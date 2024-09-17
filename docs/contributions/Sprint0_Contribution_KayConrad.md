@@ -1,0 +1,2 @@
+# Kay Conrad Sprint0 Contribution Statement
++ In this sprint I broke down the status database into different cards with acceptance criteria. As well as I worked on the customer interview document. I also reviewed Yili's refinement of the simulation component.
