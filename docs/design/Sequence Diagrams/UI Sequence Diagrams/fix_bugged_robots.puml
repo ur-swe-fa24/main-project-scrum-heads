@@ -2,4 +2,19 @@
 skinparam dpi 200
 skinparam DefaultFontName Inconsolata
 
+' Defines all participants (actors and entities)
+actor User
+entity Screen
+entity InputManager
+entity ViewController
+entity SystemManager
+
+' Sequence flow of user selecting role and getting specific display
+User -> Screen : Enter user role
+Screen -> InputManager : Pass user role
+InputManager -> SystemManager : User role
+SystemManager -> ViewController : Passes role selection
+ViewController -> Screen : Passes specific role data
+Screen --> User : Displays user view
+
 @enduml
