@@ -1,0 +1,33 @@
+@startuml UseCase
+'This is the Use Case Diagram'
+
+actor FieldEngineer
+actor BuildingStaff
+actor SeniorManagement
+actor BuildingManager
+
+
+usecase ViewRobots
+usecase AssignTasks
+usecase ViewRooms
+usecase ViewMetrics
+usecase ViewErrors
+usecase FixBugs
+usecase Remove
+usecase Add
+
+BuildingStaff --> ViewRobots
+BuildingStaff --> AssignTasks
+
+BuildingManager --> ViewRobots
+BuildingManager --> AssignTasks
+BuildingManager --> ViewRooms
+
+SeniorManagement --> ViewMetrics
+
+FieldEngineer --> ViewRobots
+FieldEngineer --> AssignTasks
+FieldEngineer --> FixBugs
+FieldEngineer --> Add
+FieldEngineer --> Remove
+FieldEngineer --> ViewErrors
