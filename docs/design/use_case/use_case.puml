@@ -6,28 +6,27 @@ actor BuildingStaff
 actor SeniorManagement
 actor BuildingManager
 
-
 usecase ViewRobots
 usecase AssignTasks
-usecase ViewRooms
+usecase ChangeRoomStatus
 usecase ViewMetrics
 usecase ViewErrors
 usecase FixBugs
-usecase Remove
-usecase Add
+usecase RemoveRobots
+usecase AddRobots
 
 BuildingStaff --> ViewRobots
 BuildingStaff --> AssignTasks
 
 BuildingManager --> ViewRobots
 BuildingManager --> AssignTasks
-BuildingManager --> ViewRooms
+BuildingManager --> ChangeRoomStatus
 
 SeniorManagement --> ViewMetrics
 
 FieldEngineer --> ViewRobots
 FieldEngineer --> AssignTasks
 FieldEngineer --> FixBugs
-FieldEngineer --> Add
-FieldEngineer --> Remove
+FieldEngineer --> AddRobots
+FieldEngineer --> RemoveRobots
 FieldEngineer --> ViewErrors
