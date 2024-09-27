@@ -10,6 +10,7 @@ entity ViewController
 entity SystemManager
 
 ' Sequence flow of user selecting role and getting specific display
+SystemManager -> ViewController : Fetch current data visible to users
 User -> Screen : Enter user role
 Screen -> InputManager : Pass user role
 InputManager -> SystemManager : User role
@@ -23,7 +24,7 @@ Screen --> User : Displays user view
 User -> Screen : Add or remove robot input
 Screen -> InputManager : Pass input
 InputManager -> SystemManager : Addition or removal of robot
-SystemManager -> ViewController : Updated views
+SystemManager -> ViewController : Updated potential views
 ViewController -> Screen : Updated screen data
 Screen --> User : Displays updated screen
 
