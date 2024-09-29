@@ -1,0 +1,31 @@
+@startuml AddRemoveRobotsSD
+skinparam dpi 200
+skinparam DefaultFontName Inconsolata
+
+' Defines all participants (actors and entities)
+actor User
+entity Screen
+entity InputManager
+entity ViewController
+entity SystemManager
+
+' Sequence flow of user selecting role and getting specific display
+SystemManager -> ViewController : Fetch current data visible to users
+User -> Screen : Enter user role
+Screen -> InputManager : Pass user role
+InputManager -> SystemManager : User role
+SystemManager -> ViewController : Passes role selection
+ViewController -> Screen : Passes specific role data
+Screen --> User : Displays user view
+
+' Sequence flow for adding or removing a robot
+' Note: not all users would be able to accomplish this
+' because the screen simply wouldn't display the option
+User -> Screen : Add or remove robot input
+Screen -> InputManager : Pass input
+InputManager -> SystemManager : Addition or removal of robot
+SystemManager -> ViewController : Updated potential views
+ViewController -> Screen : Updated screen data
+Screen --> User : Displays updated screen
+
+@enduml

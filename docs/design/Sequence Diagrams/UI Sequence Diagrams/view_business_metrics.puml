@@ -1,0 +1,23 @@
+@startuml ViewMetricsSD
+skinparam dpi 200
+skinparam DefaultFontName Inconsolata
+
+' Defines all participants (actors and entities)
+actor User
+entity Screen
+entity InputManager
+entity ViewController
+entity SystemManager
+
+' Sequence flow of user selecting role and getting specific display
+' Note: the only thing the user needs to view business metrics
+' is simply have the senior management role, so that is the only input necessary
+SystemManager -> ViewController : Fetch current data visible to users
+User -> Screen : Enter user role
+Screen -> InputManager : Pass user role
+InputManager -> SystemManager : User role
+SystemManager -> ViewController : Passes role selection
+ViewController -> Screen : Passes specific role data
+Screen --> User : Displays user view
+
+@enduml
