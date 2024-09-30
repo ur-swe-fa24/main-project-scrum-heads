@@ -1,0 +1,2 @@
+# Kay Conrad Sprint1 Contribution Statement
++ In this sprint one, I created the Use Case Diagram and the use_case.md files. I also helped construct the architechture diagram as well as create the diagram in draw.io. I also created the achritechture.md file and all the sub diagrams contained in that file. I also helped review the all other portions that were made by my teammates.
