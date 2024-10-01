@@ -1,6 +1,22 @@
 # Use Cases
-+ In our use case diagram we have our 4 user roles who will be interacting with the software. We have the:
-    + **Building Staff** who will be able to view the attributes of the robots and assign tasks to the robots.
-    +  **Building Manager** who will be able to change the status of the rooms to whether they are accessible or not. They will also be able to view the attributes of the robots and assign tasks to the robots.
-    + **Field Engineer** who will be able to do all the building staff can do with the addition of fixing the bugs of the robots, view a detailed summary of the errors as well as remove robots and add robots to the fleet.
-    + **Senior Management** they will be able to view the specific metrics of the robots including but not limited to the effeciency, utilization, and error rates.
+![Use Case Diagram](UseCase.png)
++ This use case diagram captures these user stories
+    + For the Building Staff:
+        + As a building staff, I want to view robot status and properties.
+        + As a building staff, I want to assign cleaning tasks to robots.
+    + For the Building Manager:
+        + As a building manager, I want to view robot fleet status and properties.
+        + As a building manager, I want to assign cleaning tasks to a fleet of robots.
+        + As a building manager, I want to be able to determine if rooms are accessible or not
+    + For the Field Engineer.
+        + As a field engineer, I want to view robot status and properties.
+        + As a field engineer, I want to assign cleaning tasks to robots.
+        + As a field engineer, I want to be able to fix bugged robots.
+        + As a field engineer, I want to be able to add robots from the system.
+        + As a field engineer, I want to be able to remove robots from the system.
+        + As a field engineer, I want to be able to view detailed error logs.
+    + For Senior Management
+        + As senior management, I want to view general metrics about robot efficiency, utilization, and error rates.
+        
+Note that viewing a fleet of robots and viewing the robots are encapsulated in the same ViewRobots. <br>
+Note that assigning a task to a fleet of robots and assigning a task to one robots are encapsulated in the same View Robots.
