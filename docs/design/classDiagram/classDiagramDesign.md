@@ -1,5 +1,5 @@
 # Class Diagram
-![Class_Diagram](classDiagrams.puml)
+![Class_Diagram](classDiagrams.png)
 
 ## Entities
 
