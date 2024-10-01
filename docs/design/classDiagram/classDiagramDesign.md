@@ -1,5 +1,5 @@
 # Class Diagram
-![Class_Diagram](classDiagrams.png)
+![Class_Diagram](ClassDiagram.png)
 
 ## Entities
 
