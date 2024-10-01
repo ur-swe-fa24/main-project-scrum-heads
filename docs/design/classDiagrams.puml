@@ -1,0 +1,90 @@
+@startuml ClassDiagram
+skinparam dpi 200
+skinparam DefaultFontName Inconsolata
+left to right direction
+
+' Robot class with attributes and methods
+class Robot {
+    -robot_id: int
+    -robotSize: string
+    -waterLevel: int
+    -batteryLevel: int
+    -errorStatus: string
+    -taskStatus: string
+    -taskRoom: int
+    -functionType: string
+    -location: int
+    -taskStartTime: int
+    -taskEndTime: int
+    +getRobotId(): int
+    +getRobotSize(): string
+    +getTaskStatus(): string
+    +getFunction(): string
+    +getBatteryLevel(): int
+    +getWaterLevel():int
+    +getLocation():int
+    +getTaskRoom(): int
+    +getTaskStart(): int
+    +getTaskEnd(): int
+    +reportError(): string
+    +canClean(room_id: int): boolean
+    +doTask(room_id: int): void
+}
+
+' Robot_Manager class managing multiple robots
+class Robot_Manager {
+    -clock: double
+    -robots: List<Robot>
+    +addRobot(robot: Robot): void
+    +removeRobot(robot: Robot): void
+    +getRobot(index: int): Robot
+    +getAllRobots(): List<Robot>
+    +assignRoomToRobot(robot: Robot, room_id: int): boolean
+}
+
+Robot_Manager "1" ---> "0..n" Robot : manages
+
+' Data_Management class handling data transfer, central bridge
+class Data_Management {
+    +configureRooms(numberOfRooms: int): void
+    +assignTaskToRobot(robot: Robot, room_id: int): void
+    +receiveError(): void
+    +sendErrorUI(): void
+    +requestDataFromDatabase(): void
+    +retrieveDataForScreen(): void
+}
+
+' DataDriver class for handling data conversions and storage
+class DataDriver {
+    -simulationData: List<SimulationData>
+    +storeData(): void
+    +convertData(): void
+    +fetchData(): List<SimulationData>
+}
+
+' Screen class with role-based access
+class Screen {
+    -userRole: String
+    +startUserSession(): void
+    +displayErrorInfo(errorData: ErrorInfo): void
+    +logError(errorData: ErrorInfo): void
+    +showDashboard(userRole: String): void
+    +showMetrics(): void
+    +viewRobotStatus(): void
+    +assignTasksToGroups(): void
+    +viewErrorDetails(): void
+    +performFixAction(robot: Robot): void
+    +addRobot(robot: Robot): void
+    +removeRobot(robot: Robot): void
+}
+
+' Linking Data_Management and Screen classes
+Data_Management "1" ..> "1" Screen : retrieves data and sends data
+
+' Linking Data_Management and Robot_Manager classes
+Data_Management "1" ..> "1" Robot_Manager : manages
+
+' Data_Management to DataDriver class (data transport and conversion)
+Data_Management "1" ..> "1" DataDriver : converts and stores data
+
+@enduml
