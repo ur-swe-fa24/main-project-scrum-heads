@@ -18,5 +18,5 @@
     + For Senior Management
         + As senior management, I want to view general metrics about robot efficiency, utilization, and error rates.
         
- Note that viewing a fleet of robots and viewing the robots are encapsulated in the same ViewRobots. <br>
-Note that assigning a task to a fleet of robots and assigning a task to a 
+Note that viewing a fleet of robots and viewing the robots are encapsulated in the same ViewRobots. <br>
+Note that assigning a task to a fleet of robots and assigning a task to one robots are encapsulated in the same View Robots.
