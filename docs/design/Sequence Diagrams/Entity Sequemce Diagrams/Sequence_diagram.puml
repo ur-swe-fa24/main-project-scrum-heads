@@ -1,0 +1,212 @@
+@startuml
+' Define actors and entities 
+actor "Building Manager" as BM
+actor "Building Staff" as BS
+actor "Field Engineer" as FE
+actor "Senior Management" as SM
+entity "User Interface (UI)" as UI
+entity "System Manager" as SMgr
+entity "Simulation Engine" as SimEng
+database "Status Database" as SDB
+
+skinparam participantPadding 20
+skinparam boxPadding 10
+skinparam arrowColor DarkSlateGray
+skinparam actorBorderColor DeepSkyBlue
+skinparam lifelineBorderColor gray
+skinparam sequenceGroupHeaderFontColor DarkBlue
+skinparam sequenceGroupHeaderFontSize 16
+skinparam sequenceGroupHeaderFontStyle bold
+
+' Continuous operation of the Simulation Engine
+== Simulation Engine Operation ==
+group Simulation Engine Active
+    ' Simulation Engine continuously updates System Manager with real-time data
+    loop Every Tick
+        SimEng -> SMgr : Send current data as simulate
+        activate SimEng
+        activate SMgr
+        SMgr -> SDB : Update with new data
+        activate SDB
+        SDB --> SMgr : Confirm update & send current data
+        deactivate SDB
+        deactivate SMgr
+        deactivate SimEng
+    end
+end
+
+' Viewing the status of robots by various users
+== Viewing Robot Status ==
+group View robot status
+    ' Users request robot status which is retrieved from the Simulation Engine via the System Manager
+    BM -> UI : Request to view robot status
+    activate UI
+    BS -> UI : Request to view robot status
+    FE -> UI : Request to view robot status
+    UI -> SMgr : Forward status request
+    activate SMgr
+    SMgr -> SimEng : Request current robot status
+    activate SimEng
+    SimEng -> SMgr : Send current data as simulate
+    SMgr -> SDB : Query latest status data
+    activate SDB
+    SDB --> SMgr : Return status data
+    deactivate SDB
+    SMgr --> UI : Send updated status information
+    deactivate SimEng
+    deactivate SMgr
+    UI --> BM : Display current status
+    UI --> BS : Display current status
+    UI --> FE : Display current status
+    deactivate UI
+end
+
+' Assigning cleaning tasks including error handling for simulation failures
+== Assigning Cleaning Tasks ==
+group Assign cleaning task
+    ' Building Manager, Staff, or Field Engineer inputs task details which are processed by the Simulation Engine
+    BM -> UI : Input task details
+    activate UI
+    BS -> UI : Input task details
+    FE -> UI : Input task details
+    UI -> SMgr : Forward task details
+    activate SMgr
+    SMgr -> SimEng : Request to assign new task
+    activate SimEng
+    ' Handle simulation results: success updates the database, failure returns an error
+    alt Simulation Success
+        SimEng -> SMgr : Update task simulation and send new data
+        SMgr -> SDB : Log new task & update robot status
+        activate SDB
+        SDB --> SMgr : Confirm task assignment and status update
+        deactivate SDB
+        SMgr --> UI : Confirm task assignment
+    else Simulation Failure
+        SimEng -> SMgr : Notify task assignment failure
+        SMgr -> UI : Notify task assignment failure
+    end
+    deactivate SimEng
+    deactivate SMgr
+    UI --> BM : Display task confirmation or failure message
+    UI --> BS : Display task confirmation or failure message
+    UI --> FE : Display task confirmation or failure message
+    deactivate UI
+end
+
+' Checking room accessibility based on real-time simulation data
+== Checking Room Accessibility ==
+group Check room accessibility
+    ' Building Manager requests room accessibility which is checked through simulation
+    BM -> UI : Request to check room accessibility
+    activate UI
+    UI -> SMgr : Forward accessibility request
+    activate SMgr
+    SMgr -> SimEng : Request current accessibility status
+    activate SimEng
+    SimEng -> SMgr : Provide current data as simulate
+    SMgr -> SDB : Query room access details
+    activate SDB
+    SDB --> SMgr : Return access details
+    deactivate SDB
+    SMgr --> UI : Send confirmed accessibility details
+    deactivate SimEng
+    deactivate SMgr
+    UI --> BM : Display room accessibility status
+    deactivate UI
+end
+
+' Handling errors and managing fixes within the system
+== Handling Errors and Fixes ==
+group Error Log Review and Fix Implementation
+    ' Field Engineer requests error logs which may lead to fix actions
+    FE -> UI : Request to view error logs
+    activate UI
+    UI -> SMgr : Forward error log request
+    activate SMgr
+    SMgr -> SDB : Query latest error logs
+    activate SDB
+    ' Error log retrieval: handling successful and failed data fetch scenarios
+    alt Successful Retrieval
+        SDB --> SMgr : Return error logs
+        SMgr --> UI : Send error logs
+    else Retrieval Failure
+        SDB --> SMgr : Error fetching logs
+        SMgr --> UI : Notify error fetching failure
+    end
+    deactivate SDB
+    UI --> FE : Display error logs or failure message
+    deactivate UI
+    ' Fixes are based on error logs and involve simulation to test solutions
+    FE -> UI : Input fix details (firmware updates, config adjustments)
+    activate UI
+    UI -> SMgr : Send fix commands
+    activate SMgr
+    SMgr -> SimEng : Simulate fixes and send results
+    activate SimEng
+    ' Simulation of fixes: handling outcomes
+    alt Simulation Success
+        SimEng -> SMgr : Simulation results
+        SMgr -> SDB : Log fixes and update parameters
+        activate SDB
+        SDB --> SMgr : Confirm fixes logged
+    else Simulation Failure
+        SimEng --> SMgr : Notify fix simulation failure
+        SMgr --> UI : Notify simulation failure
+    end
+    deactivate SDB
+    deactivate SimEng
+    SMgr --> UI : Confirm successful fix or notify failure
+    deactivate SMgr
+    UI --> FE : Display fix confirmation or failure message
+    deactivate UI
+end
+
+' Managing the composition of the robot fleet based on user decisions
+== Managing Fleet Composition ==
+group Add or Remove Robots
+    ' Field Engineer logs in to add or remove robots, which involves simulation for validation
+    FE -> UI : Log in and choose action (add/remove robot)
+    activate UI
+    UI -> SMgr : Forward decision and robot details
+    activate SMgr
+    SMgr -> SimEng : Initialize robot addition/removal
+    activate SimEng
+    ' Handling the addition or removal of robots: success updates database, failure informs user
+    alt Addition/Removal Success
+        SimEng -> SMgr : Process and send fleet update
+        SMgr -> SDB : Update fleet records
+        activate SDB
+        SDB --> SMgr : Confirm fleet update
+    else Addition/Removal Failure
+        SimEng --> SMgr : Notify fleet update failure
+        SMgr --> UI : Notify update failure
+    end
+    deactivate SDB
+    deactivate SimEng
+    SMgr --> UI : Confirm successful update or notify failure
+    deactivate SMgr
+    UI --> FE : Display update confirmation or failure message
+    deactivate UI
+end
+
+' Business metrics viewing for senior management, showing system-wide data
+== Viewing General Business Metrics ==
+group Business Metrics Retrieval
+    ' Senior Management requests business metrics, which are fetched from the database
+    SM -> UI : Request business metrics
+    activate UI
+    UI -> SMgr : Forward metrics request
+    activate SMgr
+    SMgr -> SDB : Query for metrics
+    activate SDB
+    ' Retrieve and process business metrics for display
+    SDB --> SMgr : Return compiled metrics
+    deactivate SDB
+    SMgr --> UI : Process and send metrics
+    deactivate SMgr
+    UI --> SM : Display business metrics
+    deactivate UI
+end
+
+
+@enduml
