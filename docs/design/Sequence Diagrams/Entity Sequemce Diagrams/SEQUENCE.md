@@ -1,5 +1,5 @@
 # Sequence Diagram
-![alt text](<../../../../out/docs/design/Sequence Diagrams/Sequence_diagram/Sequence_diagram.png>)
+![Sequence Diagram](Sequence_diagram.png)
 
 ## Actors and Entities
 
