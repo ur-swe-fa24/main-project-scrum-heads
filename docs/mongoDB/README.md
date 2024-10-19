@@ -1,5 +1,5 @@
 # Welcome to the MongoDB Explanation Space
-In this folder we will explain all important details that we will need while using MongoDB as well as the what exactly is happening when mapping this from SQL to MongoDB
+In this folder we will explain all important details that we will need while using MongoDB as well as a small translation from SQL to MongoDB
 ## What is MongoDB
 Explanation as to what MongoDB is as well as the corresponding SQL terms and MongoDB terms.
 + [What is MongoDB](what_is_mongodb.md) 
@@ -10,4 +10,3 @@ This linked file will document and explain all important operations that may per
 + [SQL to MongDB](https://www.mongodb.com/docs/manual/reference/sql-comparison/)
 + [Write Data](https://www.mongodb.com/docs/languages/cpp/cpp-driver/current/write/)
 + [Read Data](https://www.mongodb.com/docs/languages/cpp/cpp-driver/current/read/)
-+ [Json to Bson](https://www.mongodb.com/resources/basics/json-and-bson)

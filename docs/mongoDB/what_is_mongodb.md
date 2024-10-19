@@ -6,6 +6,8 @@ MongoDB is a document database used to build highly available and scalable inter
 + You can nest JSON to store complex data objects.
 + JSON has a flexible and dynamic schema, so adding fields or leaving a field out is not a problem.
 + Documents map to objects in most popular programming languages.
+
+Because the data we will be recieving from the MongoDB driver is in JSON format we may need some adapter/class/methods to either convert data into JSON which will be feed into the database or convert from JSON into the data needed for the UI, SM, or Simulation. Also to note that the data could be in JSON format for all objects and classes. This is a design question when implementing the system.
 ## SQL to MongoDB
 MongoDB database stores its data in collections. A collection holds one or more BSON documents. Documents are analogous to records or rows in a relational database table. Each document has one or more fields; fields are similar to the columns in a relational database table.
 ![Sql to MongoDB terms](sql_to_mongodb_table.png)
