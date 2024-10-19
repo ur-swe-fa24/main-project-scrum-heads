@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(WxAppTest)
+project(WxFormBuilderTest)
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 17)
@@ -15,14 +15,23 @@ set(wxWidgets_INCLUDE_DIR "${wxWidgets_ROOT_DIR}/include")
 list(APPEND CMAKE_PREFIX_PATH "${wxWidgets_ROOT_DIR}")
 list(APPEND CMAKE_LIBRARY_PATH "${wxWidgets_LIB_DIR}")
 
-# Find wxWidgets
+# Find wxWidgets (ensure that the necessary components are found)
 find_package(wxWidgets REQUIRED COMPONENTS core base)
 
-# Include wxWidgets
+# Debugging: Output the wxWidgets include directories
+message(STATUS "wxWidgets include directories: ${wxWidgets_INCLUDE_DIRS}")
+
+# Include wxWidgets settings (adds include directories and compile/link flags)
 include(${wxWidgets_USE_FILE})
 
+# Add your source files
+set(SRC_FILES
+    MyProjectBase.cpp
+    main.cpp
+)
+
 # Add your executable target
-add_executable(WxAppTest hello_world.cpp)
+add_executable(WxFormBuilderTest ${SRC_FILES})
 
 # Link wxWidgets to the target
-target_link_libraries(WxAppTest ${wxWidgets_LIBRARIES})
+target_link_libraries(WxFormBuilderTest ${wxWidgets_LIBRARIES})
