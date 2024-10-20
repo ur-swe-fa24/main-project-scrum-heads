@@ -5,7 +5,7 @@ This folder contains a test trial of wxWidgets that implements the ["Hello World
 CMake was used to link the wxWidgets library to `hello_world.cpp`. This CMake file was constructed using the references below, in addition to class instruction.
 
 # Required Setup
-+ [Install wxWidgets](https://www.wxwidgets.org/downloads/), taking note of where you put the repository.
++ [Install wxWidgets](https://www.wxwidgets.org/downloads/), taking note of where you put the directory.
 + Go into WxAppTest/CMakeLists.txt, and change the location of wxWidgets to the location on your local machine, as noted in the previous step.
 
 # How to Use

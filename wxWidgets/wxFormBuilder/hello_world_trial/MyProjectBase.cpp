@@ -17,7 +17,7 @@ MyFrame1::MyFrame1( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 
 	testButton = new wxButton( this, wxID_ANY, _("Test Button"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer1->Add( testButton, 0, wxALL, 5 );
+	bSizer1->Add( testButton, 0, wxALIGN_CENTER|wxALL, 5 );
 
 
 	this->SetSizer( bSizer1 );

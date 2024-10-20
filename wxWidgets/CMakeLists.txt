@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(WxFormBuilderTest)
+project(wxWidgets)
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 17)
@@ -15,24 +15,32 @@ set(wxWidgets_INCLUDE_DIR "${wxWidgets_ROOT_DIR}/include")
 list(APPEND CMAKE_PREFIX_PATH "${wxWidgets_ROOT_DIR}")
 list(APPEND CMAKE_LIBRARY_PATH "${wxWidgets_LIB_DIR}")
 
-# Find wxWidgets (ensure that the necessary components are found)
+# Find wxWidgets (ensures that the necessary components are found)
 find_package(wxWidgets REQUIRED COMPONENTS core base)
 
-# Debugging: Output the wxWidgets include directories
-message(STATUS "wxWidgets include directories: ${wxWidgets_INCLUDE_DIRS}")
-
-# Include wxWidgets settings (adds include directories and compile/link flags)
+# Include wxWidgets settings
 include(${wxWidgets_USE_FILE})
 
-# Add your source files
-set(SRC_FILES
-    MyProjectBase.cpp
-    derivedFrame.cpp
-    main.cpp
+# Combine WxFormBuilder source files
+set(WX_FORM_BUILDER_FILES
+    wxFormBuilder/hello_world_trial/MyProjectBase.cpp
+    wxFormBuilder/hello_world_trial/derivedFrame.cpp
+    wxFormBuilder/hello_world_trial/main.cpp
 )
 
-# Add your executable target
-add_executable(WxFormBuilderTest ${SRC_FILES})
+# Combine WxApp source files
+set(WX_APP_FILES
+    WxAppTest/hello_world.cpp
+)
 
-# Link wxWidgets to the target
+# Add executable target for WxFormBuilder
+add_executable(WxFormBuilderTest ${WX_FORM_BUILDER_FILES})
+
+# Add executable target for WxApp
+add_executable(WxAppTest ${WX_APP_FILES})
+
+# Link wxWidgets to target
 target_link_libraries(WxFormBuilderTest ${wxWidgets_LIBRARIES})
+
+# Link wxWidgets to target
+target_link_libraries(WxAppTest ${wxWidgets_LIBRARIES})

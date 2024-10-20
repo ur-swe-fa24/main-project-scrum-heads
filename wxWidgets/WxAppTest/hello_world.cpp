@@ -3,7 +3,7 @@
 // Start of wxWidgets "Hello World" Program
 
 // Global include for wxWidgets' header files, includes common headers, not all
-#include <wx/wx.h>
+#include <wx/wx.h> 
 
 // Class derives from wxApp
 class MyApp : public wxApp

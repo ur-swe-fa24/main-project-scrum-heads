@@ -1,15 +1,18 @@
 #include "MyProjectBase.h"
-#include <wx/app.h>
+#include "derivedFrame.hpp"
+#include <wx/wx.h>
 
 class MyApp : public wxApp
 {
 public:
-    virtual bool OnInit()
-    {
-        MyFrame1* frame = new MyFrame1(NULL, wxID_ANY, "WxFormBuilder Test");
-        frame->Show(true);
-        return true;
-    }
+    virtual bool OnInit();
 };
+
+bool MyApp::OnInit()
+{
+    MyDerivedFrame* frame = new MyDerivedFrame(nullptr);
+    frame->Show(true);
+    return true;
+}
 
 wxIMPLEMENT_APP(MyApp);
