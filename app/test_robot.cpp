@@ -3,59 +3,52 @@
 #include <vector>
 
 using namespace robots;
+using namespace std;
 
-int main(int argc, char* argv[]) {
-    /** This is a pseudo code for how I planned the system manager should interact with the user(Only for this sprint)
-    robots::Robots::Start_Time startTime = {9, 0, 0};  // 9:00:00
-        robots::Robots::End_Time endTime = {17, 30, 45};   // 17:30:45
-    // Create a Robot object
-    robots::Robots robot(a,b,c,d)
-    a = 1
-    
-    robots::Robots robot1(1, "Medium", 100, 90, "No Error", "Finished", 101, 
-                      robots::Robots::robotFunction::SCRUB, 5, 5, startTime, endTime);
-    std::cout << "Hi! Which role are you: FieldEngineer" << std::endl;
-    cin >> string
-    if (string == FieldEngineer) {
-        std::cout << "What you do want to do today? choices: create robot" << std::endl;
-        cin >> string2
-        // Create a Robot object
-        robots::Robots robot1(1, "Medium", 100, 90, "No Error", "Finished", 101, 
-                      robots::Robots::robotFunction::SCRUB, 5, 5, startTime, endTime);
-        std::cout << "What you do want to do today? choices: create robot" << std::endl;
+int main() {
+    cout << "Hi! Which role are you? Enter 'FieldEngineer': ";
+    string user_role;
+    cin >> user_role; // Input the role of the user
 
-        if (string2 == "view_robot1_status") {
+    // Check if the user is a Field Engineer
+    if (user_role == "FieldEngineer") {
+        cout << "What do you want to do today? Enter 'create_robot' or 'view_robot_status': ";
+        string action;
+        cin >> action; // Input the action the user wants to perform
+
+        // Set start and end times
+        Robots::Start_Time startTime = {9, 0, 0};  // Represents 9:00:00 AM
+        Robots::End_Time endTime = {17, 30, 45};   // Represents 5:30:45 PM
+
+        if (action == "create_robot") {
+            // Vector to hold robots
+            vector<Robots> robot_list; // Create a vector to store Robots objects
+
+            // Creating a temporary Robots object for calling the non-static add_robot method
+            Robots temp_robot(0, "", 0, 0, "", "", 0, Robots::robotFunction::SCRUB, 0, 0, startTime, endTime);
+
+            // Call add_robot function using the temp_robot object
+            temp_robot.add_robot(robot_list);
+
+            // Output the status of the newly added robot if available
+            if (!robot_list.empty()) {
+                cout << "\n--- Robot Status after Addition ---\n";
+                robot_list.back().field_engineer_view_status();
+            } else {
+                cout << "No robots were added." << endl;
+            }
+        } else if (action == "view_robot_status") {
+            // Assuming we already have a robot to view, normally you'd select which robot's status to view
+            Robots robot1(1, "Medium", 100, 90, "No Error", "Finished", 101, 
+                          Robots::robotFunction::SCRUB, 5, 5, startTime, endTime);
+            cout << "\n--- Viewing Robot Status ---\n";
             robot1.field_engineer_view_status();
+        } else {
+            cout << "Invalid action entered." << endl;
         }
-    }
-    */
-
-    // testing field_engineer_view_status()
-    std::cout << "\n--- testing field_engineer_view_status() ---\n";
-    robots::Robots::Start_Time startTime = {9, 0, 0};  // 9:00:00
-    robots::Robots::End_Time endTime = {17, 30, 45};   // 17:30:45
-
-    robots::Robots robot1(1, "Medium", 100, 90, "No Error", "Finished", 101, 
-                        robots::Robots::robotFunction::SCRUB, 5, 5, startTime, endTime);
-    robot1.field_engineer_view_status();
-
-    //testing add a robot
-    std::cout << "\n--- testing add_robot() ---\n";
-    std::vector<robots::Robots> robot_list;
-
-    // Create a Robots object to call add_robot (the robot object will be overwritten by new user input)
-    robots::Robots temp_robot(0, "", 0, 0, "", "", 0, robots::Robots::robotFunction::SCRUB, 0, 0);
-
-    // Call add_robot function using temp_robot object
-    temp_robot.add_robot(robot_list);
-
-    // View the robot's status after it's added
-    if (!robot_list.empty()) {
-        std::cout << "\n--- Robot Status ---\n";
-        robot_list[0].field_engineer_view_status();
     } else {
-        std::cout << "No robots were added." << std::endl;
+        cout << "Access denied. Only field engineers can perform actions." << endl;
     }
-    return 0;
-}
 
+    return 0; // Return 0 to indicate successful execution
+}
