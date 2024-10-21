@@ -19,10 +19,10 @@ include(../dependencies/dependencies.cmake)
 # list(APPEND CMAKE_LIBRARY_PATH "${wxWidgets_LIB_DIR}")
 
 # Find wxWidgets (ensures that the necessary components are found)
-find_package(wxWidgets REQUIRED COMPONENTS core base)
+# find_package(wxWidgets REQUIRED COMPONENTS core base)
 
 # Include wxWidgets settings
-include(${wxWidgets_USE_FILE})
+# include(${wxWidgets_USE_FILE})
 
 # Combine WxFormBuilder source files
 set(WX_FORM_BUILDER_FILES
@@ -43,7 +43,7 @@ add_executable(WxFormBuilderTest ${WX_FORM_BUILDER_FILES})
 add_executable(WxAppTest ${WX_APP_FILES})
 
 # Link wxWidgets to target
-target_link_libraries(WxFormBuilderTest ${wxWidgets_LIBRARIES})
+target_link_libraries(WxFormBuilderTest wx::net wx::core wx::base)
 
 # Link wxWidgets to target
-target_link_libraries(WxAppTest ${wxWidgets_LIBRARIES})
+target_link_libraries(WxAppTest wx::net wx::core wx::base)
