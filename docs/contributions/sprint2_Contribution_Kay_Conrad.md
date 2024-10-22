@@ -1,0 +1,2 @@
+# Kay Conrad Sprint2 Contribution Statement
++ During this sprint, I took on the research portion of MongoDB. I spent my time finding the important operations that we will use for the driver. I also spent my time mapping SQL to MongoDB since I have already learned SQL. Lastly I managed the git flow and also consulted on reviewing the other portions before the submit date.
