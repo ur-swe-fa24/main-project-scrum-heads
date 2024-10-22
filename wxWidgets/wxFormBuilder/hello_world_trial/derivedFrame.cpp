@@ -10,7 +10,6 @@ MyDerivedFrame::MyDerivedFrame(wxWindow* parent)
 
 void MyDerivedFrame::testButtonOnButtonClick(wxCommandEvent& event)
 {
-    // Implement your custom logic here
+    // Implement necessary button press logic here
     wxMessageBox("Button clicked from derived frame!", "Info", wxOK | wxICON_INFORMATION);
-    std::cout << "test" << std::endl;
 }
