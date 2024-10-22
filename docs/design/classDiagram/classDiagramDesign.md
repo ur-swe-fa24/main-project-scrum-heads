@@ -33,6 +33,7 @@ The `Robot` class represents a robot in the system. Each robot has several attri
 - `reportError(): string` — Reports the current error status of the robot.
 - `canClean(room_id: int): boolean` — Determines if the robot can clean a room based on the room ID and its capabilities.
 - `+doTask(room_id: int): void` - Robot actually do task in the given room.
+- `+field_engineer_view_status(): void` - Viewing robot status from the field engineer perspective.
 
 ### 2. **Robot_Manager**
 The `Robot_Manager` class is responsible for managing a collection of robots and assigning them tasks. It keeps track of all robots in the system and assigns them to clean specific rooms based on their capabilities. It can also adds or removes robot

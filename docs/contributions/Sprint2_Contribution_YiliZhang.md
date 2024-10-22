@@ -1,0 +1,5 @@
+# Sprint2_Contribution_Yili_Zhang
+
++ I write the `test_robot.cpp` function serves as the system manager within our robot management system, facilitating critical user interactions and process oversight. This function manages the primary operations, allowing field engineers to dynamically create or review robot profiles based on real-time inputs. By handling user roles and subsequent actions, it ensures that the system adheres to operational protocols and security measures, maintaining integrity and efficiency.
+
++ Accompanied by a detailed activity diagram, the function’s workflow is visually mapped, showcasing the logical progression from user input through system response. This diagram is instrumental for stakeholders to visualize the decision-making pathways and understand how the system manages tasks and responses based on user-defined roles and commands.

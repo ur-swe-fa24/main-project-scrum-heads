@@ -1,0 +1,63 @@
+@startuml ActivityDiagram
+
+start
+:Start Program;
+' Initializes the application.
+
+:Ask User Role;
+' Prompts for user role input.
+
+partition "User Role Verification" {
+    :Enter 'FieldEngineer';
+    ' Checks if the user role is 'FieldEngineer'.
+
+    if (User role is 'FieldEngineer') then (yes)
+        :Proceed;
+        ' Allows continued access if the role is correct.
+    else (no)
+        :Access Denied;
+        ' Denies access if the role is incorrect.
+        stop
+    endif
+}
+
+:Ask Action;
+' Asks the user to choose an action.
+
+partition "Action Decision" {
+    :Enter 'create_robot' or 'view_robot_status';
+    ' User chooses between creating a robot or viewing status.
+
+    if (Action is 'create_robot') then (create)
+        :Initialize robot_list;
+        ' Prepares a list to store robot data.
+
+        :Create temporary Robots object;
+        ' Sets up a temporary robot for operations.
+
+        :Call add_robot function;
+        ' Attempts to add a robot to the list.
+
+        if (Robot added?) then (yes)
+            :Display Robot Status;
+            ' Displays status if the robot is successfully added.
+        else (no)
+            :Output "No robots were added";
+            ' Informs if no robot was added.
+        endif
+    elseif (Action is 'view_robot_status') then (view)
+        :Assume robot exists;
+        ' Assumes a robot is available for status viewing.
+
+        :Display Existing Robot Status;
+        ' Shows the status of an existing robot.
+    else (invalid)
+        :Output "Invalid action entered";
+        ' Alerts on invalid action entry.
+    endif
+}
+
+stop
+' Ends the program after action completion.
+
+@enduml
