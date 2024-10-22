@@ -12,6 +12,7 @@ include_directories(include)
 
 # Add subdirectories for app
 add_subdirectory(app)
+add_subdirectory(wxWidgets)
 
 # Create a library from the robot.cpp file in src
 add_library(robot_lib src/robot.cpp)
