@@ -1,5 +1,7 @@
 # Activity Diagram Documentation
 
+![Activity_Diagram](ActivityDiagram.png)
+
 ## Overview
 
 The activity diagram provided outlines the operational workflow of the `test_robot.cpp` function, which serves as the system manager for our robot management system. This documentation aims to explain the diagram's components and their relationships to each other, ensuring a clear understanding of how user inputs dictate the system's behavior.
