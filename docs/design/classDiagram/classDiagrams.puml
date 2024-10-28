@@ -9,11 +9,12 @@ class Robot {
     -robotSize: string
     -waterLevel: int
     -batteryLevel: int
-    -errorStatus: string
-    -taskStatus: string
-    -taskRoom: int
+    -errorStatus: string = ""
+    -taskStatus: string = ""
+    -taskRoom: int = 0
     -functionType: string
-    -location: int
+    -location_x: int = 0
+    -location_y: int = 0
     -taskStartTime: int
     -taskEndTime: int
     +getRobotId(): int
@@ -21,14 +22,17 @@ class Robot {
     +getTaskStatus(): string
     +getFunction(): string
     +getBatteryLevel(): int
-    +getWaterLevel():int
-    +getLocation():int
+    +getWaterLevel(): int
+    +getLocationX(): int
+    +getLocationY(): int
     +getTaskRoom(): int
     +getTaskStart(): int
     +getTaskEnd(): int
     +reportError(): string
     +canClean(room_id: int): boolean
     +doTask(room_id: int): void
+    +add_robot(robot_list: List<Robot>): void
+    +field_engineer_view_status(): void
 }
 
 ' Robot_Manager class managing multiple robots
