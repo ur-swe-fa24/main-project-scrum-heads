@@ -28,6 +28,7 @@ include(../dependencies/dependencies.cmake)
 set(WX_FORM_BUILDER_FILES
     wxFormBuilder/hello_world_trial/MyProjectBase.cpp
     wxFormBuilder/hello_world_trial/derivedFrame.cpp
+    wxFormBuilder/hello_world_trial/newDerivedFrame.cpp
     wxFormBuilder/hello_world_trial/main.cpp
 )
 

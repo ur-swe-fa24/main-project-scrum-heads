@@ -1,5 +1,6 @@
 #include "MyProjectBase.h"
 #include "derivedFrame.hpp"
+#include "newDerivedFrame.hpp"
 #include <wx/wx.h>
 
 class MyApp : public wxApp
@@ -15,6 +16,9 @@ bool MyApp::OnInit()
     // Frames are created hidden to allow filling them with content before showing all the content at once
     // Show() is necessary to show this hidden ontent
     frame->Show(true);
+
+    // MyNewDerivedFrame* frame2 = new MyNewDerivedFrame(nullptr);
+    // frame2->Show(true);
     // Returning true here allows the application to start running
     return true;
 }
