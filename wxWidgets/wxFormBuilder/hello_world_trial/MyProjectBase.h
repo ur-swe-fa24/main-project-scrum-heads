@@ -32,17 +32,37 @@ class MyFrame1 : public wxFrame
 	private:
 
 	protected:
-		wxButton* testButton;
+		wxButton* testButton1;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void testButtonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
-
 
 	public:
 
 		MyFrame1( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~MyFrame1();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class MyFrame2
+///////////////////////////////////////////////////////////////////////////////
+class MyFrame2 : public wxFrame
+{
+	private:
+
+	protected:
+		wxButton* testButton2;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void testButtonOnButtonClick( wxCommandEvent& event ) { event.Skip(); }
+
+	public:
+
+		MyFrame2( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~MyFrame2();
 
 };
 
