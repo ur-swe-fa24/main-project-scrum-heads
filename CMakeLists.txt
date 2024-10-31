@@ -5,13 +5,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message("Export compile commands: ${CMAKE_EXPORT_COMPILE_COMMANDS}")
-set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/libs/mongo-cxx-driver")
+# set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/libs/mongo-cxx-driver")
 message("CMake install prefix: ${CMAKE_INSTALL_PREFIX}")
+
+project(ScrumHeads VERSION 1.0)
 
 include(dependencies/get_cpm.cmake)
 include(dependencies/dependencies.cmake)
-
-find_package(mongocxx REQUIRED)
+# cmake -DCMAKE_PREFIX_PATH="/home/kc3ks/libs/mongo-cxx-driver" ..
+find_package(mongocxx CONFIG REQUIRED)
 if (mongocxx_FOUND)
   message(STATUS "mongocxx found!")
 endif()
@@ -21,14 +23,14 @@ if (bsoncxx_FOUND)
 endif()
 
 # Project name and version
-project(ScrumHeads VERSION 1.0)
+
 
 # Add include directories
 include_directories(include)
 
 # Add subdirectories for app
 add_subdirectory(app)
-# add_subdirectory(wxWidgets)
+add_subdirectory(wxWidgets)
 
 # Create a library from the robot.cpp file in src
 add_library(robot_lib src/robot.cpp)

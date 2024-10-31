@@ -6,7 +6,7 @@
 #include <utility>
 #include <mongocxx/instance.hpp>
 
-namespace loggable {
+namespace adapters {
     //Cout_Adapter inherits from loggable.hpp
     class Mongo_Adapter : public Adapter{
         public:
@@ -16,7 +16,7 @@ namespace loggable {
             void read_robot( const robots::Robot& robot) override;
             
         private:
-            mongocxx::instance db {};
+            mongocxx::instance db;
 
     };
 }
