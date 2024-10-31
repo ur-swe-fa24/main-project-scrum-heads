@@ -4,19 +4,22 @@
 #include "adapter.hpp"
 #include <memory>
 #include <utility>
+#include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
+#include <mongocxx/stdx.hpp>
+#include <mongocxx/uri.hpp>
 
 namespace adapters {
     //Cout_Adapter inherits from loggable.hpp
     class Mongo_Adapter : public Adapter{
         public:
-            MongoAdapter() override;
+            Mongo_Adapter();
             // Pass by const ref - protects original objects the parameters are the senor or actuator
-            void write_robot( const robots::Robot& robot) override;
-            void read_robot( const robots::Robot& robot) override;
+            void write_robot( const robots::Robots& robot) override;
+            void read_robot( const robots::Robots& robot) override;
             
         private:
-            mongocxx::instance db;
+            mongocxx::instance db_;
 
     };
 }
