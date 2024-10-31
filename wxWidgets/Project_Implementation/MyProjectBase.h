@@ -21,6 +21,7 @@
 #include <wx/settings.h>
 #include <wx/sizer.h>
 #include <wx/frame.h>
+#include <wx/textctrl.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -61,6 +62,8 @@ class feBaseFrame : public wxFrame
 
 	protected:
 		wxButton* feButton;
+		wxTextCtrl* feTextControl;
+		wxButton* feRefreshButton;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnFEButtonClick( wxCommandEvent& event ) { event.Skip(); }

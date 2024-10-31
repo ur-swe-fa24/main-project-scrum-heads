@@ -13,3 +13,8 @@ void MyFEBaseFrame::OnFEButtonClick(wxCommandEvent& event)
     // Implement necessary button press logic here
     wxMessageBox("Field Engineer Frame", "Info", wxOK | wxICON_INFORMATION);
 }
+
+void MyFEBaseFrame::SetText(const wxString& text)
+{
+    feTextControl->SetValue(text);  // Update text in feTextCtrl
+}

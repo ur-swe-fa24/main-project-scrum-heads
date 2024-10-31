@@ -55,6 +55,12 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	feButton = new wxButton( this, wxID_ANY, _("Field Engineer Info"), wxDefaultPosition, wxDefaultSize, 0 );
 	feBaseFrameSizer->Add( feButton, 0, wxALL, 5 );
 
+	feTextControl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	feBaseFrameSizer->Add( feTextControl, 0, wxALL, 5 );
+
+	feRefreshButton = new wxButton( this, wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
+	feBaseFrameSizer->Add( feRefreshButton, 0, wxALL, 5 );
+
 
 	this->SetSizer( feBaseFrameSizer );
 	this->Layout();

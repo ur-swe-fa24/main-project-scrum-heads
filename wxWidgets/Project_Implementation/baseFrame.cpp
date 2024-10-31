@@ -19,7 +19,12 @@ void MyBaseFrame::OnFESelectButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
     // wxMessageBox("Field Engineer Frame", "Info", wxOK | wxICON_INFORMATION);
+
     MyFEBaseFrame* feFrame = new MyFEBaseFrame(nullptr);
+
+    wxString sampleText = "Hello, Field Engineer!";
+    feFrame->SetText(sampleText);  // Set the text in feFrame’s text control
+    
     feFrame->Show(true);
 }
 
