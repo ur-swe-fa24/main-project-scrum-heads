@@ -19,7 +19,10 @@ namespace adapters {
             void read_robot( const robots::Robots& robot) override;
             
         private:
-            mongocxx::instance db_;
+            mongocxx::instance mongo_instance_ {};
+            mongocxx::uri uri_ {"mongodb://localhost:27017"};
+            mongocxx::client client_ {uri_};
+            mongocxx::v_noabi::database db_ {client_["mydb"]};
 
     };
 }

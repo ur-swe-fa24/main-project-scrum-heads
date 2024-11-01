@@ -19,6 +19,19 @@ using bsoncxx::builder::basic::make_document;
 
 int main() 
 {
-    
+    std::cout << "First make a robot: " << std::endl;
+
+    robots::Robots::Start_Time startTime = {9, 0, 0};  // Represents 9:00:00 AM
+    robots::Robots::End_Time endTime = {17, 30, 45}; 
+    robots::Robots temp_robot(1, "Large", 100, 50, "", "Vacuum", 3, robots::Robots::robotFunction::SCRUB, 10, 15, startTime, endTime);
+
+    adapters::Mongo_Adapter mongo_database{};
+    spdlog::info("Connected to the mongodb!");
+
+    std::cout << "Now let's write a Robot" << std::endl;
+    mongo_database.write_robot(temp_robot);
+
+    std::cout << "Now let's read the robot" << std::endl;
+    mongo_database.read_robot(temp_robot);
 
 }
