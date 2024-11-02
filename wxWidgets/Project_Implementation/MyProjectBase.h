@@ -22,6 +22,7 @@
 #include <wx/sizer.h>
 #include <wx/frame.h>
 #include <wx/textctrl.h>
+#include <wx/listbox.h>
 #include <wx/stattext.h>
 #include <wx/choice.h>
 
@@ -67,6 +68,7 @@ class feBaseFrame : public wxFrame
 		wxTextCtrl* feTextControl;
 		wxButton* feRefreshButton;
 		wxButton* addRobotButton;
+		wxListBox* robotListBox;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnFEButtonClick( wxCommandEvent& event ) { event.Skip(); }

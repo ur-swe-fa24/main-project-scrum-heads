@@ -8,6 +8,7 @@ public:
 
     // Method to set the text content
     void SetText(const wxString& text);
+    void AddRobotToList(const wxString& robotDescription);
 
 protected:
     // Override the virtual method

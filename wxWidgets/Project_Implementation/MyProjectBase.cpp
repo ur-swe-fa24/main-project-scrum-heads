@@ -64,6 +64,9 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	addRobotButton = new wxButton( this, wxID_ANY, _("Add Robot"), wxDefaultPosition, wxDefaultSize, 0 );
 	feBaseFrameSizer->Add( addRobotButton, 0, wxALL, 5 );
 
+	robotListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	feBaseFrameSizer->Add( robotListBox, 0, wxALL, 5 );
+
 
 	this->SetSizer( feBaseFrameSizer );
 	this->Layout();

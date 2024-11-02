@@ -27,11 +27,16 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)
 {
     // Create and show the AddRobotFrame
-    MyAddRobotFrame* addRobotFrame = new MyAddRobotFrame(this);
+    MyAddRobotFrame* addRobotFrame = new MyAddRobotFrame(this, this);
     addRobotFrame->Show(true);
 }
 
 void MyFEBaseFrame::SetText(const wxString& text)
 {
     feTextControl->SetValue(text);  // Update text in feTextCtrl
+}
+
+void MyFEBaseFrame::AddRobotToList(const wxString& robotDescription)
+{
+    robotListBox->Append(robotDescription);
 }
