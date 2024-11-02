@@ -48,8 +48,7 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
         kvp("Task Status", robot.get_task_status()),
         kvp("Function Type", robot.get_function_type()),
         kvp("Location x:", robot.get_location_x()),
-        kvp("Location y:", robot.get_location_y()),
-        kvp("Location x:", robot.get_location_x())
+        kvp("Location y:", robot.get_location_y())
     ));
 }
 
