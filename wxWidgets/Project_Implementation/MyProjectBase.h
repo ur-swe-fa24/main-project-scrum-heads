@@ -67,6 +67,7 @@ class feBaseFrame : public wxFrame
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnFEButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:

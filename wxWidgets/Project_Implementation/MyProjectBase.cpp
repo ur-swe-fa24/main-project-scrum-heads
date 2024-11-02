@@ -69,6 +69,7 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 
 	// Connect Events
 	feButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFEButtonClick ), NULL, this );
+	feRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFERefreshButtonClick ), NULL, this );
 }
 
 feBaseFrame::~feBaseFrame()

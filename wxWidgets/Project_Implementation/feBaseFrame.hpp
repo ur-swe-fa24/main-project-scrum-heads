@@ -12,4 +12,5 @@ public:
 protected:
     // Override the virtual method
     void OnFEButtonClick(wxCommandEvent& event) override;
+    void OnFERefreshButtonClick(wxCommandEvent& event) override;
 };
