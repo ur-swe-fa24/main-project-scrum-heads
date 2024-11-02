@@ -26,7 +26,10 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 
 void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)
 {
-    // Create and show the AddRobotFrame
+    // Create and show the AddRobotFrame (window where field engineer can add robots)
+    // First this: makes the current feFrame the parent window of the created addRobotFrame
+    // Second this: passes instance of feFrame as a pointer to itself, allowing created addRobotFrame to communicate directly with it
+    // necessary for taking the robot info added in the addRobotFrame and transporting it to feBaseFrame where field engineer can view
     MyAddRobotFrame* addRobotFrame = new MyAddRobotFrame(this, this);
     addRobotFrame->Show(true);
 }
@@ -38,5 +41,6 @@ void MyFEBaseFrame::SetText(const wxString& text)
 
 void MyFEBaseFrame::AddRobotToList(const wxString& robotDescription)
 {
+    // Add the robot description to the list of robots 
     robotListBox->Append(robotDescription);
 }
