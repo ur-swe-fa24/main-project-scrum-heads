@@ -77,6 +77,7 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	feButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFEButtonClick ), NULL, this );
 	feRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFERefreshButtonClick ), NULL, this );
 	addRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnAddRobotButtonClick ), NULL, this );
+	robotListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( feBaseFrame::OnRobotListBoxDClick ), NULL, this );
 }
 
 feBaseFrame::~feBaseFrame()
@@ -200,5 +201,47 @@ AddRobotFrame::AddRobotFrame( wxWindow* parent, wxWindowID id, const wxString& t
 }
 
 AddRobotFrame::~AddRobotFrame()
+{
+}
+
+robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* robotInfoFrameSizer;
+	robotInfoFrameSizer = new wxBoxSizer( wxVERTICAL );
+
+	propertiesLabelText = new wxStaticText( this, wxID_ANY, _("Properties:"), wxDefaultPosition, wxDefaultSize, 0 );
+	propertiesLabelText->Wrap( -1 );
+	robotInfoFrameSizer->Add( propertiesLabelText, 0, wxALL, 5 );
+
+	robotPropertiesText = new wxStaticText( this, wxID_ANY, _("Properties Placeholder"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotPropertiesText->Wrap( -1 );
+	robotInfoFrameSizer->Add( robotPropertiesText, 0, wxALL, 5 );
+
+	statusLabelText = new wxStaticText( this, wxID_ANY, _("Status:"), wxDefaultPosition, wxDefaultSize, 0 );
+	statusLabelText->Wrap( -1 );
+	robotInfoFrameSizer->Add( statusLabelText, 0, wxALL, 5 );
+
+	robotStatusText = new wxStaticText( this, wxID_ANY, _("Status Placeholder"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotStatusText->Wrap( -1 );
+	robotInfoFrameSizer->Add( robotStatusText, 0, wxALL, 5 );
+
+	errorLogLabelText = new wxStaticText( this, wxID_ANY, _("Error Log:"), wxDefaultPosition, wxDefaultSize, 0 );
+	errorLogLabelText->Wrap( -1 );
+	robotInfoFrameSizer->Add( errorLogLabelText, 0, wxALL, 5 );
+
+	robotErrorLogText = new wxStaticText( this, wxID_ANY, _("Errors Placeholder"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotErrorLogText->Wrap( -1 );
+	robotInfoFrameSizer->Add( robotErrorLogText, 0, wxALL, 5 );
+
+
+	this->SetSizer( robotInfoFrameSizer );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+}
+
+robotInfoFrame::~robotInfoFrame()
 {
 }

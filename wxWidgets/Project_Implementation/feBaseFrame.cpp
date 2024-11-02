@@ -1,5 +1,6 @@
 #include "feBaseFrame.hpp"
 #include "addRobotFrame.hpp"
+#include "robotInfoFrame.hpp"
 #include <wx/wx.h>
 
 MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent)
@@ -41,6 +42,25 @@ void MyFEBaseFrame::SetText(const wxString& text)
 
 void MyFEBaseFrame::AddRobotToList(const wxString& robotDescription)
 {
+    // //add robotDescription (currently just properties, so size and function) to robots vector
+    RobotData robot = {robotDescription};
+    robots.push_back(robot);
+
     // Add the robot description to the list of robots 
     robotListBox->Append(robotDescription);
+}
+
+void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
+{
+    //note: the exact logic here will change such that when a user clicks on a robot it accesses it's ID and then retrives the necessary data
+    int selectionIndex = robotListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
+    if (selectionIndex != wxNOT_FOUND && selectionIndex < robots.size()) {
+        RobotData selectedRobot = robots[selectionIndex]; //finds the coordinated robot from the robots vector
+
+        // Create robotInfoFrame
+        MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: ");
+        // Set the appropriate data and show the frame
+        infoFrame->SetRobotData(selectedRobot.robotPropertyData);
+        infoFrame->Show();
+    }
 }

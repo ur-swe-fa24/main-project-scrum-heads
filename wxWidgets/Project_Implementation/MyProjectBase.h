@@ -74,6 +74,7 @@ class feBaseFrame : public wxFrame
 		virtual void OnFEButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAddRobotButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRobotListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
@@ -175,6 +176,29 @@ class AddRobotFrame : public wxFrame
 		AddRobotFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~AddRobotFrame();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class robotInfoFrame
+///////////////////////////////////////////////////////////////////////////////
+class robotInfoFrame : public wxFrame
+{
+	private:
+
+	protected:
+		wxStaticText* propertiesLabelText;
+		wxStaticText* robotPropertiesText;
+		wxStaticText* statusLabelText;
+		wxStaticText* robotStatusText;
+		wxStaticText* errorLogLabelText;
+		wxStaticText* robotErrorLogText;
+
+	public:
+
+		robotInfoFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~robotInfoFrame();
 
 };
 

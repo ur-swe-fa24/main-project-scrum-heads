@@ -46,6 +46,7 @@ set(PROJECT_GUI_IMPLEMENTATION_FILES
     Project_Implementation/bsBaseFrame.cpp
     Project_Implementation/feBaseFrame.cpp
     Project_Implementation/addRobotFrame.cpp
+    Project_Implementation/robotInfoFrame.cpp
     Project_Implementation/main.cpp
 )
 
