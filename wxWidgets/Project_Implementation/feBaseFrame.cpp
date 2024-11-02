@@ -1,4 +1,5 @@
 #include "feBaseFrame.hpp"
+#include "addRobotFrame.hpp"
 #include <wx/wx.h>
 
 MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent)
@@ -21,6 +22,13 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
     wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
+}
+
+void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)
+{
+    // Create and show the AddRobotFrame
+    MyAddRobotFrame* addRobotFrame = new MyAddRobotFrame(this);
+    addRobotFrame->Show(true);
 }
 
 void MyFEBaseFrame::SetText(const wxString& text)

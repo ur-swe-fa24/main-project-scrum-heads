@@ -20,6 +20,8 @@ bool MyApp::OnInit()
     // Show() is necessary to show this hidden ontent
     frame->Show(true);
 
+    
+
     return true;
 }
 

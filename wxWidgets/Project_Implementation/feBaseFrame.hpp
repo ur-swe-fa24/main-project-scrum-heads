@@ -13,4 +13,5 @@ protected:
     // Override the virtual method
     void OnFEButtonClick(wxCommandEvent& event) override;
     void OnFERefreshButtonClick(wxCommandEvent& event) override;
+    void OnAddRobotButtonClick(wxCommandEvent& event) override;
 };

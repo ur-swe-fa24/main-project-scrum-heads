@@ -61,6 +61,9 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	feRefreshButton = new wxButton( this, wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
 	feBaseFrameSizer->Add( feRefreshButton, 0, wxALL, 5 );
 
+	addRobotButton = new wxButton( this, wxID_ANY, _("Add Robot"), wxDefaultPosition, wxDefaultSize, 0 );
+	feBaseFrameSizer->Add( addRobotButton, 0, wxALL, 5 );
+
 
 	this->SetSizer( feBaseFrameSizer );
 	this->Layout();
@@ -70,6 +73,7 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	// Connect Events
 	feButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFEButtonClick ), NULL, this );
 	feRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFERefreshButtonClick ), NULL, this );
+	addRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnAddRobotButtonClick ), NULL, this );
 }
 
 feBaseFrame::~feBaseFrame()
@@ -145,5 +149,53 @@ smBaseFrame::smBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 }
 
 smBaseFrame::~smBaseFrame()
+{
+}
+
+AddRobotFrame::AddRobotFrame( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* addRobotFrameSizer;
+	addRobotFrameSizer = new wxBoxSizer( wxVERTICAL );
+
+	robotSizeText = new wxStaticText( this, wxID_ANY, _("Robot Size:"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotSizeText->Wrap( -1 );
+	addRobotFrameSizer->Add( robotSizeText, 0, wxALL, 5 );
+
+	wxString robotSizeDropdownChoices[] = { _("Small"), _("Medium"), _("Large") };
+	int robotSizeDropdownNChoices = sizeof( robotSizeDropdownChoices ) / sizeof( wxString );
+	robotSizeDropdown = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, robotSizeDropdownNChoices, robotSizeDropdownChoices, 0 );
+	robotSizeDropdown->SetSelection( 0 );
+	addRobotFrameSizer->Add( robotSizeDropdown, 0, wxALL, 5 );
+
+	robotFunctionText = new wxStaticText( this, wxID_ANY, _("Robot Function:"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotFunctionText->Wrap( -1 );
+	addRobotFrameSizer->Add( robotFunctionText, 0, wxALL, 5 );
+
+	wxString robotFunctionDropdownChoices[] = { _("Scrub"), _("Vacuum"), _("Shampoo") };
+	int robotFunctionDropdownNChoices = sizeof( robotFunctionDropdownChoices ) / sizeof( wxString );
+	robotFunctionDropdown = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, robotFunctionDropdownNChoices, robotFunctionDropdownChoices, 0 );
+	robotFunctionDropdown->SetSelection( 0 );
+	addRobotFrameSizer->Add( robotFunctionDropdown, 0, wxALL, 5 );
+
+	createRobotButton = new wxButton( this, wxID_ANY, _("Create Robot"), wxDefaultPosition, wxDefaultSize, 0 );
+	createRobotButton->Enable( false );
+
+	addRobotFrameSizer->Add( createRobotButton, 0, wxALL, 5 );
+
+
+	this->SetSizer( addRobotFrameSizer );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	robotSizeDropdown->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( AddRobotFrame::OnRobotSizeChoice ), NULL, this );
+	robotFunctionDropdown->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( AddRobotFrame::OnRobotFunctionChoice ), NULL, this );
+	createRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AddRobotFrame::OnCreateRobotButtonClick ), NULL, this );
+}
+
+AddRobotFrame::~AddRobotFrame()
 {
 }
