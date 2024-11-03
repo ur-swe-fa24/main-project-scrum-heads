@@ -22,21 +22,7 @@ adapters::Mongo_Adapter::Mongo_Adapter(){
 
 // Pass by const ref - protects original objects the parameters are the senor or actuator
 void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
-    // auto example_doc = make_document(
-    //     kvp("id", robot.get_id()),
-    //     kvp("size", robot.get_size()),
-    //     kvp("water_level", robot.get_water_level()),
-    //     kvp("battery level", robot.get_battery_level()),
-    //     kvp("Error Status", robot.get_error_status()),
-    //     kvp("Task Status", robot.get_task_status()),
-    //     kvp("Function Type", robot.get_function_type()),
-    //     kvp("Location x:", robot.get_location_x()),
-    //     kvp("Location y:", robot.get_location_y()),
-    //     kvp("Task Length:", robot.get_task_length()),
-    //     kvp("Location x:", robot.get_location_x())
-    // );
     // Mongo db will read exampledoc as a rvalue so the doc should be created all in one line 
-
     auto result = db_["robot"].insert_one(make_document(
         kvp("_id", robot.get_id()),
         kvp("size", robot.get_size()),
@@ -44,59 +30,64 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
         kvp("battery level", robot.get_battery_level()),
         kvp("Error Status", robot.get_error_status()),
         kvp("Task Status", robot.get_task_status()),
+        kvp("Task Room", robot.get_task_room()),
         kvp("Function Type", robot.get_function_type()),
-        kvp("Location x:", robot.get_location_x()),
-        kvp("Location y:", robot.get_location_y())
+        kvp("Location x", robot.get_location_x()),
+        kvp("Location y", robot.get_location_y())
     ));
 }
 
-void adapters::Mongo_Adapter::read_robot(const robots::Robots& robot){
-    std::optional< bsoncxx::document::value > result = db_["robot"].find_one(make_document(kvp("_id", robot.get_id())));
-    if (result){
-        std::cout << bsoncxx::to_json(*result) << std::endl;
-        // auto information = bsoncxx::to_json(*result);
-        // json Doc{json::parse(information)};
+void adapters::Mongo_Adapter::read_robot(const robots::Robots& robot) {
+    auto result = db_["robot"].find_one(make_document(kvp("_id", robot.get_id())));
+    if (result) {
+        auto information = bsoncxx::to_json(*result);
+        std::cout << "here" << std::endl;
+        json Doc = json::parse(information);
 
-        // std::cout << "here" << std::endl;
-        // std::string Id{Doc[0]};
-        // std::string Size{Doc[1]};
-        // std::string Water_Level{Doc[2]};
-        // std::string Battery_Level{Doc[3]};
-        // std::string Error_Status{Doc[4]};
-        // std::string Task_Status{Doc[5]};
-        // std::string Function_type{Doc[6]};
-        // std::string Location_x{Doc[7]};
-        // std::string Location_y{Doc[8]};
+        // Assuming Doc is a JSON object, access fields by their keys.
+        std::cout << "here" << std::endl;
+        auto Id = Doc["_id"];
+        auto Size = Doc["size"];
+        auto Water_Level = Doc["water_level"];
+        auto Battery_Level = Doc["battery level"];
+        auto Error_Status = Doc["Error Status"];
+        auto Task_Status = Doc["Task Status"];
+        auto Task_Room = Doc["Task Room"];
+        auto Function_type = Doc["Function Type"];
+        auto Location_x = Doc["Location x"];
+        auto Location_y = Doc["Location y"];
+        std::cout << "here" << std::endl;
 
-        // std::cout << "here" << std::endl;
-
-        // std::cout << "id: "  + Id << std::endl;
-        // std::cout << "size: " + Size << std::endl;
-        // std::cout << "Water Level: " + Water_Level << std::endl;
-        // std::cout << "Battery Level: " + Battery_Level << std::endl;
-        // std::cout << "Error Status: " + Error_Status << std::endl;
-        // std::cout << "Task Status: " + Task_Status << std::endl;
-        // std::cout << "Function Type: " + Function_type << std::endl;
-        // std::cout << "Location x: " + Location_x << std::endl;
-        // std::cout << "Location y: " + Location_y << std::endl;
+        // Print or utilize the extracted information as needed
+        std::cout << "Robot ID: " << Id << std::endl;
+        std::cout << "Size: " << Size << std::endl;
+        std::cout << "Water Level: " << Water_Level << std::endl;
+        std::cout << "Battery Level: " << Battery_Level << std::endl;
+        std::cout << "Error Status: " << Error_Status << std::endl;
+        std::cout << "Task Status: " << Task_Status << std::endl;
+        std::cout << "Task Room: " << Task_Room << std::endl;
+        std::cout << "Function Type: " << Function_type << std::endl;
+        std::cout << "Location: (" << Location_x << ", " << Location_y << ")" << std::endl;
+    } else {
+        std::cout << "No instance of robot with id " << robot.get_id() << std::endl;
     }
-    else{
-        std::cout << "No instance of robot with id "<< std::endl;
-    }
-
-    
-        // std::cout << bsoncxx::to_json(*result) << std::endl;
-    
-    
-
-    // std::cout << "Should be one robot" << std::endl;
-    // auto results = db_["robot"].find(make_document(kvp("_id", 2)));
-    // for(auto&& doc : results) {
-    //     std::cout << bsoncxx::to_json(doc) << std::endl;
-    // }
 }
+
+void adapters::Mongo_Adapter::read_all_robots(){
+    auto cursor = db_["robot"].find({});
+    for( auto&& doc : cursor) {
+        std::cout << bsoncxx::to_json(doc) << std::endl;
+    }
+}
+    
 
 void adapters::Mongo_Adapter::delete_robot(const robots::Robots& robot){
     auto result = db_["robot"].delete_one(make_document(kvp("_id", robot.get_id())));
 }
+
+void adapters::Mongo_Adapter::delete_all_robots(){
+    db_["robot"].drop( {} );
+}
+
+
 

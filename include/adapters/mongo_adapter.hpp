@@ -17,7 +17,9 @@ namespace adapters {
             // Pass by const ref - protects original objects the parameters are the senor or actuator
             void write_robot( const robots::Robots& robot) override;
             void read_robot( const robots::Robots& robot) override;
+            void read_all_robots() override;
             void delete_robot( const robots::Robots& robot) override;
+            void delete_all_robots() override;
             
         private:
             mongocxx::instance mongo_instance_ {};
