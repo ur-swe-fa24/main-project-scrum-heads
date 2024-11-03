@@ -23,7 +23,7 @@ int main()
 
     robots::Robots::Start_Time startTime = {9, 0, 0};  // Represents 9:00:00 AM
     robots::Robots::End_Time endTime = {17, 30, 45}; 
-    robots::Robots temp_robot(1, "Large", 100, 50, "", "Vacuum", 3, robots::Robots::robotFunction::SCRUB, 10, 15, startTime, endTime);
+    robots::Robots temp_robot(14, "Large", 100, 50, "", "Vacuum", 3, robots::Robots::robotFunction::SCRUB, 10, 15, startTime, endTime);
 
     adapters::Mongo_Adapter mongo_database{};
     spdlog::info("Connected to the mongodb!");
@@ -33,5 +33,14 @@ int main()
 
     std::cout << "Now let's read the robot" << std::endl;
     mongo_database.read_robot(temp_robot);
+
+    std::cout << "Now let's delete the robot" << std::endl;
+    mongo_database.delete_robot(temp_robot);
+
+    std::cout << "Now let's check the robot was deleted" << std::endl;
+    mongo_database.read_robot(temp_robot);
+
+    std::cout << "End of program" << std::endl;
+
 
 }
