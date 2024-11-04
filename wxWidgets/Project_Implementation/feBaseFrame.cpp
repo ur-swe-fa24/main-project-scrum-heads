@@ -25,7 +25,19 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
     //this refresh button click will have similar logic to the creation of the original feFrame,
     //interacting with the system manager to fetch all the new data that might not be displayed on screen.
     //For example, after adding a new robot, the user will need to refresh this window
-    wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
+
+    // wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
+
+    std::vector<RobotData>& robots = GetRobots();
+
+    // Clear the existing display in the wxListBox
+    robotListBox->Clear();
+
+    // Iterate through the vector and display each robot's information
+    for (RobotData& robot : robots) {
+        wxString robotInfo = wxString::Format(robot.robotPropertyData);
+        robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
+    }
 }
 
 void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)
@@ -50,7 +62,8 @@ void MyFEBaseFrame::AddRobotToList(const wxString& robotDescription)
     robots.push_back(robot);
 
     // Add the robot description to the list of robots 
-    robotListBox->Append(robotDescription);
+    // note: currently commented out because using refresh button to show functionality of GetRobots()
+    // robotListBox->Append(robotDescription);
 }
 
 void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
@@ -66,4 +79,13 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
         infoFrame->SetRobotData(selectedRobot.robotPropertyData);
         infoFrame->Show();
     }
+}
+
+// Getter for the vector of robots
+std::vector<RobotData>& MyFEBaseFrame::GetRobots() 
+{
+    // for (const RobotData& robot : robots) {
+    //     wxLogMessage(robot.robotPropertyData);
+    // }
+    return robots;
 }

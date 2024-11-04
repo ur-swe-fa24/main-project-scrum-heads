@@ -18,6 +18,9 @@ public:
     // Event for selecting a robot from wxListBox
     void OnRobotSelected(wxCommandEvent& event);
 
+    // Getter for the vector of robots
+    std::vector<RobotData>& GetRobots();
+
 protected:
     // Override virtual method for various button clicks
     void OnFEButtonClick(wxCommandEvent& event) override;
