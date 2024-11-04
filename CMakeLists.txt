@@ -28,12 +28,9 @@ include(dependencies/dependencies.cmake)
 # Add include directories
 include_directories(include)
 
-# Add subdirectories for app
+# Add subdirectories for app, wxWidgets, robot_loop, and room_task
 add_subdirectory(app)
 add_subdirectory(wxWidgets)
-
-# Create a library from the robot.cpp file in src
-add_library(robot_lib src/robot.cpp)
-
-# Include directories for robot_lib
-target_include_directories(robot_lib PUBLIC include)
+add_subdirectory(robot_loop)
+add_subdirectory(room_task)
+add_subdirectory(src)  # Include src directory to build robot_lib
