@@ -28,6 +28,7 @@ include(../dependencies/dependencies.cmake)
 set(WX_FORM_BUILDER_FILES
     wxFormBuilder/hello_world_trial/MyProjectBase.cpp
     wxFormBuilder/hello_world_trial/derivedFrame.cpp
+    wxFormBuilder/hello_world_trial/newDerivedFrame.cpp
     wxFormBuilder/hello_world_trial/main.cpp
 )
 
@@ -36,14 +37,32 @@ set(WX_APP_FILES
     WxAppTest/hello_world.cpp
 )
 
+# Combine WxApp source files
+set(PROJECT_GUI_IMPLEMENTATION_FILES
+    Project_Implementation/MyProjectBase.cpp
+    Project_Implementation/baseFrame.cpp
+    Project_Implementation/bmBaseFrame.cpp
+    Project_Implementation/smBaseFrame.cpp
+    Project_Implementation/bsBaseFrame.cpp
+    Project_Implementation/feBaseFrame.cpp
+    Project_Implementation/addRobotFrame.cpp
+    Project_Implementation/robotInfoFrame.cpp
+    Project_Implementation/main.cpp
+)
+
 # Add executable target for WxFormBuilder
 add_executable(WxFormBuilderTest ${WX_FORM_BUILDER_FILES})
 
 # Add executable target for WxApp
 add_executable(WxAppTest ${WX_APP_FILES})
 
+add_executable(ProjectGUI ${PROJECT_GUI_IMPLEMENTATION_FILES})
+
 # Link wxWidgets to target
 target_link_libraries(WxFormBuilderTest wx::net wx::core wx::base)
 
 # Link wxWidgets to target
 target_link_libraries(WxAppTest wx::net wx::core wx::base)
+
+# Link wxWidgets to target
+target_link_libraries(ProjectGUI wx::net wx::core wx::base)
