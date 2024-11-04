@@ -37,7 +37,7 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
     ));
 }
 
-void adapters::Mongo_Adapter::read_robot(int id) {
+std::string adapters::Mongo_Adapter::read_robot(int id) {
     auto result = db_["robot"].find_one(make_document(kvp("_id", id)));
     if (result) {
         auto information = bsoncxx::to_json(*result);
@@ -68,8 +68,10 @@ void adapters::Mongo_Adapter::read_robot(int id) {
         std::cout << "Task Room: " << Task_Room << std::endl;
         std::cout << "Function Type: " << Function_type << std::endl;
         std::cout << "Location: (" << Location_x << ", " << Location_y << ")" << std::endl;
+        return information;
     } else {
         std::cout << "No instance of robot with id " << id << std::endl;
+        return "";
     }
 }
 
