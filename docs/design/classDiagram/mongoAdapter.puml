@@ -1,0 +1,66 @@
+@startuml MongoAdapterDiagram
+skinparam dpi 200
+skinparam DefaultFontName Inconsolata
+
+class Mongo_Adapter{
+    - mongo_instance_ : instance 
+    - uri_ : uri
+    - client_ : client 
+    - db_ : database
+
+    + Mongo_Adapter()
+    + write_robot( robot : const Robots& ) : void 
+    + read_robot( id : int ) : void
+    + read_all_robots() : void
+    + delete_robot(id : int) : void
+    + delete_all_robots() : void
+    + update_robot(int id, int water_level, int battery_level) + write_robot( robot : const Robots& ) : void 
+}
+
+abstract Adapter{
+    + \~ Adapter()
+    + write_robot( robot : const Robots& ) : void 
+    + read_robot( id : int ) : void
+    + read_all_robots() : void
+    + delete_robot(id : int) : void
+    + delete_all_robots() : void
+    + update_robot(int id, int water_level, int battery_level) + write_robot( robot : const Robots& ) : void 
+} 
+
+class Robot {
+    -robot_id: int
+    -robotSize: string
+    -waterLevel: int
+    -batteryLevel: int
+    -errorStatus: string = ""
+    -taskStatus: string = ""
+    -taskRoom: int = 0
+    -functionType: string
+    -location_x: int = 0
+    -location_y: int = 0
+    -taskStartTime: int
+    -taskEndTime: int
+    +getRobotId(): int
+    +getRobotSize(): string
+    +getTaskStatus(): string
+    +getFunction(): string
+    +getBatteryLevel(): int
+    +getWaterLevel(): int
+    +getLocationX(): int
+    +getLocationY(): int
+    +getTaskRoom(): int
+    +getTaskStart(): int
+    +getTaskEnd(): int
+    +reportError(): string
+    +canClean(room_id: int): boolean
+    +doTask(room_id: int): void
+    +add_robot(robot_list: List<Robot>): void
+    +field_engineer_view_status(): void
+}
+
+Adapter <|-- Mongo_Adapter : implements
+
+Robot <-- Mongo_Adapter : uses
+
+
+@enduml 

@@ -103,3 +103,10 @@ The `Robot_Manager` manages a collection of robots. It stores a list of `Robot` 
 
 ### 4. **Data_Management ↔ Screen**
 `Data_Management` retrieves data for the user interface (`Screen`) to display relevant information. This includes error data, robot statuses, and task assignments. The `Screen` never directly communicates with other parts of the system; it relies entirely on `Data_Management` to retrieve the necessary data.
+
+### 1. **Mongo Adapter**
+![Mongo Adapter Class Diagram](MongoAdapterDiagram.png)
+The `Mongo Adapter` is the class that allows MongoDB to be called and utilized in the project easily.
+
+The `Mongo Adapter` implements `Adapter`. These functions allow another class to simply write and read robots. When calling write robots the `Mongo Adapter` will then call the getter functions of the robot passed and add these values into the database. The `Robot` is not changed, but utilized to easilycall the needed information.
+
