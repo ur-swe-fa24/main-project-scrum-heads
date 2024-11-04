@@ -22,6 +22,9 @@ void MyFEBaseFrame::OnFEButtonClick(wxCommandEvent& event)
 void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
+    //this refresh button click will have similar logic to the creation of the original feFrame,
+    //interacting with the system manager to fetch all the new data that might not be displayed on screen.
+    //For example, after adding a new robot, the user will need to refresh this window
     wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
 }
 

@@ -22,6 +22,9 @@ void MyBaseFrame::OnFESelectButtonClick(wxCommandEvent& event)
 
     MyFEBaseFrame* feFrame = new MyFEBaseFrame(nullptr);
 
+    //here is where I would interact with the system manager to fetch all the necessary data I need,
+    //since it's here that the feFrame is created
+
     wxString sampleText = "Hello, Field Engineer!";
     feFrame->SetText(sampleText);  // Set the text in feFrame’s text control
     
