@@ -37,8 +37,8 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
     ));
 }
 
-void adapters::Mongo_Adapter::read_robot(const robots::Robots& robot) {
-    auto result = db_["robot"].find_one(make_document(kvp("_id", robot.get_id())));
+void adapters::Mongo_Adapter::read_robot(int id) {
+    auto result = db_["robot"].find_one(make_document(kvp("_id", id)));
     if (result) {
         auto information = bsoncxx::to_json(*result);
         std::cout << "here" << std::endl;
@@ -69,7 +69,7 @@ void adapters::Mongo_Adapter::read_robot(const robots::Robots& robot) {
         std::cout << "Function Type: " << Function_type << std::endl;
         std::cout << "Location: (" << Location_x << ", " << Location_y << ")" << std::endl;
     } else {
-        std::cout << "No instance of robot with id " << robot.get_id() << std::endl;
+        std::cout << "No instance of robot with id " << id << std::endl;
     }
 }
 
@@ -81,13 +81,22 @@ void adapters::Mongo_Adapter::read_all_robots(){
 }
     
 
-void adapters::Mongo_Adapter::delete_robot(const robots::Robots& robot){
-    auto result = db_["robot"].delete_one(make_document(kvp("_id", robot.get_id())));
+void adapters::Mongo_Adapter::delete_robot(int id){
+    auto result = db_["robot"].delete_one(make_document(kvp("_id", id)));
 }
 
 void adapters::Mongo_Adapter::delete_all_robots(){
     db_["robot"].drop( {} );
 }
 
+
+void adapters::Mongo_Adapter::update_robot(int id, int water_level, int battery_level){
+    auto query_filter = make_document(kvp("_id", id));
+    auto update_doc1 = make_document(kvp("$set", make_document(kvp("battery level", battery_level))));
+    auto update_doc2 = make_document(kvp("$set", make_document(kvp("water_level", water_level))));
+    db_["robot"].update_one(query_filter.view(), update_doc1.view());
+    db_["robot"].update_one(query_filter.view(), update_doc2.view());
+
+}
 
 

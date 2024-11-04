@@ -16,17 +16,17 @@ namespace adapters {
             Mongo_Adapter();
             // Pass by const ref - protects original objects the parameters are the senor or actuator
             void write_robot( const robots::Robots& robot) override;
-            void read_robot( const robots::Robots& robot) override;
+            void read_robot(int id) override;
             void read_all_robots() override;
-            void delete_robot( const robots::Robots& robot) override;
+            void delete_robot(int id) override;
             void delete_all_robots() override;
+            void update_robot(int id, int water_level, int battery_level) override;
             
         private:
             mongocxx::instance mongo_instance_ {};
             mongocxx::uri uri_ {"mongodb://localhost:27017"};
             mongocxx::client client_ {uri_};
             mongocxx::v_noabi::database db_ {client_["mydb"]};
-
     };
 }
 
