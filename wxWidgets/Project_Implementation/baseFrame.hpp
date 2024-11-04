@@ -7,7 +7,7 @@ public:
     MyBaseFrame(wxWindow* parent);
 
 protected:
-    // Override the virtual method
+    // Override the virtual method for various button clicks
     void OnFESelectButtonClick(wxCommandEvent& event) override;
     void OnBMSelectButtonClick(wxCommandEvent& event) override;
     void OnBSSelectButtonClick(wxCommandEvent& event) override;
