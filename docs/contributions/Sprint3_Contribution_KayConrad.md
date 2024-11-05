@@ -1,0 +1,2 @@
+# Kay Conrad Sprint3 Contribution Statement
+For this sprint I started integrating and connecting MongoDB. I was able to successfully build MongoDB in the CMake files. I created a Mongo_Adapter class using the adapter patterns so the system manager will be able to access the mongo database. I also created test cases for the mongo_adapter using Catch2. Finally, I helped facilitate workflow, reviewed my other team members parts, as well as I was a reliable source for getting feedback from and bouncing ideas off of when other team members got stuck.
