@@ -8,17 +8,20 @@ namespace tasks {
 
 class RoomTask {
 public:
+    // Enum for room size
     enum class RoomSize { SMALL, MEDIUM, LARGE };
 
+    // Constructor to set room size
     explicit RoomTask(RoomSize size) : room_size_(size) {}
 
-    // Function to perform the task, modifying the robot's battery and water levels
-    void perform_task(robots::Robots& robot);
+    // Method to calculate the duration of the task based on room size
+    int calculate_task_duration() const;
+
+    // Method to get resource usage percentage based on room size
+    int get_resource_usage() const;
 
 private:
-    RoomSize room_size_;
-    int calculate_task_duration() const;
-    int get_resource_usage() const;
+    RoomSize room_size_;  // Store the size of the room for this task
 };
 
 } // namespace tasks
