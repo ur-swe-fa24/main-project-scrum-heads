@@ -5,8 +5,8 @@
 
 // #include "DataManager.hpp"  // need for data manager
 
-MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent)
-    : feBaseFrame(parent)  // Call the base class constructor
+MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent, DataManager* dataManager)
+    : feBaseFrame(parent), dataManager(dataManager)  // Call the base class constructor
 {
     // Connect the button event to the overridden method
     feButton->Bind(wxEVT_BUTTON, &MyFEBaseFrame::OnFEButtonClick, this);
@@ -43,6 +43,11 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
     for (RobotData& robot : robots) {
         wxString robotInfo = wxString::Format(robot.robotPropertyData);
         robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
+    }
+
+    // Pass the robots data to the controller
+    if (dataManager) {
+        dataManager->SendRobotsData(robots);
     }
 }
 

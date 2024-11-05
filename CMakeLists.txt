@@ -41,9 +41,9 @@ add_library(robot_lib src/robot.cpp)
 # )
 
 # Create a library from the DataManager.cpp file in src
-# add_library(dataManager_lib src/DataManager.cpp src/main.cpp)
+add_library(dataManager_lib src/DataManager.cpp)
 
-# target_link_libraries(dataManager_lib wx::net wx::core wx::base)
+target_link_libraries(dataManager_lib wx::net wx::core wx::base)
 
 # Include directories for robot_lib
 target_include_directories(robot_lib PUBLIC include)
