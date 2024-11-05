@@ -1,0 +1,2 @@
+# Sprint3_Contribution_QingShen
+ In this sprint, I expand the simulation engine, now it can loop and show the progress of the robot, with less water& battery level, it will refuse to do the task. I wrote the room_task class that allows different time length and different water&battery level needed for robots. I have a robot_loop_lib for all functions needed as a lib, and robot loop acts like a main that calles the functions. 

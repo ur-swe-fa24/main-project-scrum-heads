@@ -1,138 +1,122 @@
-#include <thread>
-#include <chrono>
+#include "robot_loop.hpp"
+#include "robot_loop_lib.hpp"
+#include "robot.hpp"
+#include "room_task.hpp"
+#include "spdlog/spdlog.h"
 #include <future>
-#include <limits>
 #include <random>
 #include <iostream>
 #include <atomic>
-#include "spdlog/spdlog.h"
-#include "utils/utils.hpp"
-#include "utils/threadsafe_queue.hpp"
-
-enum class Event {
-    START,
-    STOP,
-    QUIT,
-    CONTINUE,
-    UNKNOWN
-};
-
-enum class ErrorType {
-    OVERHEAT,
-    LOW_BATTERY,
-    MOTOR_FAILURE,
-    SENSOR_FAILURE,
-    SOFTWARE_CRASH
-};
-
-// Helper function to convert Event and ErrorType enums to strings.
-std::string event_string(Event event){
-    switch (event) {
-        case Event::START: return "start";
-        case Event::STOP: return "stop";
-        case Event::QUIT: return "quit";
-        case Event::CONTINUE: return "continue";
-        default: return "?";
-    }
-}
-
-std::string error_string(ErrorType error){
-    switch (error) {
-        case ErrorType::OVERHEAT: return "Overheat";
-        case ErrorType::LOW_BATTERY: return "Low Battery";
-        case ErrorType::MOTOR_FAILURE: return "Motor Failure";
-        case ErrorType::SENSOR_FAILURE: return "Sensor Failure";
-        case ErrorType::SOFTWARE_CRASH: return "Software Crash";
-        default: return "Unknown Error";
-    }
-}
 
 class View {
 public:
-    void prompt(){
+    void prompt() {
         std::cout << "----" << std::endl;
         std::cout << "Enter your command (start, stop, quit, continue): ";
     }
-    Event get_input(){
+
+    Event get_input() {
         std::string command;
         std::cin >> command;
         std::cout << "----" << std::endl;
+
+        // Convert to lowercase to avoid case-sensitivity issues
+        std::transform(command.begin(), command.end(), command.begin(), ::tolower);
+
         if (command == "start") return Event::START;
         if (command == "stop") return Event::STOP;
         if (command == "quit") return Event::QUIT;
         if (command == "continue") return Event::CONTINUE;
+
+        spdlog::warn("Invalid command entered: '{}'", command); // Warn about invalid input
         return Event::UNKNOWN;
+    }
+
+
+    int get_battery_level() {
+        int battery;
+        std::cout << "Enter initial battery level (0-100): ";
+        std::cin >> battery;
+        return battery;
+    }
+
+    int get_water_level() {
+        int water;
+        std::cout << "Enter initial water level (0-100): ";
+        std::cin >> water;
+        return water;
+    }
+
+    tasks::RoomTask::RoomSize get_room_size() {
+        int size_choice;
+        std::cout << "Select room size (1 - Small, 2 - Medium, 3 - Large): ";
+        std::cin >> size_choice;
+
+        switch (size_choice) {
+            case 1: return tasks::RoomTask::RoomSize::SMALL;
+            case 2: return tasks::RoomTask::RoomSize::MEDIUM;
+            case 3: return tasks::RoomTask::RoomSize::LARGE;
+            default:
+                std::cout << "Invalid choice. Defaulting to Medium size." << std::endl;
+                return tasks::RoomTask::RoomSize::MEDIUM;
+        }
     }
 };
 
-int task(int start_value, std::atomic_bool& is_canceled, std::atomic_bool& is_paused, int task_length) {
-    spdlog::info("Robot started the task!");
-
-    std::mt19937_64 mt{std::random_device{}()};  // Random number engine
-    std::uniform_real_distribution<double> error_chance(0.0, 100.0); // 3% error chance
-    std::uniform_int_distribution<int> error_type_dist(0, 4);  // Randomly choose one of five error types
-
-    int task_counter = start_value;
-    int progress_increment = task_length / 10; // Update progress at 10% increments
-
-    while (!is_canceled && task_counter < task_length) {
-        if (is_paused) {
-            spdlog::info("Task paused at progress: {}%", (task_counter * 100) / task_length);
-            while (is_paused && !is_canceled) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-            if (is_canceled) {
-                spdlog::warn("Task canceled during pause!");
-                break;
-            }
-            spdlog::info("Task resumed.");
-        }
-
-        // Randomly decide if an error occurs at this progress step
-        if (error_chance(mt) < 3.0) {
-            ErrorType error = static_cast<ErrorType>(error_type_dist(mt));
-            spdlog::error("Task encountered an error: {}", error_string(error));
-            is_canceled = true;
-            break;
-        }
-
-        // Slow down progress increment delay to 300 milliseconds
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        task_counter += progress_increment;
-
-        int progress = (task_counter * 100) / task_length;
-        // Only print progress at 10%, 20%, ..., 100%
-        if (progress % 10 == 0) {
-            spdlog::info("Task progress: {}%", progress);
-        }
-
-        if (progress >= 100) {
-            spdlog::info("Task completed successfully with progress: 100%");
-            break;
-        }
-    }
-
-    if (is_canceled && task_counter < task_length) {
-        spdlog::warn("Task stopped due to an error or cancellation.");
-    }
-
-    return task_counter;
-}
-
 int main() {
-    std::mt19937_64 mt{std::random_device{}()};  // Random number engine with a seed
-    std::uniform_int_distribution<int> rand_int{100, 200}; // Increased range for demonstration
+    std::uniform_int_distribution<int> rand_int{100, 200};
 
     std::atomic_bool task_cancelled{false};
     std::atomic_bool task_paused{false};
 
-    std::future<int> task_result;
-    bool is_task_started = false;
+    View ui{};
     spdlog::info("Event loop starting!");
 
-    View ui{};
+    int battery_level = ui.get_battery_level();
+    int water_level = ui.get_water_level();
+    tasks::RoomTask::RoomSize room_size = ui.get_room_size();
+
+    // Create robot and room task with selected attributes
+    robots::Robots robot(1, "Medium", battery_level, water_level, "None", "Idle", 0, robots::Robots::robotFunction::SCRUB, 0, 0);
+    tasks::RoomTask room_task(room_size);
+
+    // Pre-check conditions based on water and battery levels and room size
+    if ((battery_level < 10 || water_level < 10) &&
+        (room_size == tasks::RoomTask::RoomSize::SMALL || 
+         room_size == tasks::RoomTask::RoomSize::MEDIUM || 
+         room_size == tasks::RoomTask::RoomSize::LARGE)) {
+        spdlog::error("Cannot start task: water or battery level is below 10%");
+        return 0; // Exit the program
+    }
+
+    if ((battery_level < 40 || water_level < 40) &&
+        (room_size == tasks::RoomTask::RoomSize::MEDIUM || 
+         room_size == tasks::RoomTask::RoomSize::LARGE)) {
+        spdlog::error("Cannot start task: water or battery level is below 40% for medium or large rooms");
+        return 0; // Exit the program
+    }
+
+    if ((battery_level < 90 || water_level < 90) &&
+        (room_size == tasks::RoomTask::RoomSize::LARGE)) {
+        spdlog::error("Cannot start task: water or battery level is below 40% for medium or large rooms");
+        return 0; // Exit the program
+    }
+
+    if (battery_level == 100 && water_level == 100 &&
+        (room_size == tasks::RoomTask::RoomSize::SMALL || 
+         room_size == tasks::RoomTask::RoomSize::MEDIUM || 
+         room_size == tasks::RoomTask::RoomSize::LARGE)) {
+        spdlog::info("Starting task with full water and battery levels.");
+    }
+
+    std::future<int> task_result;
+    bool is_task_started = false;
 
     while (true) {
+        if (is_task_started && task_result.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready) {
+            spdlog::info("Task completed, exiting loop.");
+            break;
+        }
         ui.prompt();
         auto input_event = ui.get_input();
         spdlog::info("User entered {}", event_string(input_event));
@@ -140,17 +124,18 @@ int main() {
         if (input_event == Event::QUIT) {
             if (is_task_started) {
                 task_cancelled = true;
-                task_result.wait();
+                task_result.wait(); // Wait for the task to acknowledge cancellation
             }
             break;
         } else if (input_event == Event::START && !is_task_started) {
             task_cancelled = false;
             task_paused = false;
-            int task_length = rand_int(mt);
+            int task_length = 100;
             task_result = std::async(
                 std::launch::async,
                 task,
-                0, // Start from 0 for simplicity
+                std::ref(robot),
+                std::ref(room_task),
                 std::ref(task_cancelled),
                 std::ref(task_paused),
                 task_length
@@ -162,6 +147,12 @@ int main() {
         } else if (input_event == Event::CONTINUE && is_task_started && task_paused) {
             task_paused = false;
             spdlog::info("Task resumed by user.");
+        }
+
+        // Check if task is completed
+        if (is_task_started && task_result.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready) {
+            spdlog::info("Task completed, exiting loop.");
+            break;
         }
     }
 
