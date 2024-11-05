@@ -40,6 +40,11 @@ add_library(robot_lib src/robot.cpp)
 #       mongo::mongocxx_shared
 # )
 
+# Create a library from the DataManager.cpp file in src
+# add_library(dataManager_lib src/DataManager.cpp src/main.cpp)
+
+# target_link_libraries(dataManager_lib wx::net wx::core wx::base)
+
 # Include directories for robot_lib
 target_include_directories(robot_lib PUBLIC include)
 add_subdirectory(robot_loop)

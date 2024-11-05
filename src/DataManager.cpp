@@ -2,7 +2,8 @@
 #include <sstream>  // Include for std::stringstream used in logging
 
 // Constructor: Initializes the DataManager with a reference to the GUI frame.
-DataManager::DataManager(feBaseFrame* feFrame) : client{mongocxx::uri{}}, feBaseFrame(feFrame) {
+DataManager::DataManager(MyFEBaseFrame* feFrame) : feBaseFrame(feFrame)//: client{mongocxx::uri{}}, feBaseFrame(feFrame) 
+{
     // Initialize the MongoDB client with the default URI
 }
 

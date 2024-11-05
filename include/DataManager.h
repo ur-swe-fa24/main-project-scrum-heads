@@ -1,9 +1,9 @@
 #pragma once
 
-#include <mongocxx/client.hpp>
-#include <mongocxx/instance.hpp>
-#include "feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
-#include "Simulation.hpp"   // Assuming simulation class 
+// #include <mongocxx/client.hpp>
+// #include <mongocxx/instance.hpp>
+#include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
+// #include "Simulation.hpp"   // Assuming simulation class 
 #include <sstream>
 #include <string>
 
@@ -11,7 +11,7 @@
 class DataManager {
 public:
     // Constructor initializing DataManager with a pointer to the GUI frame.
-    DataManager(feBaseFrame* feFrame);
+    DataManager(MyFEBaseFrame* feFrame);
     // Destructor to handle cleanup if necessary.
     ~DataManager();
 
@@ -21,8 +21,8 @@ public:
     void refreshDataInGUI();
 
 private:
-    mongocxx::instance instance{}; // MongoDB driver instance to manage MongoDB client lifecycle.
-    mongocxx::client client;       // MongoDB client for database operations.
+    // mongocxx::instance instance{}; // MongoDB driver instance to manage MongoDB client lifecycle.
+    // mongocxx::client client;       // MongoDB client for database operations.
     feBaseFrame* feBaseFrame;      // Pointer to GUI frame for direct interaction.
 
     // Retrieves simulation results from the database to display in the GUI.
@@ -32,7 +32,7 @@ private:
     // Method to simulate task performance by a robot, returning the outcome as a string.
     std::string runSimulation(const std::string& data);
     // Helper method to convert a JSON string to a BSON document.
-    bsoncxx::document::value convertToDocument(const std::string& json);
+    // bsoncxx::document::value convertToDocument(const std::string& json);
     // Helper method to convert a BSON document to a JSON string.
-    std::string convertToJson(const bsoncxx::document::value& doc);
+    // std::string convertToJson(const bsoncxx::document::value& doc);
 };
