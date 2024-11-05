@@ -29,7 +29,6 @@ target_include_directories(hello_mongo
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
 
-
 target_link_libraries(hello_mongo
     PRIVATE
         adapter_lib

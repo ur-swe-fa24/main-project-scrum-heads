@@ -44,3 +44,4 @@ target_link_libraries(adapter_lib
 target_include_directories(robot_lib PUBLIC include)
 add_subdirectory(robot_loop)
 add_subdirectory(room_task)
+add_subdirectory(tests)
