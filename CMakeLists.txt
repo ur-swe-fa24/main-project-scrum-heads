@@ -9,8 +9,20 @@ message("CMake install prefix: ${CMAKE_INSTALL_PREFIX}")
 
 project(ScrumHeads VERSION 1.0)
 
+# Include dependencies
 include(dependencies/get_cpm.cmake)
 include(dependencies/dependencies.cmake)
+
+# Find MongoDB C++ libraries
+find_package(mongocxx CONFIG REQUIRED)
+if (mongocxx_FOUND)
+  message(STATUS "mongocxx found!")
+endif()
+
+find_package(bsoncxx REQUIRED)
+if (bsoncxx_FOUND)
+  message(STATUS "bsoncxx found!")
+endif()
 
 # Add include directories
 include_directories(include)
@@ -20,9 +32,11 @@ add_subdirectory(app)
 add_subdirectory(robot_loop)
 add_subdirectory(room_task)
 add_subdirectory(simulation_tests)
+add_subdirectory(wxWidgets)
 
-# Create a library from the robot.cpp file in src
+# Create libraries
 add_library(robot_lib src/robot.cpp)
-
-# Include directories for robot_lib
 target_include_directories(robot_lib PUBLIC include)
+
+add_library(adapter_lib src/mongo_adapter.cpp)
+target_link_libraries(adapter_lib PRIVATE mongo::mongocxx_shared)
