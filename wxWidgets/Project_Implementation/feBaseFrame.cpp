@@ -3,6 +3,8 @@
 #include "robotInfoFrame.hpp"
 #include <wx/wx.h>
 
+// #include "DataManager.hpp"  // need for data manager
+
 MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent)
     : feBaseFrame(parent)  // Call the base class constructor
 {
@@ -11,6 +13,10 @@ MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent)
     
     // Connect the button event to the overridden method
     feRefreshButton->Bind(wxEVT_BUTTON, &MyFEBaseFrame::OnFERefreshButtonClick, this);
+
+    // Pass this frame instance to DataManager
+    // DataManager* dataManager = new DataManager(this); 
+    // bindEvents();
 }
 
 void MyFEBaseFrame::OnFEButtonClick(wxCommandEvent& event)
@@ -89,3 +95,19 @@ std::vector<RobotData>& MyFEBaseFrame::GetRobots()
     // }
     return robots;
 }
+
+/** 
+// Method to bind GUI events for user interaction.
+void MyFEBaseFrame::bindEvents() {
+    // Bind refresh button to DataManager refresh method
+    feRefreshButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this](wxCommandEvent& event) {
+        dataManager->refreshDataInGUI();
+    });
+}
+
+// Updates the GUI display with new robot data.
+void MyFEBaseFrame::updateRobotDisplay(const wxString& robotData) {
+    feTextControl->SetValue(robotData);  // Update the text control with new data
+}
+
+*/

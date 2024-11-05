@@ -1,52 +1,85 @@
 #include "DataManager.h"
+#include <sstream>  // Include for std::stringstream used in logging
 
-DataManager::DataManager() : client{mongocxx::uri{}} {
-    // Connection to MongoDB is initialized here
+// Constructor: Initializes the DataManager with a reference to the GUI frame.
+DataManager::DataManager(feBaseFrame* feFrame) : client{mongocxx::uri{}}, feBaseFrame(feFrame) {
+    // Initialize the MongoDB client with the default URI
 }
 
-DataManager::~DataManager() {
-    // Cleanup resources if needed
+// Destructor: Handles cleanup, if necessary.
+DataManager::~DataManager() {}
+
+// Updates robot data from GUI, processes it via simulation, and stores the results in the database.
+void DataManager::updateRobotDataFromGUI() {
+    // Ensure we have a valid pointer to the MyFEBaseFrame for accessing robot data.
+    auto myFeBaseFrame = dynamic_cast<MyFEBaseFrame*>(feBaseFrame);
+    if (myFeBaseFrame) {
+        // Access the vector of RobotData from the GUI frame.
+        std::vector<RobotData>& robots = myFeBaseFrame->GetRobots();
+        for (const RobotData& robot : robots) {
+            // Run simulation for each robot and store the results.
+            std::string simulatedData = runSimulation(robot.robotPropertyData.ToStdString());
+            storeSimulationResults(simulatedData);
+        }
+    }
 }
 
-void DataManager::receiveDataFromGUI(const wxString& data) {
-    // Convert data from GUI and run simulation
-    auto jsonStr = std::string(data.mb_str());
-    auto simulationResults = runSimulation(jsonStr);
-    storeSimulationResults(simulationResults);
+// Refreshes the GUI with the latest data fetched from the MongoDB database.
+void DataManager::refreshDataInGUI() {
+    // Retrieve the latest simulation results from the database.
+    std::string results = retrieveSimulationResults();
+    auto myFeBaseFrame = dynamic_cast<MyFEBaseFrame*>(feBaseFrame);
+    if (myFeBaseFrame) {
+        // Update the GUI display with the fetched results.
+        myFeBaseFrame->updateRobotDisplay(wxString(results));
+    }
 }
 
-wxString DataManager::sendDataToGUI() {
-    // Fetch simulation results and send them back to the GUI
-    auto results = retrieveSimulationResults();
-    return wxString(results);
-}
-
+// Simulates task performance by a robot and returns the outcome as a string.
 std::string DataManager::runSimulation(const std::string& data) {
-    // Assume Simulation::simulate takes JSON string and returns JSON string
-    return simulation.simulate(data);
+    // Simulate a medium room cleaning task using robot data.
+    robots::Robots robot(1, "Medium", 100, 100, "None", "Idle", 0, robots::Robots::robotFunction::SCRUB, 0, 0);
+    tasks::RoomTask medium_room_task(tasks::RoomTask::RoomSize::MEDIUM);
+    medium_room_task.perform_task(robot);
+
+    // Collect the results into a string using a stringstream.
+    std::stringstream log_output;
+    log_output << "After task - Battery level: " << robot.get_battery_level()
+               << "%, Water level: " << robot.get_water_level() << "%";
+
+    // Log the results using spdlog.
+    spdlog::info(log_output.str());
+    return log_output.str();
 }
 
+// Stores the simulation results in the MongoDB database.
 void DataManager::storeSimulationResults(const std::string& results) {
-    // Store results in MongoDB
-    auto collection = client["database_name"]["simulation_results"];
+    // Access the collection for robot simulation results.
+    auto collection = client["database_name"]["robot_simulation"];
+    // Convert the results string into a BSON document.
     auto document = convertToDocument(results);
+    // Insert the document into the MongoDB collection.
     collection.insert_one(document.view());
 }
 
+// Retrieves the latest simulation results from the MongoDB database.
 std::string DataManager::retrieveSimulationResults() {
-    // Retrieve results from MongoDB
-    auto collection = client["database_name"]["simulation_results"];
+    // Access the collection for robot simulation results.
+    auto collection = client["database_name"]["robot_simulation"];
     auto cursor = collection.find({});
+    // Return the first document found as a JSON string.
     for (auto&& doc : cursor) {
-        return convertToJson(doc);  // Assuming we are interested in the latest document
+        return convertToJson(doc);
     }
-    return "{}";  // Return empty JSON if no results
+    return "{}";  // Return an empty JSON object if no results are found.
 }
 
+// Helper function to convert a JSON string to a BSON document.
 bsoncxx::document::value DataManager::convertToDocument(const std::string& json) {
     return bsoncxx::from_json(json);
 }
 
+// Helper function to convert a BSON document to a JSON string.
 std::string DataManager::convertToJson(const bsoncxx::document::value& doc) {
     return bsoncxx::to_json(doc);
 }
