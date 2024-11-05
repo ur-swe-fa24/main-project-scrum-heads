@@ -11,7 +11,7 @@ int RoomTask::calculate_task_duration() const {
         case RoomSize::MEDIUM: return 6000;   // Medium task duration (ms)
         case RoomSize::LARGE: return 12000;   // Longest task duration (ms)
     }
-    return 0;  // Default case
+    return 0;
 }
 
 int RoomTask::get_resource_usage() const {
@@ -20,7 +20,7 @@ int RoomTask::get_resource_usage() const {
         case RoomSize::MEDIUM: return 40;
         case RoomSize::LARGE: return 90;
     }
-    return 0;  // Default case
+    return 0;
 }
 
 void RoomTask::perform_task(robots::Robots& robot) {
