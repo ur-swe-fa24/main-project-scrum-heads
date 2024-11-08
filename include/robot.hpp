@@ -72,6 +72,10 @@ public:
     void add_robot(std::vector<robots::Robots>& robot_list);
     // Declaration of the helper function outside the class
     robots::Robots::robotFunction get_function_type_from_input(const std::string& input);
+    
+    // Add these in the public section of the Robots class
+    void update_battery_level(int16_t new_level) { battery_level_ = new_level; }
+    void update_water_level(int16_t new_level) { water_level_ = new_level; }
 
 
 private:
