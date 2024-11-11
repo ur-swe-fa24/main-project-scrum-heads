@@ -99,3 +99,13 @@ void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
 
     // You can then call the database model to save or update robot data here
 }
+
+//getter method for vector of robots
+std::vector<RobotData>& DataManager::GetRobots() {
+    return robots;
+}
+
+//setter method for vector of robots
+void DataManager::AddRobot(const RobotData& robot) {
+    robots.push_back(robot);
+}

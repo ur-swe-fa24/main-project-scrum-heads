@@ -34,7 +34,7 @@ protected:
     void OnRobotListBoxDClick(wxCommandEvent& event) override;
 
 private:
-    std::vector<RobotData> robots;
+    // std::vector<RobotData> robots;
 
     DataManager* dataManager;  // Pointer to the data manager
 };

@@ -34,7 +34,10 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 
     // wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
 
-    std::vector<RobotData>& robots = GetRobots();
+    // std::vector<RobotData>& robots = GetRobots();
+
+    // Access the shared vector from DataManager and display each robot
+    std::vector<RobotData>& robots = dataManager->GetRobots();
 
     // Clear the existing display in the wxListBox
     robotListBox->Clear();
@@ -70,7 +73,9 @@ void MyFEBaseFrame::AddRobotToList(const wxString& robotDescription)
 {
     // //add robotDescription (currently just properties, so size and function) to robots vector
     RobotData robot = {robotDescription};
-    robots.push_back(robot);
+    // robots.push_back(robot);
+
+    dataManager->AddRobot(robot);
 
     // Add the robot description to the list of robots 
     // note: currently commented out because using refresh button to show functionality of GetRobots()
@@ -79,9 +84,14 @@ void MyFEBaseFrame::AddRobotToList(const wxString& robotDescription)
 
 void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
 {
+    std::vector<RobotData>& robots = dataManager->GetRobots();
     //note: the exact logic here will change such that when a user clicks on a robot it accesses it's ID and then retrives the necessary data
     int selectionIndex = robotListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
+    // std::cout << selectionIndex << std::endl;
+    // std::cout << robots.size() << std::endl;
     if (selectionIndex != wxNOT_FOUND && selectionIndex < robots.size()) {
+        // std::cout << selectionIndex << std::endl;
+        // std::cout << robots.size() << std::endl;
         RobotData selectedRobot = robots[selectionIndex]; //finds the coordinated robot from the robots vector
 
         // Create robotInfoFrame
@@ -92,14 +102,14 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
     }
 }
 
-// Getter for the vector of robots
-std::vector<RobotData>& MyFEBaseFrame::GetRobots() 
-{
-    // for (const RobotData& robot : robots) {
-    //     wxLogMessage(robot.robotPropertyData);
-    // }
-    return robots;
-}
+// // Getter for the vector of robots
+// std::vector<RobotData>& MyFEBaseFrame::GetRobots() 
+// {
+//     // for (const RobotData& robot : robots) {
+//     //     wxLogMessage(robot.robotPropertyData);
+//     // }
+//     return robots;
+// }
 
 /** 
 // Method to bind GUI events for user interaction.

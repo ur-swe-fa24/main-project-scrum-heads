@@ -26,7 +26,11 @@ public:
 
     void SendRobotsData(const std::vector<RobotData>& robots);
 
+    std::vector<RobotData>& GetRobots();
+    void AddRobot(const RobotData& robot);
+
 private:
+    std::vector<RobotData> robots;
     // mongocxx::instance instance{}; // MongoDB driver instance to manage MongoDB client lifecycle.
     // mongocxx::client client;       // MongoDB client for database operations.
     // feBaseFrame* feBaseFrame;      // Pointer to GUI frame for direct interaction.

@@ -6,6 +6,8 @@
 #include "DataManager.h"
 #include <wx/wx.h>
 
+DataManager dataManager; //create single shared instance of dataManager
+
 MyBaseFrame::MyBaseFrame(wxWindow* parent)
     : baseFrame(parent)  // Call the base class constructor
 {
@@ -20,7 +22,7 @@ void MyBaseFrame::OnFESelectButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
     // wxMessageBox("Field Engineer Frame", "Info", wxOK | wxICON_INFORMATION);
-    DataManager dataManager;
+    // DataManager dataManager; //create single shared instance of dataManager
     MyFEBaseFrame* feFrame = new MyFEBaseFrame(nullptr, &dataManager);
 
     //here is where I would interact with the system manager to fetch all the necessary data I need,
