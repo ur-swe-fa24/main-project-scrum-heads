@@ -30,9 +30,12 @@ std::vector<RobotData>& DataManager::GetRobots() {
 void DataManager::AddRobot(const RobotData& robot) {
     int new_id = GetNextAvailableRobotId();  // Get a new unique ID
 
+    // Convert wxString to std::string for robotSize and robotFunction
+    std::string size_str = std::string(robot.robotSize.mb_str());
+    std::string function_str = std::string(robot.robotFunction.mb_str());
+
     // Create a new robot instance with the new ID and the provided robot data
-    robots::Robots new_robot(new_id, robot.robotSize, 100, 100, "None", "Idle", 0, 
-                             robots::Robots::get_function_type_from_input(robot.robotFunction), 0, 0);
+    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Idle", 0, function_str, 0, 0);
 
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
