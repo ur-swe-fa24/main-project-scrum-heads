@@ -91,21 +91,21 @@ DataManager::~DataManager() {}
 // }
 
 // Method to receive and process robots data
-void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
-    // Process each robot and prepare for database insertion or other actions
-    for (const auto& robot : robots) {
-        std::cout << "Size: " + robot.robotSize + ", Function: " + robot.robotFunction << std::endl;
-    }
+// void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
+//     // Process each robot and prepare for database insertion or other actions
+//     for (const auto& robot : robots) {
+//         std::cout << "Size: " + robot.robotSize + ", Function: " + robot.robotFunction << std::endl;
+//     }
 
-    // You can then call the database model to save or update robot data here
-}
+//     // You can then call the database model to save or update robot data here
+// }
 
-//getter method for vector of robots
+//getter method for vector of RobotData (just size and function)
 std::vector<RobotData>& DataManager::GetRobots() {
     return robots;
 }
 
-//setter method for vector of robots
+//setter method for vector of RobotData (just size and function)
 void DataManager::AddRobot(const RobotData& robot) {
     robots.push_back(robot);
 }

@@ -2,12 +2,12 @@
 
 // #include <mongocxx/client.hpp>
 // #include <mongocxx/instance.hpp>
-#include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
+#include "../wxWidgets/Project_Implementation/baseFrame.hpp"  // Include base frame for access to struct
 // #include "Simulation.hpp"   // Assuming simulation class 
 #include <sstream>
 #include <string>
 
-struct RobotData;
+struct RobotData; //include the RobotData struct from baseFrame
 
 
 // DataManager class manages data operations between the GUI, simulation, and the MongoDB database.
@@ -24,13 +24,17 @@ public:
     // // Method to refresh GUI components with the latest data from the database.
     // void refreshDataInGUI();
 
-    void SendRobotsData(const std::vector<RobotData>& robots);
+    // void SendRobotsData(const std::vector<RobotData>& robots);
 
+    //getter function for vector of RobotData
     std::vector<RobotData>& GetRobots();
+    //add robot to the RobotData vector
+    //takes input from feBaseFrame when field engineer creates a robot
     void AddRobot(const RobotData& robot);
 
 private:
-    std::vector<RobotData> robots;
+    std::vector<RobotData> robots; //vector of robot data used to create robots with a specified size and function from the user
+
     // mongocxx::instance instance{}; // MongoDB driver instance to manage MongoDB client lifecycle.
     // mongocxx::client client;       // MongoDB client for database operations.
     // feBaseFrame* feBaseFrame;      // Pointer to GUI frame for direct interaction.
