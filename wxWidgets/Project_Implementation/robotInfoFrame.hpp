@@ -7,5 +7,5 @@ public:
     MyRobotInfoFrame(wxWindow* parent, const wxString& title);
 
     // Method to set and display robot details
-    void SetRobotData(const wxString& robotProperties);
+    void SetRobotData(const wxString& robotSize, const wxString& robotFunction);
 };

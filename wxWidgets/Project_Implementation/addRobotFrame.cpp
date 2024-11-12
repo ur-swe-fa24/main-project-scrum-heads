@@ -49,14 +49,14 @@ void MyAddRobotFrame::OnCreateRobotButtonClick(wxCommandEvent& event)
 
     // Create robot description to show up on field engineer view of list of robots
     // Robot description also serving as a temporary/preliminary structure to represent how robot data might be cumulated here before being retrived by system manager
-    wxString robotDescription = wxString::Format("Size: %s, Function: %s", robotSize, robotFunction);
+    // wxString robotDescription = wxString::Format("Size: %s, Function: %s", robotSize, robotFunction);
 
     // Pass the robot description to feFrame's list box
     // note: this currently only works for the feFrame that is open (the feFrame that was passed as parameter to MyAddRobotFrame)
     // for integration, will scratch this and instead get the robots for the user view 
     // frames on initialization of frames and when clicking refresh button
     if (my_feFrame) {
-        my_feFrame->AddRobotToList(robotDescription);
+        my_feFrame->AddRobotToList(robotSize, robotFunction);
     }
 
     // Close the AddRobotFrame after robot creation
