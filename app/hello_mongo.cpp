@@ -22,7 +22,7 @@ int main()
 
     robots::Robots::Start_Time startTime = {9, 0, 0};  // Represents 9:00:00 AM
     robots::Robots::End_Time endTime = {17, 30, 45}; 
-    robots::Robots temp_robot(3, "Large", 100, 50, "", "Vacuum", 3, robots::Robots::robotFunction::SCRUB, 10, 15, startTime, endTime);
+    robots::Robots temp_robot(69, "Large", 100, 50, "", "Vacuum", 3, robots::Robots::robotFunction::SCRUB, 10, 15, startTime, endTime);
     adapters::Mongo_Adapter mongo_database{};
     spdlog::info("Connected to the mongodb!");
 
@@ -30,28 +30,30 @@ int main()
     mongo_database.write_robot(temp_robot);
 
     std::cout << "Now let's read the robot" << std::endl;
-    mongo_database.read_robot(3);
+    std::string hello = mongo_database.read_robot(69);
+    std::cout << hello << std::endl;
 
 
-    // robots::Robots temp_robot(2, "Large", 50, 25, "", "Vacuum", 3, robots::Robots::robotFunction::SCRUB, 10, 15, startTime, endTime);
     std::cout << "Now let's update the robot" << std::endl;
-    mongo_database.update_robot(3, 50, 25);
+    mongo_database.update_robot(69, 50, 25);
 
     std::cout << "Now let's read the robot" << std::endl;
-    mongo_database.read_robot(3);
+    mongo_database.read_robot(69);
 
 
-    // std::cout << "Now let's delete the robot" << std::endl;
-    // mongo_database.delete_robot(temp_robot);
+    std::cout << "Now let's delete the robot" << std::endl;
+    mongo_database.delete_robot(69);
 
-    // std::cout << "Now let's check the robot was deleted" << std::endl;
-    // mongo_database.read_robot(temp_robot);
+    std::cout << "Now let's check the robot was deleted" << std::endl;
+    mongo_database.read_robot(69);
+
 
     std::cout << "Now delete all robots" << std::endl;
+    mongo_database.write_robot(temp_robot);
     mongo_database.delete_all_robots();
 
-    // std::cout << "Now let's check all robots were deleted" << std::endl;
-    // mongo_database.read_all_robots();
+    std::cout << "Now let's check all robots were deleted" << std::endl;
+    mongo_database.read_all_robots();
 
 
     std::cout << "End of program" << std::endl;
