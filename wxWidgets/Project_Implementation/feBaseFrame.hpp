@@ -4,7 +4,8 @@
 
 //placeholder for database/system manager later
 struct RobotData {
-    wxString robotPropertyData;
+    wxString robotSize;
+    wxString robotFunction;
 };
 
 class DataManager;
@@ -17,7 +18,7 @@ public:
     // Method to set the text to write into the field engineer window
     void SetText(const wxString& text);
     // Method to add a robot to the wxListBox that holds robot info
-    void AddRobotToList(const wxString& robotDescription);
+    void AddRobotToList(const wxString& robotSize, const wxString& robotFunction);
     // Event for selecting a robot from wxListBox
     void OnRobotSelected(wxCommandEvent& event);
 

@@ -44,7 +44,7 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 
     // Iterate through the vector and display each robot's information
     for (RobotData& robot : robots) {
-        wxString robotInfo = wxString::Format(robot.robotPropertyData);
+        wxString robotInfo = wxString::Format(robot.robotSize + robot.robotFunction); //will be ugly for now a placeholder for ID or whatever else later
         robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
     }
 
@@ -69,10 +69,10 @@ void MyFEBaseFrame::SetText(const wxString& text)
     feTextControl->SetValue(text);  // Update text in feTextCtrl
 }
 
-void MyFEBaseFrame::AddRobotToList(const wxString& robotDescription)
+void MyFEBaseFrame::AddRobotToList(const wxString& robotSize, const wxString& robotFunction)
 {
     // //add robotDescription (currently just properties, so size and function) to robots vector
-    RobotData robot = {robotDescription};
+    RobotData robot = {robotSize, robotFunction};
     // robots.push_back(robot);
 
     dataManager->AddRobot(robot);
@@ -97,7 +97,7 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
         // Create robotInfoFrame
         MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: ");
         // Set the appropriate data and show the frame
-        infoFrame->SetRobotData(selectedRobot.robotPropertyData);
+        infoFrame->SetRobotData(selectedRobot.robotSize, selectedRobot.robotFunction);
         infoFrame->Show();
     }
 }

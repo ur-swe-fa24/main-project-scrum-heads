@@ -94,7 +94,7 @@ DataManager::~DataManager() {}
 void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
     // Process each robot and prepare for database insertion or other actions
     for (const auto& robot : robots) {
-        std::cout << robot.robotPropertyData << std::endl;
+        std::cout << "Size: " + robot.robotSize + ", Function: " + robot.robotFunction << std::endl;
     }
 
     // You can then call the database model to save or update robot data here
