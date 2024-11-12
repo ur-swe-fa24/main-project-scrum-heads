@@ -42,7 +42,8 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
         kvp("size", robot.get_size()),
         kvp("water_level", robot.get_water_level()),
         kvp("battery level", robot.get_battery_level()),
-        kvp("Function Type", robot.get_function_type())
+        kvp("Function Type", robot.get_function_type()),
+        kvp("Error Status", robot.get_error_status())
     ));
 }
 
@@ -62,10 +63,10 @@ std::string adapters::Mongo_Adapter::read_robot(int id) {
         auto Size = Doc["size"];
         auto Water_Level = Doc["water_level"];
         auto Battery_Level = Doc["battery level"];
-        // auto Error_Status = Doc["Error Status"];
         // auto Task_Status = Doc["Task Status"];
         // auto Task_Room = Doc["Task Room"];
         auto Function_type = Doc["Function Type"];
+        auto Error_Status = Doc["Error Status"];
         // auto Location_x = Doc["Location x"];
         // auto Location_y = Doc["Location y"];
 
@@ -74,10 +75,10 @@ std::string adapters::Mongo_Adapter::read_robot(int id) {
         std::cout << "Size: " << Size << std::endl;
         std::cout << "Water Level: " << Water_Level << std::endl;
         std::cout << "Battery Level: " << Battery_Level << std::endl;
-        // std::cout << "Error Status: " << Error_Status << std::endl;
         // std::cout << "Task Status: " << Task_Status << std::endl;
         // std::cout << "Task Room: " << Task_Room << std::endl;
         std::cout << "Function Type: " << Function_type << std::endl;
+        std::cout << "Error Status: " << Error_Status << std::endl;
         // std::cout << "Location: (" << Location_x << ", " << Location_y << ")" << std::endl;
         return information;
     } 
@@ -137,14 +138,9 @@ std::vector<int> adapters::Mongo_Adapter::get_all_ids(){
     std::vector<int> ids;
     auto cursor = db_["robot"].find({});
     for(auto&& doc : cursor) {
-        std::cout << "here" << std::endl;
         auto information = bsoncxx::to_json(doc);
-        std::cout << "here" << std::endl;
         json info = json::parse(information);
-        std::cout << "here" << std::endl;
         auto Id = info["_id"];
-        // std::cout << std::stoi(Id) << std::endl;
-        std::cout << "here" << std::endl;
         ids.push_back(Id);
     }
     return ids;
