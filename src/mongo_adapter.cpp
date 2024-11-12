@@ -2,6 +2,8 @@
 #include "robot.hpp"
 #include <memory>
 #include <utility>
+#include <vector>
+#include <string>
 
 #include <bsoncxx/builder/basic/document.hpp>
 #include <nlohmann/json.hpp>
@@ -34,17 +36,14 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
         throw std::invalid_argument{ "Duplicate id." };
     }
     // Mongo db will read exampledoc as a rvalue so the doc should be created all in one line 
+    //Remove error status, task status and room, and location
     db_["robot"].insert_one(make_document(
         kvp("_id", robot.get_id()),
         kvp("size", robot.get_size()),
         kvp("water_level", robot.get_water_level()),
         kvp("battery level", robot.get_battery_level()),
-        kvp("Error Status", robot.get_error_status()),
-        kvp("Task Status", robot.get_task_status()),
-        kvp("Task Room", robot.get_task_room()),
         kvp("Function Type", robot.get_function_type()),
-        kvp("Location x", robot.get_location_x()),
-        kvp("Location y", robot.get_location_y())
+        kvp("Error Status", robot.get_error_status())
     ));
 }
 
@@ -59,27 +58,28 @@ std::string adapters::Mongo_Adapter::read_robot(int id) {
         json Doc = json::parse(information);
 
         // Assuming Doc is a JSON object, access fields by their keys.
+        //Remove error status, task status and room, and location
         auto Id = Doc["_id"];
         auto Size = Doc["size"];
         auto Water_Level = Doc["water_level"];
         auto Battery_Level = Doc["battery level"];
-        auto Error_Status = Doc["Error Status"];
-        auto Task_Status = Doc["Task Status"];
-        auto Task_Room = Doc["Task Room"];
+        // auto Task_Status = Doc["Task Status"];
+        // auto Task_Room = Doc["Task Room"];
         auto Function_type = Doc["Function Type"];
-        auto Location_x = Doc["Location x"];
-        auto Location_y = Doc["Location y"];
+        auto Error_Status = Doc["Error Status"];
+        // auto Location_x = Doc["Location x"];
+        // auto Location_y = Doc["Location y"];
 
         // Print or utilize the extracted information as needed
         std::cout << "Robot ID: " << Id << std::endl;
         std::cout << "Size: " << Size << std::endl;
         std::cout << "Water Level: " << Water_Level << std::endl;
         std::cout << "Battery Level: " << Battery_Level << std::endl;
-        std::cout << "Error Status: " << Error_Status << std::endl;
-        std::cout << "Task Status: " << Task_Status << std::endl;
-        std::cout << "Task Room: " << Task_Room << std::endl;
+        // std::cout << "Task Status: " << Task_Status << std::endl;
+        // std::cout << "Task Room: " << Task_Room << std::endl;
         std::cout << "Function Type: " << Function_type << std::endl;
-        std::cout << "Location: (" << Location_x << ", " << Location_y << ")" << std::endl;
+        std::cout << "Error Status: " << Error_Status << std::endl;
+        // std::cout << "Location: (" << Location_x << ", " << Location_y << ")" << std::endl;
         return information;
     } 
     std::cout << "No instance of robot with id " << id << std::endl;
@@ -120,7 +120,7 @@ void adapters::Mongo_Adapter::delete_all_robots(){
 }
 
 /**
- * Udapte the robot instance in the database with the given waterlevel and battery level
+ * Udapte the robot instance in the database with the given water level and battery level
  */
 void adapters::Mongo_Adapter::update_robot(int id, int water_level, int battery_level){
     //Create the document with the query
@@ -133,5 +133,18 @@ void adapters::Mongo_Adapter::update_robot(int id, int water_level, int battery_
     db_["robot"].update_one(query_filter.view(), update_doc1.view());
     db_["robot"].update_one(query_filter.view(), update_doc2.view());
 }
+
+std::vector<int> adapters::Mongo_Adapter::get_all_ids(){
+    std::vector<int> ids;
+    auto cursor = db_["robot"].find({});
+    for(auto&& doc : cursor) {
+        auto information = bsoncxx::to_json(doc);
+        json info = json::parse(information);
+        auto Id = info["_id"];
+        ids.push_back(Id);
+    }
+    return ids;
+}
+
 
 
