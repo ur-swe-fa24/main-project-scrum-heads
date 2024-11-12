@@ -20,9 +20,7 @@ int main()
 {
     std::cout << "First make a robot: " << std::endl;
 
-    robots::Robots::Start_Time startTime = {9, 0, 0};  // Represents 9:00:00 AM
-    robots::Robots::End_Time endTime = {17, 30, 45}; 
-    robots::Robots temp_robot(69, "Large", 100, 50, "", "Vacuum", 3, robots::Robots::robotFunction::SCRUB, 10, 15, startTime, endTime);
+    robots::Robots temp_robot(69, "Large", 100, 50, "", "Vacuum", 3, "scrub", 10, 15);
     adapters::Mongo_Adapter mongo_database{};
     spdlog::info("Connected to the mongodb!");
 

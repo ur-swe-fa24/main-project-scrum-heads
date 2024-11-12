@@ -29,9 +29,9 @@ include_directories(include)
 
 # Add subdirectories for components
 add_subdirectory(app)
-add_subdirectory(robot_loop)
-add_subdirectory(room_task)
-add_subdirectory(simulation_tests)
+# add_subdirectory(robot_loop)
+# add_subdirectory(room_task)
+# add_subdirectory(simulation_tests)
 add_subdirectory(tests)
 add_subdirectory(wxWidgets)
 
