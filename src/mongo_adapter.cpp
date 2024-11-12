@@ -3,6 +3,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <string>
 
 #include <bsoncxx/builder/basic/document.hpp>
 #include <nlohmann/json.hpp>
@@ -132,15 +133,21 @@ void adapters::Mongo_Adapter::update_robot(int id, int water_level, int battery_
     db_["robot"].update_one(query_filter.view(), update_doc2.view());
 }
 
-std::vector<int> adapters:Mongo_Adapter::get_all_ids(){
+std::vector<int> adapters::Mongo_Adapter::get_all_ids(){
     std::vector<int> ids;
     auto cursor = db_["robot"].find({});
-    for( auto&& doc : cursor) {
-        std::string = bsoncxx::to_json(doc)
-        json Doc = json::parse(information);
-        ids.push_back(Doc["_id"]);
+    for(auto&& doc : cursor) {
+        std::cout << "here" << std::endl;
+        auto information = bsoncxx::to_json(doc);
+        std::cout << "here" << std::endl;
+        json info = json::parse(information);
+        std::cout << "here" << std::endl;
+        auto Id = info["_id"];
+        // std::cout << std::stoi(Id) << std::endl;
+        std::cout << "here" << std::endl;
+        ids.push_back(Id);
     }
-    return ids
+    return ids;
 }
 
 

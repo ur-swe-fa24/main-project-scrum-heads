@@ -33,7 +33,7 @@ add_subdirectory(robot_loop)
 add_subdirectory(room_task)
 add_subdirectory(simulation_tests)
 add_subdirectory(tests)
-add_subdirectory(wxWidgets)
+# add_subdirectory(wxWidgets)
 
 # Create libraries
 add_library(robot_lib src/robot.cpp)
