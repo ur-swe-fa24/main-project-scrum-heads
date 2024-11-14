@@ -28,9 +28,12 @@ public:
     std::vector<RobotData>& GetRobots();
     void AddRobot(const RobotData& robot);
     void UpdateIds();
+    std::string GetIDString(); //this is for the UI to access id easily when robot is made
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
+
+    int id;
 
     std::vector<RobotData> robots;  // Stores robot data in a local vector
     std::vector<int> ids;  // Stores robot IDs currently in the database

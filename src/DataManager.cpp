@@ -36,7 +36,7 @@ void DataManager::AddRobot(const RobotData& robot) {
 
     // Create a new robot instance with the new ID and the provided robot data
     robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Idle", 0, function_str, 0, 0);
-
+    
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
 
@@ -56,7 +56,7 @@ void DataManager::UpdateIds() {
 
 // Method to find the next available robot ID
 int DataManager::GetNextAvailableRobotId() {
-    int id = 1;  // Start from ID 1
+    id = 14;  // Start from ID 1
 
     // Find the next available ID that is not already used
     while (std::find(ids.begin(), ids.end(), id) != ids.end()) {
@@ -64,4 +64,10 @@ int DataManager::GetNextAvailableRobotId() {
     }
 
     return id;
+}
+
+// Returns current ID
+std::string DataManager::GetIDString() {
+    std::string IDString = std::to_string(id);
+    return IDString;
 }

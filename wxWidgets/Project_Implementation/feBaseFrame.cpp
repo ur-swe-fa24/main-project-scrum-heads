@@ -77,6 +77,10 @@ void MyFEBaseFrame::AddRobotToList(const wxString& robotSize, const wxString& ro
 
     dataManager->AddRobot(robot);
 
+    std::string id = dataManager->GetIDString();
+
+    wxMessageBox("Robot created with ID: " + id, "Success!", wxOK | wxICON_INFORMATION);
+
     // Add the robot description to the list of robots 
     // note: currently commented out because using refresh button to show functionality of GetRobots()
     // robotListBox->Append(robotDescription);
