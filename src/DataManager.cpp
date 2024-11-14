@@ -1,6 +1,6 @@
 #include "DataManager.h"
-#include <sstream>  // Include for std::stringstream used in logging
 #include <algorithm>  // Include for std::find
+#include <wx/string.h>
 
 DataManager::DataManager() 
 {
