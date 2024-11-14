@@ -66,7 +66,7 @@ int DataManager::GetNextAvailableRobotId() {
     return id;
 }
 
-// Returns current ID
+// Returns current ID as string for easy UI use
 std::string DataManager::GetIDString() {
     std::string IDString = std::to_string(id);
     return IDString;

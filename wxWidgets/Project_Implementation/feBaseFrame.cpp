@@ -37,6 +37,7 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
     // std::vector<RobotData>& robots = GetRobots();
 
     // Access the shared vector from DataManager and display each robot
+    //now, I need to change this to read from the full robot data, not just this abbreviated version used for creation
     std::vector<RobotData>& robots = dataManager->GetRobots();
 
     // Clear the existing display in the wxListBox
@@ -77,9 +78,9 @@ void MyFEBaseFrame::AddRobotToList(const wxString& robotSize, const wxString& ro
 
     dataManager->AddRobot(robot);
 
-    std::string id = dataManager->GetIDString();
+    std::string idString = dataManager->GetIDString();
 
-    wxMessageBox("Robot created with ID: " + id, "Success!", wxOK | wxICON_INFORMATION);
+    wxMessageBox("Robot created with ID: " + idString, "Success!", wxOK | wxICON_INFORMATION);
 
     // Add the robot description to the list of robots 
     // note: currently commented out because using refresh button to show functionality of GetRobots()
