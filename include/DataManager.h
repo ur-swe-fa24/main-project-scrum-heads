@@ -1,11 +1,19 @@
 #pragma once
 
-#include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
-#include <sstream>
+// #include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
+// #include <sstream>
+
 #include <string>
+// #include "../wxWidgets/Project_Implementation/baseFrame.hpp"
+#include <wx/string.h>
 #include "adapters/mongo_adapter.hpp"
 
-struct RobotData;
+// struct RobotData;
+
+struct RobotData {
+    wxString robotSize;
+    wxString robotFunction;
+};
 
 
 // DataManager class manages data operations between the GUI, simulation, and the MongoDB database.

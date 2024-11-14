@@ -3,10 +3,10 @@
 #include "../include/DataManager.h"
 
 //placeholder for database/system manager later
-struct RobotData {
-    wxString robotSize;
-    wxString robotFunction;
-};
+// struct RobotData {
+//     wxString robotSize;
+//     wxString robotFunction;
+// };
 
 class DataManager;
 

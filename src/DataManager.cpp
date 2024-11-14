@@ -45,11 +45,13 @@ void DataManager::AddRobot(const RobotData& robot) {
 
     // Append the new ID to the list of IDs
     ids.push_back(new_id);
+
+    std::cout << mongo_database.read_robot(new_id) << std::endl;
 }
 
 // Method to update the list of robot IDs from the MongoDB database
 void DataManager::UpdateIds() {
-    ids = mongo_database.get_all_ids();
+    // ids = mongo_database.get_all_ids();
 }
 
 // Method to find the next available robot ID
