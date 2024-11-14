@@ -6,10 +6,6 @@ using namespace robots;
 using namespace std;
 
 int main() {
-    cout << "Hi! Which role are you? Enter 'FieldEngineer': ";
-    string user_role;
-    cin >> user_role; // Input the role of the user
-
     // Check if the user is a Field Engineer
     if (user_role == "FieldEngineer") {
         cout << "What do you want to do today? Enter 'create_robot' or 'view_robot_status': ";
