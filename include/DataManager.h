@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
-#include <sstream>
 #include <string>
 #include "adapters/mongo_adapter.hpp"
 
