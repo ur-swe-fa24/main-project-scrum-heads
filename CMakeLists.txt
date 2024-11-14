@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message("Export compile commands: ${CMAKE_EXPORT_COMPILE_COMMANDS}")
+set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/libs/mongo-cxx-driver")
 message("CMake install prefix: ${CMAKE_INSTALL_PREFIX}")
 
 project(ScrumHeads VERSION 1.0)
