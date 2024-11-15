@@ -51,7 +51,7 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
  * Reads a robot with a given key and outputs the information pertaining to that robot
  * If robot does not exist a string is returned specifying that
  */
-std::string adapters::Mongo_Adapter::read_robot(int id) {
+robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
     auto result = db_["robot"].find_one(make_document(kvp("_id", id)));
     if (result) {
         auto information = bsoncxx::to_json(*result);
@@ -70,6 +70,8 @@ std::string adapters::Mongo_Adapter::read_robot(int id) {
         // auto Location_x = Doc["Location x"];
         // auto Location_y = Doc["Location y"];
 
+        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, "", 0, Function_type, 0, 0} ;
+        
         // Print or utilize the extracted information as needed
         std::cout << "Robot ID: " << Id << std::endl;
         std::cout << "Size: " << Size << std::endl;
@@ -80,10 +82,11 @@ std::string adapters::Mongo_Adapter::read_robot(int id) {
         std::cout << "Function Type: " << Function_type << std::endl;
         std::cout << "Error Status: " << Error_Status << std::endl;
         // std::cout << "Location: (" << Location_x << ", " << Location_y << ")" << std::endl;
-        return information;
+        return new_robot;
     } 
     std::cout << "No instance of robot with id " << id << std::endl;
-    return "No instance of robot with id " + std::to_string(id);
+    robots::Robots new_robot = robots::Robots(0, "", 0, 0, "No instance of robot with id", "", 0, "", 0, 0);
+    return new_robot;
 }
 
 /**

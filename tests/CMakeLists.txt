@@ -10,12 +10,12 @@ add_executable(test_mongodb
     test_mongodb.cpp
 )
 
-# target_include_directories(test_mongodb
-#     PRIVATE
-#     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-# )
+target_include_directories(test_mongodb
+    PRIVATE
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+)
 
-# target_compile_features(test_mongodb PRIVATE cxx_std_17)
+target_compile_features(test_mongodb PRIVATE cxx_std_17)
 
 target_link_libraries(test_mongodb
   PRIVATE
