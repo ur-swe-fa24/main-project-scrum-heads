@@ -33,7 +33,7 @@ public:
     void UpdateIds();
     std::string GetIDString(); //this is for the UI to access id easily when robot is made
 
-    const robots::Robots& GetAllRobotInfo(int robotId);
+    robots::Robots GetAllRobotInfo(int robotId);
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
