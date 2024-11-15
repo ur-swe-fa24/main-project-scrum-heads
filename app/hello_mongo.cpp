@@ -20,7 +20,7 @@ int main()
 {
     std::cout << "First make a robot: " << std::endl;
 
-    robots::Robots temp_robot(69, "Large", 100, 50, "", "Vacuum", 3, "scrub", 10, 15);
+    robots::Robots temp_robot(9009, "Large", 100, 50, "", "Vacuum", 3, "scrub", 10, 15);
 
     adapters::Mongo_Adapter mongo_database{};
     spdlog::info("Connected to the mongodb!");
@@ -29,23 +29,23 @@ int main()
     mongo_database.write_robot(temp_robot);
 
     std::cout << "Now let's read the robot" << std::endl;
-    std::string hello = mongo_database.read_robot(47);
+    std::string hello = mongo_database.read_robot(9009);
     std::cout << hello << std::endl;
 
 
     std::cout << "Now let's update the robot" << std::endl;
-    mongo_database.update_robot(47, 50, 25);
+    mongo_database.update_robot(9009, 50, 25);
 
     std::cout << "Now let's read the robot" << std::endl;
-    mongo_database.read_robot(47);
+    mongo_database.read_robot(9009);
     mongo_database.get_all_ids();
 
 
     std::cout << "Now let's delete the robot" << std::endl;
-    mongo_database.delete_robot(47);
+    mongo_database.delete_robot(9009);
 
     std::cout << "Now let's check the robot was deleted" << std::endl;
-    mongo_database.read_robot(47);
+    mongo_database.read_robot(9009);
 
 
     std::cout << "Now delete all robots" << std::endl;
