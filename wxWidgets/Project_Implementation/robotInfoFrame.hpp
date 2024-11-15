@@ -9,5 +9,5 @@ public:
 
     // Method to set and display robot details
     //CHANGE THIS to work by retrieving data from database using robot ID number!!
-    void SetRobotData(const RobotData& robot);
+    void SetRobotData(robots::Robots robot);
 };

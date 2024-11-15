@@ -6,6 +6,7 @@
 // #include "../wxWidgets/Project_Implementation/baseFrame.hpp"
 #include <wx/string.h>
 #include "adapters/mongo_adapter.hpp"
+#include "robot.hpp"
 
 // struct RobotData;
 
@@ -31,6 +32,8 @@ public:
     void AddRobot(RobotData& robot);
     void UpdateIds();
     std::string GetIDString(); //this is for the UI to access id easily when robot is made
+
+    robots::Robots GetAllRobotInfo(int robotId);
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
