@@ -56,12 +56,12 @@ void DataManager::AddRobot(RobotData& robot) {
 
 // Method to update the list of robot IDs from the MongoDB database
 void DataManager::UpdateIds() {
-    // ids = mongo_database.get_all_ids();
+    ids = mongo_database.get_all_ids();
 }
 
 // Method to find the next available robot ID
 int DataManager::GetNextAvailableRobotId() {
-    id = 35;  // Start from ID 1
+    id = 1;  // Start from ID 1
 
     // Find the next available ID that is not already used
     while (std::find(ids.begin(), ids.end(), id) != ids.end()) {
@@ -80,7 +80,7 @@ std::string DataManager::GetIDString() {
 robots::Robots DataManager::GetAllRobotInfo(int robotId)
 {
     //temporary placeholder that just creates a robot pre-database integration
-    robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "scrub", 10, 15);
+    robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
     // robots::Robots clicked_robot = mongo_database.read_robot(robotId);
     return clicked_robot;
 }
