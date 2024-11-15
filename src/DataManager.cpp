@@ -12,14 +12,15 @@ DataManager::DataManager()
 DataManager::~DataManager() {}
 
 // Method to receive and process robots data
-void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
-    // Process each robot and prepare for database insertion or other actions
-    for (const auto& robot : robots) {
-        std::cout << "Size: " + robot.robotSize + ", Function: " + robot.robotFunction << std::endl;
-    }
+// void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
+//     // Process each robot and prepare for database insertion or other actions
+//     for (const auto& robot : robots) {
+//         std::cout << "Size: " + robot.robotSize + ", Function: " + robot.robotFunction << std::endl;
+//     }
 
-    // You can then call the database model to save or update robot data here
-}
+//     // You can then call the database model to save or update robot data here
+// }
+
 
 // Getter method for vector of robots
 std::vector<RobotData>& DataManager::GetRobots() {

@@ -49,10 +49,10 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
         robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
     }
 
-    // Pass the robots data to the controller
-    if (dataManager) {
-        dataManager->SendRobotsData(robots);
-    }
+    // // Pass the robots data to the controller
+    // if (dataManager) {
+    //     dataManager->SendRobotsData(robots);
+    // }
 }
 
 void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)

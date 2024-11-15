@@ -2,7 +2,6 @@
 
 // #include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
 // #include <sstream>
-
 #include <string>
 // #include "../wxWidgets/Project_Implementation/baseFrame.hpp"
 #include <wx/string.h>
@@ -24,8 +23,10 @@ public:
   
     ~DataManager();
 
+
     void SendRobotsData(const std::vector<RobotData>& robots);
 
+    //getter function for vector of RobotData
     std::vector<RobotData>& GetRobots();
     void AddRobot(RobotData& robot);
     void UpdateIds();
