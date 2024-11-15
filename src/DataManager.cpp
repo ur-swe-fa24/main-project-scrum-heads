@@ -61,7 +61,7 @@ void DataManager::UpdateIds() {
 
 // Method to find the next available robot ID
 int DataManager::GetNextAvailableRobotId() {
-    id = 21;  // Start from ID 1
+    id = 30;  // Start from ID 1
 
     // Find the next available ID that is not already used
     while (std::find(ids.begin(), ids.end(), id) != ids.end()) {
@@ -75,4 +75,9 @@ int DataManager::GetNextAvailableRobotId() {
 std::string DataManager::GetIDString() {
     std::string IDString = std::to_string(id);
     return IDString;
+}
+
+const robots::Robots& GetAllRobotInfo(int robotId)
+{
+    
 }
