@@ -8,6 +8,7 @@
 #include <mongocxx/instance.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
+#include <vector>
 
 namespace adapters {
     //Mongo_Adapter inherits from adapter.hpp
@@ -21,6 +22,7 @@ namespace adapters {
             std::string delete_robot(int id) override;
             void delete_all_robots() override;
             void update_robot(int id, int water_level, int battery_level) override;
+            std::vector<int> get_all_ids() override;
             
         private:
         // Database is created here so that db_ can be accessed throughout the class

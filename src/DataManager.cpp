@@ -1,94 +1,15 @@
 #include "DataManager.h"
-#include <sstream>  // Include for std::stringstream used in logging
+#include <algorithm>  // Include for std::find
+#include <wx/string.h>
 
 DataManager::DataManager() 
 {
-    // Initialize the MongoDB client with the default URI
+    // Initialize the MongoDB client and update the list of IDs
+    UpdateIds();
 }
-
-// // Constructor: Initializes the DataManager with a reference to the GUI frame.
-// DataManager::DataManager(MyFEBaseFrame* feFrame) : feBaseFrame(feFrame)//: client{mongocxx::uri{}}, feBaseFrame(feFrame) 
-// {
-//     // Initialize the MongoDB client with the default URI
-// }
 
 // Destructor: Handles cleanup, if necessary.
 DataManager::~DataManager() {}
-
-// // Updates robot data from GUI, processes it via simulation, and stores the results in the database.
-// void DataManager::updateRobotDataFromGUI() {
-//     // Ensure we have a valid pointer to the MyFEBaseFrame for accessing robot data.
-//     auto myFeBaseFrame = dynamic_cast<MyFEBaseFrame*>(feBaseFrame);
-//     if (myFeBaseFrame) {
-//         // Access the vector of RobotData from the GUI frame.
-//         std::vector<RobotData>& robots = myFeBaseFrame->GetRobots();
-//         for (const RobotData& robot : robots) {
-//             // Run simulation for each robot and store the results.
-//             std::string simulatedData = runSimulation(robot.robotPropertyData.ToStdString());
-//             storeSimulationResults(simulatedData);
-//         }
-//     }
-// }
-
-// // Refreshes the GUI with the latest data fetched from the MongoDB database.
-// void DataManager::refreshDataInGUI() {
-//     // Retrieve the latest simulation results from the database.
-//     std::string results = retrieveSimulationResults();
-//     auto myFeBaseFrame = dynamic_cast<MyFEBaseFrame*>(feBaseFrame);
-//     if (myFeBaseFrame) {
-//         // Update the GUI display with the fetched results.
-//         myFeBaseFrame->updateRobotDisplay(wxString(results));
-//     }
-// }
-
-// // Simulates task performance by a robot and returns the outcome as a string.
-// std::string DataManager::runSimulation(const std::string& data) {
-//     // Simulate a medium room cleaning task using robot data.
-//     robots::Robots robot(1, "Medium", 100, 100, "None", "Idle", 0, robots::Robots::robotFunction::SCRUB, 0, 0);
-//     tasks::RoomTask medium_room_task(tasks::RoomTask::RoomSize::MEDIUM);
-//     medium_room_task.perform_task(robot);
-
-//     // Collect the results into a string using a stringstream.
-//     std::stringstream log_output;
-//     log_output << "After task - Battery level: " << robot.get_battery_level()
-//                << "%, Water level: " << robot.get_water_level() << "%";
-
-//     // Log the results using spdlog.
-//     spdlog::info(log_output.str());
-//     return log_output.str();
-// }
-
-// // Stores the simulation results in the MongoDB database.
-// void DataManager::storeSimulationResults(const std::string& results) {
-//     // Access the collection for robot simulation results.
-//     auto collection = client["database_name"]["robot_simulation"];
-//     // Convert the results string into a BSON document.
-//     auto document = convertToDocument(results);
-//     // Insert the document into the MongoDB collection.
-//     collection.insert_one(document.view());
-// }
-
-// // Retrieves the latest simulation results from the MongoDB database.
-// std::string DataManager::retrieveSimulationResults() {
-//     // Access the collection for robot simulation results.
-//     auto collection = client["database_name"]["robot_simulation"];
-//     auto cursor = collection.find({});
-//     // Return the first document found as a JSON string.
-//     for (auto&& doc : cursor) {
-//         return convertToJson(doc);
-//     }
-//     return "{}";  // Return an empty JSON object if no results are found.
-// }
-
-// // Helper function to convert a JSON string to a BSON document.
-// bsoncxx::document::value DataManager::convertToDocument(const std::string& json) {
-//     return bsoncxx::from_json(json);
-// }
-
-// // Helper function to convert a BSON document to a JSON string.
-// std::string DataManager::convertToJson(const bsoncxx::document::value& doc) {
-//     return bsoncxx::to_json(doc);
-// }
 
 // Method to receive and process robots data
 // void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
@@ -100,12 +21,58 @@ DataManager::~DataManager() {}
 //     // You can then call the database model to save or update robot data here
 // }
 
-//getter method for vector of RobotData (just size and function)
+
+// Getter method for vector of robots
 std::vector<RobotData>& DataManager::GetRobots() {
     return robots;
 }
 
-//setter method for vector of RobotData (just size and function)
-void DataManager::AddRobot(const RobotData& robot) {
+// Method to add a new robot to the system
+void DataManager::AddRobot(RobotData& robot) {
+    int new_id = GetNextAvailableRobotId();  // Get a new unique ID
+
+    // robot.robotID = new_id;
+    // std::cout << robot.robotID << std::endl;
+
+    // Convert wxString to std::string for robotSize and robotFunction
+    std::string size_str = std::string(robot.robotSize.mb_str());
+    std::string function_str = std::string(robot.robotFunction.mb_str());
+
+    // Create a new robot instance with the new ID and the provided robot data
+    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Idle", 0, function_str, 0, 0);
+    
+    // Write the new robot to the MongoDB database
+    mongo_database.write_robot(new_robot);
+
+    robot.robotID = std::to_string(new_id);
+    // Add the new robot data to the local list of robots
     robots.push_back(robot);
+
+    // Append the new ID to the list of IDs
+    ids.push_back(new_id);
+
+    std::cout << mongo_database.read_robot(new_id) << std::endl;
+}
+
+// Method to update the list of robot IDs from the MongoDB database
+void DataManager::UpdateIds() {
+    // ids = mongo_database.get_all_ids();
+}
+
+// Method to find the next available robot ID
+int DataManager::GetNextAvailableRobotId() {
+    id = 21;  // Start from ID 1
+
+    // Find the next available ID that is not already used
+    while (std::find(ids.begin(), ids.end(), id) != ids.end()) {
+        ++id;  // Increment the ID until an available one is found
+    }
+
+    return id;
+}
+
+// Returns current ID as string for easy UI use
+std::string DataManager::GetIDString() {
+    std::string IDString = std::to_string(id);
+    return IDString;
 }

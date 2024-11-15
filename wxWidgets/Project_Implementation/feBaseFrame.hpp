@@ -2,6 +2,12 @@
 #include "MyProjectBase.h"  // Include the generated base class
 #include "../include/DataManager.h"
 
+
+//placeholder for database/system manager later
+// struct RobotData {
+//     wxString robotSize;
+//     wxString robotFunction;
+// };
 class DataManager;
 
 class MyFEBaseFrame : public feBaseFrame

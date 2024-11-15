@@ -28,16 +28,18 @@ endif()
 # Add include directories
 include_directories(include)
 
-# Add subdirectories for components
-add_subdirectory(app)
-add_subdirectory(robot_loop)
-add_subdirectory(room_task)
-add_subdirectory(simulation_tests)
-add_subdirectory(tests)
-add_subdirectory(wxWidgets)
-
 # Create libraries
 add_library(robot_lib src/robot.cpp)
 target_include_directories(robot_lib PUBLIC include)
 add_library(adapter_lib src/mongo_adapter.cpp)
-target_link_libraries(adapter_lib PRIVATE mongo::mongocxx_shared)
+target_link_libraries(adapter_lib mongo::mongocxx_shared)
+add_library(data_lib src/DataManager.cpp)
+target_link_libraries(data_lib adapter_lib wx::net wx::core wx::base)
+
+# Add subdirectories for components
+add_subdirectory(app)
+# add_subdirectory(robot_loop)
+# add_subdirectory(room_task)
+# add_subdirectory(simulation_tests)
+add_subdirectory(tests)
+add_subdirectory(wxWidgets)

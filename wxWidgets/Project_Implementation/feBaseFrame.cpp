@@ -37,6 +37,7 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
     // std::vector<RobotData>& robots = GetRobots();
 
     // Access the shared vector from DataManager and display each robot
+    //now, I need to change this to read from the full robot data, not just this abbreviated version used for creation
     std::vector<RobotData>& robots = dataManager->GetRobots();
 
     // Clear the existing display in the wxListBox
@@ -44,7 +45,7 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 
     // Iterate through the vector and display each robot's information
     for (RobotData& robot : robots) {
-        wxString robotInfo = wxString::Format(robot.robotSize + robot.robotFunction); //will be ugly for now a placeholder for ID or whatever else later
+        wxString robotInfo = wxString::Format("ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //will be ugly for now a placeholder for ID or whatever else later
         robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
     }
 
@@ -72,10 +73,16 @@ void MyFEBaseFrame::SetText(const wxString& text)
 void MyFEBaseFrame::AddRobotToList(const wxString& robotSize, const wxString& robotFunction)
 {
     // //add robotDescription (currently just properties, so size and function) to robots vector
-    RobotData robot = {robotSize, robotFunction};
+    RobotData robot = {"0", robotSize, robotFunction};
     // robots.push_back(robot);
 
     dataManager->AddRobot(robot);
+
+    std::string idString = dataManager->GetIDString();
+
+    // robot.robotID = idString;
+
+    wxMessageBox("Robot created with ID: " + idString, "Success!", wxOK | wxICON_INFORMATION);
 
     // Add the robot description to the list of robots 
     // note: currently commented out because using refresh button to show functionality of GetRobots()
@@ -84,6 +91,8 @@ void MyFEBaseFrame::AddRobotToList(const wxString& robotSize, const wxString& ro
 
 void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
 {
+    //CHANGE THIS logic to access the robot's ID when it's double clicked, then retrieve robot
+    //from database using ID as key
     std::vector<RobotData>& robots = dataManager->GetRobots();
     //note: the exact logic here will change such that when a user clicks on a robot it accesses it's ID and then retrives the necessary data
     int selectionIndex = robotListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
@@ -97,7 +106,7 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
         // Create robotInfoFrame
         MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: ");
         // Set the appropriate data and show the frame
-        infoFrame->SetRobotData(selectedRobot.robotSize, selectedRobot.robotFunction);
+        infoFrame->SetRobotData(selectedRobot);
         infoFrame->Show();
     }
 }
