@@ -2,6 +2,7 @@
 #define ADAPTER_HPP
 
 #include "robot.hpp"
+#include <vector>
 
 class Adapter {
     public:
@@ -13,6 +14,7 @@ class Adapter {
         virtual std::string delete_robot(int id) = 0;
         virtual void delete_all_robots() = 0;
         virtual void update_robot(int id, int water_level, int battery_level) = 0;
+        virtual std::vector<int> get_all_ids() = 0;
 };
 
 #endif // ADAPTER_HPP
