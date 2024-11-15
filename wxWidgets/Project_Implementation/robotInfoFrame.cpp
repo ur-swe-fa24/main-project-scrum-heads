@@ -7,8 +7,9 @@ MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title) //se
 }
 
 //note: can easily add more parameters for status, errors, whatever
-void MyRobotInfoFrame::SetRobotData(const wxString& robotSize, const wxString& robotFunction) {
-    robotPropertiesText->SetLabel(robotSize + robotFunction); //ugly for now just a placeholder
+//CHANGE THIS to work by retrieving data from database using robot ID number!!
+void MyRobotInfoFrame::SetRobotData(const RobotData& robot) {
+    robotPropertiesText->SetLabel("ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //ugly for now just a placeholder
     robotStatusText->SetLabel("Status");
     robotErrorLogText->SetLabel("Errors");
     Layout();
