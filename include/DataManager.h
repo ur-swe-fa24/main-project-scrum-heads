@@ -11,6 +11,7 @@
 // struct RobotData;
 
 struct RobotData {
+    std::string robotID;
     wxString robotSize;
     wxString robotFunction;
 };
@@ -26,7 +27,7 @@ public:
     void SendRobotsData(const std::vector<RobotData>& robots);
 
     std::vector<RobotData>& GetRobots();
-    void AddRobot(const RobotData& robot);
+    void AddRobot(RobotData& robot);
     void UpdateIds();
     std::string GetIDString(); //this is for the UI to access id easily when robot is made
 

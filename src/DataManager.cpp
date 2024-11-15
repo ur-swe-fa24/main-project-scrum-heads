@@ -27,8 +27,11 @@ std::vector<RobotData>& DataManager::GetRobots() {
 }
 
 // Method to add a new robot to the system
-void DataManager::AddRobot(const RobotData& robot) {
+void DataManager::AddRobot(RobotData& robot) {
     int new_id = GetNextAvailableRobotId();  // Get a new unique ID
+
+    // robot.robotID = new_id;
+    // std::cout << robot.robotID << std::endl;
 
     // Convert wxString to std::string for robotSize and robotFunction
     std::string size_str = std::string(robot.robotSize.mb_str());
@@ -40,6 +43,7 @@ void DataManager::AddRobot(const RobotData& robot) {
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
 
+    robot.robotID = std::to_string(new_id);
     // Add the new robot data to the local list of robots
     robots.push_back(robot);
 
@@ -56,7 +60,7 @@ void DataManager::UpdateIds() {
 
 // Method to find the next available robot ID
 int DataManager::GetNextAvailableRobotId() {
-    id = 14;  // Start from ID 1
+    id = 21;  // Start from ID 1
 
     // Find the next available ID that is not already used
     while (std::find(ids.begin(), ids.end(), id) != ids.end()) {
