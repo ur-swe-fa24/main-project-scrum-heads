@@ -101,7 +101,7 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
         const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
 
         // Create robotInfoFrame, passes through string to function as title
-        MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: " + selectedRobot.robotID);
+        MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: " + selectedRobot.robotID, completeRobot, dataManager);
         // Set the appropriate data and show the frame
         infoFrame->SetRobotData(completeRobot);
         infoFrame->Show();
