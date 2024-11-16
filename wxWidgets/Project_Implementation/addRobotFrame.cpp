@@ -59,6 +59,12 @@ void MyAddRobotFrame::OnCreateRobotButtonClick(wxCommandEvent& event)
         my_feFrame->AddRobotToList(robotSize, robotFunction);
     }
 
+    //GetParent() retrieves the parent frame, which is the FEBaseFrame that was passed in as parameter
+    //necessary to call refresh button click method to automatically refresh page so robot is visually deleted
+    //dynamic cast to ensure correct type
+    MyFEBaseFrame* parentFrame = dynamic_cast<MyFEBaseFrame*>(GetParent());
+    parentFrame->OnFERefreshButtonClick(event); // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
+
     // Close the AddRobotFrame after robot creation
     Close();
 }

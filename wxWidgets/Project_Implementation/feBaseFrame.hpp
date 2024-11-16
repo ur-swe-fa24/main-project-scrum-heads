@@ -24,11 +24,12 @@ public:
 
     // Getter for the vector of robots
     std::vector<RobotData>& GetRobots();
+    
+    void OnFERefreshButtonClick(wxCommandEvent& event) override;
 
 protected:
     // Override virtual method for various button clicks
     void OnFEButtonClick(wxCommandEvent& event) override;
-    void OnFERefreshButtonClick(wxCommandEvent& event) override;
     void OnAddRobotButtonClick(wxCommandEvent& event) override;
 
     // Override virtual method for double clicking robot in wxListBox

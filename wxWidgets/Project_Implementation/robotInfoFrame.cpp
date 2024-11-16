@@ -14,8 +14,17 @@ void MyRobotInfoFrame::OnRemoveRobotButtonClick(wxCommandEvent& event)
     // Implement necessary button press logic here
     int robotId = localRobot.get_id();
     dataManager->DeleteRobot(robotId);
-    //NEED TO somehow call the refresh button here
+    
+    //GetParent() retrieves the parent frame, which is the FEBaseFrame that was passed in as parameter
+    //necessary to call refresh button click method to automatically refresh page so robot is visually deleted
+    //dynamic cast to ensure correct type
+    MyFEBaseFrame* parentFrame = dynamic_cast<MyFEBaseFrame*>(GetParent());
+    parentFrame->OnFERefreshButtonClick(event); // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
+
+    //close frame automatically
     Close();
+
+    //convert robot id to string and print success message for user
     std::string idString = std::to_string(robotId);
     wxMessageBox("Robot removed with ID: " + idString, "Success!", wxOK | wxICON_INFORMATION);
 }
