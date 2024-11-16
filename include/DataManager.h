@@ -35,6 +35,8 @@ public:
 
     robots::Robots GetAllRobotInfo(int robotId);
 
+    void DeleteRobot(int robotId);
+
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
 

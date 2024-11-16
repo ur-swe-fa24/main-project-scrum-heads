@@ -82,3 +82,20 @@ robots::Robots DataManager::GetAllRobotInfo(int robotId)
     robots::Robots clicked_robot = mongo_database.read_robot(robotId);
     return clicked_robot;
 }
+
+void DataManager::DeleteRobot(int robotId)
+{
+    //first remove the robot from the database
+    mongo_database.delete_robot(robotId);
+    
+    //then remove the robot from the vector of RobotData
+    //convert id to string (same type as in RobotData struct)
+    std::string robotIdStr = std::to_string(robotId);
+    //auto allows compiler to take care of type
+    for (auto iterator = robots.begin(); iterator != robots.end(); ++iterator) {
+        if (iterator->robotID == robotIdStr) {
+            robots.erase(iterator);  // Remove the robot from the vector
+            break;  // Exit the loop after removal
+        }
+    }
+}
