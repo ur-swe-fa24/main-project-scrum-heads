@@ -120,7 +120,6 @@ TEST_CASE("Mongo Adapter Get all Ids Test") {
 TEST_CASE("Mongo Adapter Delete all robots test") {
     mongo_other.delete_all_robots(); 
     
-
     //Get the information from the read robot and expected output
     std::vector<int> ids = mongo_other.get_all_ids();
     std::vector<int> idsTest = {};
