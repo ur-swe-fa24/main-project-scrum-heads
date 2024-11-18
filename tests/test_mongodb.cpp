@@ -109,21 +109,21 @@ TEST_CASE("Mongo Adapter Get all Ids Test") {
     mongo_other.write_robot(temp_robot3);
     mongo_other.write_robot(temp_robot4);
 
-    //Get the information from the read robot and expected output
+    //Get the vector of all the robot ids
     std::vector<int> ids = mongo_other.get_all_ids();
     std::vector<int> idsTest = {1, 2, 3, 4};
     
-    //Check that the output matches the expected output
+    //Check that the ids returned are correct
     REQUIRE( ids == idsTest );   
 }
 
 TEST_CASE("Mongo Adapter Delete all robots test") {
     mongo_other.delete_all_robots(); 
     
-    //Get the information from the read robot and expected output
+    //Get the information from the read robot and empty vector of ids
     std::vector<int> ids = mongo_other.get_all_ids();
     std::vector<int> idsTest = {};
     
-    //Check that the output matches the expected output
+    //Check that the lists is indeed empty
     REQUIRE( ids == idsTest );   
 }
