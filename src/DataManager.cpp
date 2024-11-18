@@ -22,14 +22,14 @@ DataManager::~DataManager() {}
 // }
 
 
-// Getter method for vector of robots
+// Getter method for vector of RobotData (just ID, size, and function)
 std::vector<RobotData>& DataManager::GetRobots() {
     return robots;
 }
 
-// Method to add a new robot to the system
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
 void DataManager::AddRobot(RobotData& robot) {
-    int new_id = GetNextAvailableRobotId();  // Get a new unique ID
+    int new_id = GetNextAvailableRobotId();  // Get a new unique ID, assigned by data manager to avoid user error
 
     // robot.robotID = new_id;
     // std::cout << robot.robotID << std::endl;
@@ -44,6 +44,7 @@ void DataManager::AddRobot(RobotData& robot) {
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
 
+    //update the RobotData of the added robot with its assigned ID
     robot.robotID = std::to_string(new_id);
     // Add the new robot data to the local list of robots
     robots.push_back(robot);
@@ -75,6 +76,8 @@ std::string DataManager::GetIDString() {
     return IDString;
 }
 
+//gets all robot info (i.e., all of the info specified in robot class) for a specified ID
+//used to display necessary information to the user in GUI
 robots::Robots DataManager::GetAllRobotInfo(int robotId)
 {
     //temporary placeholder that just creates a robot pre-database integration

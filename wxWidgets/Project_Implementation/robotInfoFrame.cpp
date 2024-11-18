@@ -3,7 +3,7 @@
 #include <wx/wx.h>
 
 MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robots::Robots robot, DataManager* dataManager) //set title to "Robot: " + robotId
-    :robotInfoFrame(parent), localRobot(robot), dataManager(dataManager) //call base class constructor
+    :robotInfoFrame(parent), localRobot(robot), dataManager(dataManager) //localRobot and dataManager can now be used to call respective functions
 {
     //need to add necessary text display in wxFormBuilder, can then assign this title parameter to it
 }
@@ -11,8 +11,9 @@ MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robo
 //method for removing a robot from the database by a button click
 void MyRobotInfoFrame::OnRemoveRobotButtonClick(wxCommandEvent& event)
 {
-    // Implement necessary button press logic here
+    //get ID as integer from localRobot
     int robotId = localRobot.get_id();
+    //uses ID to delete robot from database using dataManager
     dataManager->DeleteRobot(robotId);
     
     //GetParent() retrieves the parent frame, which is the FEBaseFrame that was passed in as parameter
