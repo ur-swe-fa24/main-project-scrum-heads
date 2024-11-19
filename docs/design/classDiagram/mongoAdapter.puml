@@ -10,21 +10,21 @@ class Mongo_Adapter{
 
     + Mongo_Adapter()
     + write_robot( robot : const Robots& ) : void 
-    + read_robot( id : int ) : void
-    + read_all_robots() : void
-    + delete_robot(id : int) : void
+    + read_robot( id : int ) : Robots
+    + read_all_robots() : vector<Robots>
+    + delete_robot(id : int) : string
     + delete_all_robots() : void
-    + update_robot(int id, int water_level, int battery_level) + write_robot( robot : const Robots& ) : void 
+    + update_robot(int id, int water_level, int battery_level)  
 }
 
 abstract Adapter{
     + \~ Adapter()
     + write_robot( robot : const Robots& ) : void 
-    + read_robot( id : int ) : void
-    + read_all_robots() : void
-    + delete_robot(id : int) : void
+    + read_robot( id : int ) : Robots
+    + read_all_robots() : vector<Robots>
+    + delete_robot(id : int) : string
     + delete_all_robots() : void
-    + update_robot(int id, int water_level, int battery_level) + write_robot( robot : const Robots& ) : void 
+    + update_robot(int id, int water_level, int battery_level)
 } 
 
 class Robot {
@@ -38,8 +38,6 @@ class Robot {
     -functionType: string
     -location_x: int = 0
     -location_y: int = 0
-    -taskStartTime: int
-    -taskEndTime: int
     +getRobotId(): int
     +getRobotSize(): string
     +getTaskStatus(): string
@@ -49,8 +47,6 @@ class Robot {
     +getLocationX(): int
     +getLocationY(): int
     +getTaskRoom(): int
-    +getTaskStart(): int
-    +getTaskEnd(): int
     +reportError(): string
     +canClean(room_id: int): boolean
     +doTask(room_id: int): void
