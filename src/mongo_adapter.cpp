@@ -143,8 +143,14 @@ void adapters::Mongo_Adapter::update_robot(int id, int water_level, int battery_
     db_["robot"].update_one(query_filter.view(), update_doc2.view());
 }
 
+/**
+ * Return a vector of all the ids in the current robot collection
+ */
 std::vector<int> adapters::Mongo_Adapter::get_all_ids(){
+    // Create a new ids vector
     std::vector<int> ids;
+
+    // Loop through every row of the database and add the id parameter into the vector
     auto cursor = db_["robot"].find({});
     for(auto&& doc : cursor) {
         auto information = bsoncxx::to_json(doc);
