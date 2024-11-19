@@ -18,6 +18,7 @@ using bsoncxx::builder::basic::make_array;
 using bsoncxx::builder::basic::make_document;
 using json = nlohmann::json;
 
+
 /**
  * Create a Mongo_Adapter instance
  */
@@ -68,7 +69,7 @@ robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
         auto Function_type = Doc["Function Type"];
         auto Error_Status = Doc["Error Status"];
 
-        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, "", 0, Function_type, 0, 0} ;
+        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, "", 0, Function_type, 0} ;
         
         std::cout << "Robot ID: " << Id << std::endl;
         std::cout << "Size: " << Size << std::endl;
@@ -79,7 +80,7 @@ robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
         return new_robot;
     } 
     std::cout << "No instance of robot with id " << id << std::endl;
-    robots::Robots new_robot = robots::Robots(id, "", 0, 0, "No instance of robot with id", "", 0, "", 0, 0);
+    robots::Robots new_robot = robots::Robots(id, "", 0, 0, "No instance of robot with id", "", 0, "", 0);
     return new_robot;
 }
 
@@ -99,7 +100,7 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_robots(){
         auto Function_type = Doc["Function Type"];
         auto Error_Status = Doc["Error Status"];
 
-        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, "", 0, Function_type, 0, 0};
+        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, "", 0, Function_type, 0};
         robots.push_back(new_robot);
     }
     return robots;
