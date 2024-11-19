@@ -13,7 +13,7 @@ Mongo_Adapter mongo_other{};
 TEST_CASE("Mongo Adapter Write and Read Robot") {
 
     //Create a new Robot
-    robots::Robots temp_robot(1000, "Large", 100, 50, "", "Vacuum", 3, "scrub", 10, 15);
+    robots::Robots temp_robot(1000, "Large", 100, 50, "", "Vacuum", 3, "scrub", 0);
 
     //Write said robot
     mongo_other.write_robot(temp_robot);
@@ -34,13 +34,13 @@ TEST_CASE("Mongo Adapter Write and Read Robot") {
 TEST_CASE("Mongo Adapter Write A Robot with a Duplicate ID") {
 
     //Create new Robot
-    robots::Robots temp_robot(379, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
+    robots::Robots temp_robot(379, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 0);
 
     //Write said robot
     mongo_other.write_robot(temp_robot);
 
     //Create a robot with a duplicate id
-    robots::Robots temp_robot2(379, "Small", 60, 50, "", "Scrubber", 6, "Scrub", 10, 15);
+    robots::Robots temp_robot2(379, "Small", 60, 50, "", "Scrubber", 6, "Scrub", 0);
 
     //Check that the function will throw an exception because no exception keys are allowed
     REQUIRE_THROWS( mongo_other.write_robot(temp_robot2) );  
@@ -50,7 +50,7 @@ TEST_CASE("Mongo Adapter Write A Robot with a Duplicate ID") {
 TEST_CASE("Mongo Adapter Delete Robot Test") {
 
 
-    robots::Robots temp_robot(884, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
+    robots::Robots temp_robot(884, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 0);
     
     //Write said robot
     mongo_other.write_robot(temp_robot);
@@ -77,7 +77,7 @@ TEST_CASE("Mongo Adapter Delete Nonexistent Robot Test") {
 TEST_CASE("Mongo Adapter Update Robot Test") {
 
     //Create a new Robot
-    robots::Robots temp_robot(9009, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 10, 15);
+    robots::Robots temp_robot(9009, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 0);
 
     //Write said robot
     mongo_other.write_robot(temp_robot);
@@ -98,10 +98,10 @@ TEST_CASE("Mongo Adapter Get all Ids Test") {
     mongo_other.delete_all_robots(); 
     
     //Create a new Robots
-    robots::Robots temp_robot1(1, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 10, 15);
-    robots::Robots temp_robot2(2, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 10, 15);
-    robots::Robots temp_robot3(3, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 10, 15);
-    robots::Robots temp_robot4(4, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 10, 15);
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 0);
+    robots::Robots temp_robot2(2, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 0);
+    robots::Robots temp_robot3(3, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 0);
+    robots::Robots temp_robot4(4, "Large", 50, 100, "", "Vacuum", 3, "Scrub", 0);
 
     //Write said robots
     mongo_other.write_robot(temp_robot1);
