@@ -39,7 +39,7 @@ void DataManager::AddRobot(RobotData& robot) {
     std::string function_str = std::string(robot.robotFunction.mb_str());
 
     // Create a new robot instance with the new ID and the provided robot data
-    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Idle", 0, function_str, 0, 0);
+    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Idle", 0, function_str, 0);
     
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
