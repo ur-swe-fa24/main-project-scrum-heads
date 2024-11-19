@@ -20,7 +20,7 @@ if (mongocxx_FOUND)
   message(STATUS "mongocxx found!")
 endif()
 
-# find_package(bsoncxx REQUIRED)
+find_package(bsoncxx REQUIRED)
 if (bsoncxx_FOUND)
   message(STATUS "bsoncxx found!")
 endif()
