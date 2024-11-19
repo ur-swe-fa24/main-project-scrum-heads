@@ -38,8 +38,5 @@ target_link_libraries(data_lib adapter_lib wx::net wx::core wx::base)
 
 # Add subdirectories for components
 add_subdirectory(app)
-# add_subdirectory(robot_loop)
-# add_subdirectory(room_task)
-# add_subdirectory(simulation_tests)
 add_subdirectory(tests)
 add_subdirectory(wxWidgets)

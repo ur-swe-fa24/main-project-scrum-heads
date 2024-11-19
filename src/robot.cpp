@@ -1,20 +1,25 @@
 #include <iostream>
 #include "robot.hpp"
 
+namespace robots {
+    void Robots::add_robot(std::vector<Robots>& robot_list, const Robots& new_robot) {
+        robot_list.push_back(new_robot);
+    }
+}
 
 // Function to display the robot's full status for field engineers
-void robots::Robots::field_engineer_view_status() const {
-    std::cout << "Robot ID: " << get_id() << "\n"
-              << "Size: " << get_size() << "\n"
-              << "Water Level: " << get_water_level() << "\n"
-              << "Battery Level: " << get_battery_level() << "\n"
-              << "Error Status: " << get_error_status() << "\n"
-              << "Task Status: " << get_task_status() << "\n"
-              << "Task Room: " << get_task_room() << "\n"
-              << "Function Type: " << get_function_type() << "\n"
-              << "Location X: " << get_location_x() << "\n"
-              << "Location Y: " << get_location_y() << "\n" << std::endl;
-}
+// void robots::Robots::field_engineer_view_status() const {
+//     std::cout << "Robot ID: " << get_id() << "\n"
+//               << "Size: " << get_size() << "\n"
+//               << "Water Level: " << get_water_level() << "\n"
+//               << "Battery Level: " << get_battery_level() << "\n"
+//               << "Error Status: " << get_error_status() << "\n"
+//               << "Task Status: " << get_task_status() << "\n"
+//               << "Task Room: " << get_task_room() << "\n"
+//               << "Function Type: " << get_function_type() << "\n"
+//               << "Location X: " << get_location_x() << "\n"
+//               << "Location Y: " << get_location_y() << "\n" << std::endl;
+// }
 
 // // Function to convert string to robotFunction
 // void robots::Robots::add_robot(std::vector<robots::Robots>& robot_list) {

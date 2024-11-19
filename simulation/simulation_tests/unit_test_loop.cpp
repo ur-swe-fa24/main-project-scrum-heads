@@ -6,7 +6,15 @@
 #include <future>
 #include <atomic>
 
-// right now giving weird error at 100%, so not using it right now.
+// giving weird error as below, so not using it right now.
+// Undefined symbols for architecture arm64:
+//   "_main", referenced from:
+//      implicit entry/start for main executable
+// ld: symbol(s) not found for architecture arm64
+// clang: error: linker command failed with exit code 1 (use -v to see invocation)
+// make[2]: *** [tests/unit_test_loop] Error 1
+// make[1]: *** [tests/CMakeFiles/unit_test_loop.dir/all] Error 2
+// make: *** [all] Error 2
 using namespace robots;
 
 TEST_CASE("Robot Initialization") {
