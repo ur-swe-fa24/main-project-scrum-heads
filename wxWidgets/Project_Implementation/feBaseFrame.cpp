@@ -1,6 +1,8 @@
 #include "feBaseFrame.hpp"
 #include "addRobotFrame.hpp"
 #include "robotInfoFrame.hpp"
+#include "addTaskFrame.hpp"
+#include "viewTaskFrame.hpp"
 #include <wx/wx.h>
 
 // #include "DataManager.hpp"  // need for data manager
@@ -9,7 +11,7 @@ MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent, DataManager* dataManager)
     : feBaseFrame(parent), dataManager(dataManager)  // Call the base class constructor
 {
     // Connect the button event to the overridden method
-    feButton->Bind(wxEVT_BUTTON, &MyFEBaseFrame::OnFEButtonClick, this);
+    // feButton->Bind(wxEVT_BUTTON, &MyFEBaseFrame::OnFEButtonClick, this);
     
     // Connect the button event to the overridden method
     feRefreshButton->Bind(wxEVT_BUTTON, &MyFEBaseFrame::OnFERefreshButtonClick, this);
@@ -19,11 +21,11 @@ MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent, DataManager* dataManager)
     // bindEvents();
 }
 
-void MyFEBaseFrame::OnFEButtonClick(wxCommandEvent& event)
-{
-    // Implement necessary button press logic here
-    wxMessageBox("Field Engineer Frame", "Info", wxOK | wxICON_INFORMATION);
-}
+// void MyFEBaseFrame::OnFEButtonClick(wxCommandEvent& event)
+// {
+//     // Implement necessary button press logic here
+//     wxMessageBox("Field Engineer Frame", "Info", wxOK | wxICON_INFORMATION);
+// }
 
 void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 {
@@ -65,10 +67,10 @@ void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)
     addRobotFrame->Show(true);
 }
 
-void MyFEBaseFrame::SetText(const wxString& text)
-{
-    feTextControl->SetValue(text);  // Update text in feTextCtrl
-}
+// void MyFEBaseFrame::SetText(const wxString& text)
+// {
+//     feTextControl->SetValue(text);  // Update text in feTextCtrl
+// }
 
 void MyFEBaseFrame::AddRobotToList(const wxString& robotSize, const wxString& robotFunction)
 {
@@ -110,6 +112,21 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
         infoFrame->SetRobotData(completeRobot);
         infoFrame->Show();
     }
+}
+
+void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
+{
+    //implement logic to open task info window by double clicking task here
+}
+
+void MyFEBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
+{
+    // Create and show the AddTaskFrame (window where field engineer can add tasks)
+    // First this: makes the current feFrame the parent window of the created addTaskFrame
+    // Second this: passes instance of feFrame as a pointer to itself, allowing created addTaskFrame to communicate directly with it
+    // necessary for taking the robot info added in the addTaskFrame and transporting it to feBaseFrame where field engineer can view
+    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, this);
+    addTaskFrame->Show();
 }
 
 // // Getter for the vector of robots

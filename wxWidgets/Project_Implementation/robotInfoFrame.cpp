@@ -5,6 +5,7 @@
 MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robots::Robots robot, DataManager* dataManager) //set title to "Robot: " + robotId
     :robotInfoFrame(parent), localRobot(robot), dataManager(dataManager) //localRobot and dataManager can now be used to call respective functions
 {
+    titleText->SetLabel(title);
     //need to add necessary text display in wxFormBuilder, can then assign this title parameter to it
 }
 

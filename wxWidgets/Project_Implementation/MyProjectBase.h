@@ -21,9 +21,8 @@
 #include <wx/settings.h>
 #include <wx/sizer.h>
 #include <wx/frame.h>
-#include <wx/textctrl.h>
-#include <wx/listbox.h>
 #include <wx/stattext.h>
+#include <wx/listbox.h>
 #include <wx/choice.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -64,17 +63,19 @@ class feBaseFrame : public wxFrame
 	private:
 
 	protected:
-		wxButton* feButton;
-		wxTextCtrl* feTextControl;
 		wxButton* feRefreshButton;
+		wxStaticText* m_staticText16;
 		wxButton* addRobotButton;
 		wxListBox* robotListBox;
+		wxButton* addTaskButton;
+		wxListBox* taskListBox;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void OnFEButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAddRobotButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRobotListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAddTaskButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTaskListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
@@ -187,6 +188,7 @@ class robotInfoFrame : public wxFrame
 	private:
 
 	protected:
+		wxStaticText* titleText;
 		wxStaticText* propertiesLabelText;
 		wxStaticText* robotPropertiesText;
 		wxStaticText* statusLabelText;
@@ -204,6 +206,55 @@ class robotInfoFrame : public wxFrame
 		robotInfoFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~robotInfoFrame();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class addTaskFrame
+///////////////////////////////////////////////////////////////////////////////
+class addTaskFrame : public wxFrame
+{
+	private:
+
+	protected:
+		wxStaticText* selectRoomsTitleText;
+		wxListBox* roomSelectionListBox;
+		wxStaticText* selectRobotsTitleText;
+		wxListBox* robotSelectionListBox;
+		wxButton* createTaskButton;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnCreateTaskButtonClick( wxCommandEvent& event ) { event.Skip(); }
+
+
+	public:
+
+		addTaskFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~addTaskFrame();
+
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class viewTaskFrame
+///////////////////////////////////////////////////////////////////////////////
+class viewTaskFrame : public wxFrame
+{
+	private:
+
+	protected:
+		wxStaticText* taskStatusTitleText;
+		wxStaticText* taskStatusPlaceholderText;
+		wxStaticText* roomTitleText;
+		wxListBox* roomTaskListBox;
+		wxStaticText* robotTitleText;
+		wxListBox* robotTaskListBox;
+
+	public:
+
+		viewTaskFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+
+		~viewTaskFrame();
 
 };
 

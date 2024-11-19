@@ -51,19 +51,11 @@ void MyAddRobotFrame::OnCreateRobotButtonClick(wxCommandEvent& event)
     // Robot description also serving as a temporary/preliminary structure to represent how robot data might be cumulated here before being retrived by system manager
     // wxString robotDescription = wxString::Format("Size: %s, Function: %s", robotSize, robotFunction);
 
-    // Pass the robot description to feFrame's list box
-    // note: this currently only works for the feFrame that is open (the feFrame that was passed as parameter to MyAddRobotFrame)
-    // for integration, will scratch this and instead get the robots for the user view 
-    // frames on initialization of frames and when clicking refresh button
-    if (my_feFrame) {
-        my_feFrame->AddRobotToList(robotSize, robotFunction);
-    }
+    // Pass the robot description to feFrame's list box (if creating a new feFrame, will need to use refresh button, or will automtically refresh when addind/deleting a robot)
+    my_feFrame->AddRobotToList(robotSize, robotFunction);
 
-    //GetParent() retrieves the parent frame, which is the FEBaseFrame that was passed in as parameter
-    //necessary to call refresh button click method to automatically refresh page so robot is visually deleted
-    //dynamic cast to ensure correct type
-    MyFEBaseFrame* parentFrame = dynamic_cast<MyFEBaseFrame*>(GetParent());
-    parentFrame->OnFERefreshButtonClick(event); // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
+    // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
+    my_feFrame->OnFERefreshButtonClick(event);
 
     // Close the AddRobotFrame after robot creation
     Close();
