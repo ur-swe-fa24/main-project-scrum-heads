@@ -1,0 +1,25 @@
+@startuml DeleteRobotDiagram
+
+start
+
+:Robot Accessed;
+
+:Delete Robot;
+
+fork
+  :Delete Robot from Database;
+fork again
+  :Delete Robot from Robot vector;
+end fork
+
+:Confirmation Message;
+
+:Screen Refresh;
+
+
+
+
+stop
+' Ends the program after action completion.
+
+@enduml
