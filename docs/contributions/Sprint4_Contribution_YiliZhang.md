@@ -1,0 +1,3 @@
+# Sprint4_Contribution_Yili_Zhang
+
+For this sprint I implemented the `DataManager` class to manage data flow between the UI, MongoDB, and simulation, adding methods for robot data CRUD operations and ID management. I created unit tests using Catch2 to validate these functionalities. Additionally, I produced a class diagram with PlantUML to illustrate DataManager interactions, aiding future development.
