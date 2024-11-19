@@ -14,22 +14,21 @@ include(dependencies/get_cpm.cmake)
 include(dependencies/dependencies.cmake)
 
 # Find MongoDB C++ libraries
-# find_package(mongocxx CONFIG REQUIRED)
-# if (mongocxx_FOUND)
-#   message(STATUS "mongocxx found!")
-# endif()
+find_package(mongocxx CONFIG REQUIRED)
+if (mongocxx_FOUND)
+  message(STATUS "mongocxx found!")
+endif()
 
 # find_package(bsoncxx REQUIRED)
-# if (bsoncxx_FOUND)
-#   message(STATUS "bsoncxx found!")
-# endif()
+if (bsoncxx_FOUND)
+  message(STATUS "bsoncxx found!")
+endif()
 
 # Add include directories
 include_directories(include)
 
 # Add subdirectories for components
 add_subdirectory(app)
-# add_subdirectory(simulation)
 add_subdirectory(tests)
 add_subdirectory(wxWidgets)
 
