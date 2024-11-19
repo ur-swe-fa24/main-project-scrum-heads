@@ -1,36 +1,3 @@
-# CMSC322 Main Project (to be deleted)
-
-This main project is your repository for the duration of the semester! **Take care of it!**
-Your team must communicate and coordinate to ensure that this project repo does not get totally borked!
-
-## Repo Structure
-Here are the main directories you need to worry about this semester:
-+ `docs` - this [folder](docs/README.md) maintains **all** of your project documentation: `puml` files and `README`s. You will have deliverables that require updating this documentation.
-+ `include` - the [include](include/INCLUDE.md) files for the libraries your team makes
-+ `src` - the [source](src/SRC.md) files for libraries you decide to split out the implementation
-+ `app` - the [main application(s)](app/APP.md) of the project
-+ `tests` - a battery of [tests](tests/TESTS.md) tests for your libraries and app
-
-## Code Management
-
-Your development must take place on your `integration` branch and *any* feature branches you make!
-Each feature branch must be tied to a **sprintable PBI** that is in your Github Project backlog.
-These issues will become a branch from `integration` using the same naming scheme as you did in the Team Contract:
-```
-<issue_number>-short-descriptive-title
-```
-
-When your team is ready to submit new code to me for the SW manager (me!), you will submit a PR from `integration` to `main` and **add me as a reviewer**.
-Following this process is critical to earning your assessment mark at each deliverable.
-
-## Documentation
-
-This project will have a bunch of documentation, and your team will write all of it in Markdown in this repository.
-For starters, this `README.md` will evolve to become the landing page of your project.
-Thus, make sure that you update it with each sprint to include new developments for design and users.
- 
----
-
 # (Our Awesome Product) Overview
 
 ## Goal
@@ -48,3 +15,22 @@ There are explicit instructions on how to build and run the application in the a
 + `src` - this [folder](src) provides the source files for the project, and are implementations of the header files from the included libraries. 
 + `wxWidgets/Project_Implementation` - this [folder](wxWidgets/Project_Implementation) consists of the files making up the GUI that users interface with. For general wxWidgets information, [see here](wxWidgets/README.md). For further project GUI information, [see here](wxWidgets/Project_Implementation/README.md).
 + `tests` - this [folder](tests) consists of a testing suite used to ensure the efficacy of our libraries and application.
+
+## Changes Since Last Submission
+
++ Full implementation of add robot and remove robot functionality for field engineer, such that when a user makes the respective input, the robots are added or removed from the database itself, with the data manager handling some of the communication. 
++ Partial implementation of view robot status functionality, such that when a user double-clicks on a target robot, they can view robot properties that are saved in the database and retrieved using methods from the robot class in the simulation. 
++ RobotData struct, along with a vector of RobotData, moved to the data manager, where that vector is maintained for certain GUI interactions. Also, a string version of the robot's ID is added to this struct in order for simple confirmation messages to be printed when the user adds or deletes a robot. 
++ Refresh button functionality called automatically when adding robots to update user view seamlessly (as opposed to them manually needing to do it).
++ Refresh button functionality called automatically when deleting robots to make sure the user doesn't attempt to interact with a deleted robot.
++ Updated the Mongo_Adapter class to return robots when the robot collection is being read from in order to pass information from the database to the system manager. This then allows the GUI to easily access the data.
++ Updated the Mongo_Adapter class to have a function that returns all current robot ids in the database, so when the program is finished and exited the database can reinstantiate it's old state.
++ Updated the Mongo_Adapter test suite so that it fully tests all functionality of the class.
++ Changed Mongo_Adapter documentation and diagrams to represent the most recent version of the class.
++ Added README and User Guide documentation.
++ Updated the Data Manager class to integrate GUI, Simulation and Database.
++ Created a unit test for Data Manager.
++ Updated robot class for no longer store location, time length, add a new component task percent(how many percentage progress has the robot made). 
++ Updated robot do task loop(different sizes of robots and rooms result in different water and battery usage) and passed the unit test.
++ Created charge robot loop, robots can charge while not working. Passed unit tests on this stage, more unit tests for the future.
++ Updated the structure for simulation, all .cpp files for simulation is in simulation folder.
