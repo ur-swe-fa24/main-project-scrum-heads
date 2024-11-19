@@ -34,11 +34,8 @@ public:
     // Function for field engineers to view the robot's status
     void field_engineer_view_status() const;
 
-    // Function to add a robot to a list
-    void add_robot(std::vector<robots::Robots>& robot_list);
-
     // Declaration of the helper function outside the class
-    std::string get_function_type() const { return function_type_};
+    std::string get_function_type() const { return function_type_; }
     
     // Add these in the public section of the Robots class
     void update_battery_level(int new_level) { battery_level_ = new_level; }
@@ -46,6 +43,9 @@ public:
     void update_error_status(std::string status) { error_status_ = status; }
     void update_task_status(std::string status) { task_status_ = status; }
     void update_task_percent(int new_percent) { task_percent_ = new_percent; }
+
+    // Function to add a robot to a list
+    static void add_robot(std::vector<Robots>& robot_list, const Robots& new_robot);
 
 
 private:
