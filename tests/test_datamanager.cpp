@@ -1,51 +1,62 @@
-#include <iostream>
-#include "../DataManager.h"
-#include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"
-#include <wx/wx.h>
+#define CATCH_CONFIG_MAIN
+#include "DataManager.h"
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
+#include <wx/string.h>
 
-class MyApp : public wxApp {
-public:
-    virtual bool OnInit() override {
-        // Create the UI frame for adding robots
-        MyFEBaseFrame* frame = new MyFEBaseFrame(nullptr);
-        frame->Show(true);
+// Create a global instance of DataManager to ensure only one instance is used in all tests
+DataManager data_manager;
 
-        // Make sure the frame is displayed so that a robot can be added
-        return true;
-    }
-};
+TEST_CASE("DataManager Integration Test - Add, Delete, Retrieve Robot, and GetAllRobotInfo") {
+    // Step 1: Add a Robot and Validate ID Assignment
+    RobotData new_robot;
+    new_robot.robotSize = wxString("Large");
+    new_robot.robotFunction = wxString("Vacuum");
 
-wxIMPLEMENT_APP(MyApp);
+    // Add the new robot to the system
+    data_manager.AddRobot(new_robot);
 
-int main() {
-    // Step 1: Launch the wxWidgets GUI
-    MyApp app;
+    // Verify that the robot has been added to the local vector
+    auto& robots = data_manager.GetRobots();
+    REQUIRE(robots.size() == 1);
+    REQUIRE(robots.back().robotID == std::to_string(1));
+    REQUIRE(robots.back().robotSize == "Large");
+    REQUIRE(robots.back().robotFunction == "Vacuum");
 
-    // The user will add robot data via the UI here.
-    // The MyFEBaseFrame class contains the add robot window, which allows the user to add the robot.
-    // This action will trigger DataManager::AddRobot(), collecting data from the user.
-    app.OnInit();
+    // Step 2: Test GetAllRobotInfo to Verify Retrieval of the Same Robot
+    int robot_id = std::stoi(robots.back().robotID);
+    robots::Robots retrieved_robot = data_manager.GetAllRobotInfo(robot_id);
 
-    // Step 2: Create DataManager instance, which automatically updates IDs from MongoDB
-    DataManager manager;
+    // Validate that the retrieved robot's data matches what was originally added
+    REQUIRE(retrieved_robot.get_id() == robot_id);
+    REQUIRE(retrieved_robot.get_size() == "Large");
+    REQUIRE(retrieved_robot.get_function_type() == "Vacuum");
 
-    // Step 3: Print current IDs before adding a new robot
-    std::cout << "Current IDs in the database:" << std::endl;
-    for (int id : manager.GetAllIds()) {
-        std::cout << id << " ";
-    }
-    std::cout << std::endl;
+    // Step 3: Delete the Robot and Verify it is Removed
+    data_manager.DeleteRobot(robot_id);
 
-    // Step 4: After adding via UI, fetch and print all robots from DataManager
-    std::vector<RobotData>& robots = manager.GetRobots();
-    for (const RobotData& robot : robots) {
-        std::cout << "Robot ID: " << robot.robotId << ", Size: " << std::string(robot.robotSize.mb_str())
-                  << ", Function: " << std::string(robot.robotFunction.mb_str()) << std::endl;
-    }
+    // Verify that the robot has been removed from the local vector
+    REQUIRE(data_manager.GetRobots().empty());
 
-    // Step 5: Fetch the robots from the MongoDB database directly and print
-    std::cout << "\nRobots from MongoDB:" << std::endl;
-    manager.mongo_database.read_all_robots();  // Should print details of all robots
+    // Step 4: Add Another Robot and Validate Retrieval
+    RobotData another_robot;
+    another_robot.robotSize = wxString("Small");
+    another_robot.robotFunction = wxString("Scrub");
 
-    return 0;
+    // Add the robot to the system
+    data_manager.AddRobot(another_robot);
+
+    // Verify the robot was added correctly
+    REQUIRE(data_manager.GetRobots().size() == 1);
+    int added_robot_id = std::stoi(data_manager.GetRobots().front().robotID);
+    robots::Robots retrieved_another_robot = data_manager.GetAllRobotInfo(added_robot_id);
+
+    // Check that the retrieved robot data matches what was added
+    REQUIRE(retrieved_another_robot.get_id() == added_robot_id);
+    REQUIRE(retrieved_another_robot.get_size() == "Small");
+    REQUIRE(retrieved_another_robot.get_function_type() == "Scrub");
+
+    // Clean up after the tests by deleting all robots
+    data_manager.DeleteRobot(added_robot_id);
+    REQUIRE(data_manager.GetRobots().empty());
 }
