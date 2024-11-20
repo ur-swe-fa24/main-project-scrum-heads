@@ -1,0 +1,5 @@
+# Sprint3_Contribution_QingShen
++ From the first sprint we had until the last sprint, the simulation engine is in charge of User Interaction, DataBase, and System Manager. Since this sprint, all four parts of the project can be linked together, I reshaped and limited the simulation to only simulate robots and doesn’t take anything from user, also not printing out anything to user. 
++ The robot_do_task can successfully pass the unit tests. Robots can do tasks, different size of robots have different max for water and battery. Different size of room require different usage for water and battery. If the user cancelled the task while the robot is doing task, then the robot will stop doing the task.
++ The robots that are not working can be charging water level and battery level, more testing needed.
++ I added a new simulation engine class diagram. 

@@ -193,6 +193,11 @@ class robotInfoFrame : public wxFrame
 		wxStaticText* robotStatusText;
 		wxStaticText* errorLogLabelText;
 		wxStaticText* robotErrorLogText;
+		wxButton* removeRobotButton;
+
+		// Virtual event handlers, override them in your derived class
+		virtual void OnRemoveRobotButtonClick( wxCommandEvent& event ) { event.Skip(); }
+
 
 	public:
 

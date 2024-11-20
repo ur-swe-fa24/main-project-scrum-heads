@@ -1,0 +1,2 @@
+# Kay Conrad Sprint3 Contribution Statement
+For this sprint I continued to update the database to store and return the information needed for by the other entities. Redid my tests in order to reflect this change to the database. Helped Jeremy with the integration between the GUI, system manager, and the database. Updated the class diagram and created a new activity diagram from the delete robot activity. Also contributed to the new front README.md. I also helped fix conflicts between merges and facilitate that the git flow has no errors.

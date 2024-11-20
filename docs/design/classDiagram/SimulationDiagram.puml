@@ -1,0 +1,47 @@
+@startuml SimulationClassDiagram
+skinparam dpi 200
+skinparam DefaultFontName Inconsolata
+left to right direction
+
+' Robot class with attributes and methods
+class Robots {
+    -robot_id_: int
+    -size_: string
+    -water_level_: int
+    -battery_level_: int
+    -error_status_: string
+    -task_status_: string
+    -task_room_: int
+    -function_type_: string
+    -task_percent_: int
+    +get_id(): int
+    +get_size(): string
+    +get_water_level(): int
+    +get_battery_level(): int
+    +get_error_status(): string
+    +get_task_status(): string
+    +get_task_room(): int
+    +get_task_percent(): int
+    +get_task_length(): int
+    +get_function_type(): string
+    +field_engineer_view_status(): void
+    +update_battery_level(new_level: int): void
+    +update_water_level(new_level: int): void
+    +update_error_status(status: string): void
+    +update_task_status(status: string): void
+    +update_task_percent(new_percent: int): void
+    +add_robot(robot_list: List<Robots>, new_robot: Robots): void
+}
+
+' Robot_Do_Task class with task-related methods
+class Robot_Do_Task {
+    +do_task(robot: Robots, room_size: string): int
+    +check_robot(room_size: string, water_level: int, battery_level: int): bool
+    +robot_charge(robot_list: List<Robots>): int
+}
+
+Robots "1" ..> "1" Robot_Do_Task : tasks handled by
+
+
+@enduml
+

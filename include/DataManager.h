@@ -1,33 +1,48 @@
 #pragma once
 
-#include <wx/wx.h>
-#include <mongocxx/client.hpp>
-#include <mongocxx/instance.hpp>
+// #include "../wxWidgets/Project_Implementation/feBaseFrame.hpp"  // Assuming DataManager needs access to the base frame
+// #include <sstream>
+#include <string>
+// #include "../wxWidgets/Project_Implementation/baseFrame.hpp"
+#include <wx/string.h>
+#include "adapters/mongo_adapter.hpp"
+#include "robot.hpp"
 
-#include <bsoncxx/json.hpp>
-#include "Simulation.hpp"  // Assume this is simulation class header
+// struct RobotData;
 
+struct RobotData {
+    std::string robotID;
+    wxString robotSize;
+    wxString robotFunction;
+};
+
+
+// DataManager class manages data operations between the GUI, simulation, and the MongoDB database.
 class DataManager {
 public:
     DataManager();
+  
     ~DataManager();
 
-    void receiveDataFromGUI(const wxString& data);
-    wxString sendDataToGUI();
+
+    void SendRobotsData(const std::vector<RobotData>& robots);
+
+    //getter function for vector of RobotData
+    std::vector<RobotData>& GetRobots();
+    void AddRobot(RobotData& robot);
+    void UpdateIds();
+    std::string GetIDString(); //this is for the UI to access id easily when robot is made
+
+    robots::Robots GetAllRobotInfo(int robotId);
+
+    void DeleteRobot(int robotId);
 
 private:
-    mongocxx::instance instance{}; // MongoDB driver instance
-    mongocxx::client client;       // MongoDB client
-    Simulation simulation;         // Simulation object
+    int GetNextAvailableRobotId();  // New method to find the next available robot ID
 
-    // Database interaction
-    void storeSimulationResults(const std::string& results);
-    std::string retrieveSimulationResults();
+    int id;
 
-    // Simulation interaction
-    std::string runSimulation(const std::string& data);
-
-    // Utility functions
-    bsoncxx::document::value convertToDocument(const std::string& json);
-    std::string convertToJson(const bsoncxx::document::value& doc);
+    std::vector<RobotData> robots;  // Stores robot data in a local vector
+    std::vector<int> ids;  // Stores robot IDs currently in the database
+    adapters::Mongo_Adapter mongo_database{};  // MongoDB adapter to interact with the database
 };
