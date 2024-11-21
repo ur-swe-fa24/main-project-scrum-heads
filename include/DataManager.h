@@ -8,12 +8,17 @@
 #include "adapters/mongo_adapter.hpp"
 #include "robot.hpp"
 
-// struct RobotData;
-
+// struct for RobotData
 struct RobotData {
     std::string robotID;
     wxString robotSize;
     wxString robotFunction;
+};
+
+//struct for TaskData
+struct TaskData {
+    wxString taskRoom;
+    wxString taskRobot;
 };
 
 
@@ -29,9 +34,13 @@ public:
 
     //getter function for vector of RobotData
     std::vector<RobotData>& GetRobots();
+    //method for adding robot (receiving robotdata from UI)
     void AddRobot(RobotData& robot);
     void UpdateIds();
     std::string GetIDString(); //this is for the UI to access id easily when robot is made
+
+    //method for adding task (receiving taskdata from UI)
+    void AddTask(TaskData& task);
 
     robots::Robots GetAllRobotInfo(int robotId);
 

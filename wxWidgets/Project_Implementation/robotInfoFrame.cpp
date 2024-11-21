@@ -40,3 +40,11 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
     robotErrorLogText->SetLabel("Errors");
     Layout();
 }
+
+void MyRobotInfoFrame::OnFixRobotButtonClick(wxCommandEvent& event)
+{
+    //fix robot here
+    //need to figure out how you're going to receive bugged robot signal in order to enable button
+    //also need to figure out how to update this so the user can actually view bugged status
+    //also need to figure out how to hide this button (along with the remove robot button) in other user views (to avoid making different frames for everyone)
+}

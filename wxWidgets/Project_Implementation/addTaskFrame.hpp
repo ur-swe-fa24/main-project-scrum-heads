@@ -8,10 +8,15 @@ public:
     MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame);
 
 protected:
-
+    //override button
     void OnCreateTaskButtonClick(wxCommandEvent& event) override;
 
     MyFEBaseFrame* my_feFrame;
+
+    // Event corresponding to user selecting something from room list
+    void OnRoomTaskSelect(wxCommandEvent& event) override;
+    // Event corresponding to user selecting something from robot list
+    void OnRobotTaskSelect(wxCommandEvent& event) override;
 
 private:
     // Variables to track whether the appropriate task data has been initialized in dropdown menus
@@ -20,8 +25,4 @@ private:
 
     // Method that checks the above boolean values are both set to true
     void CheckSelections();
-
-    //NOTE: this is currently emulating addRobotFrame, but addRobotFrame uses dropdown menus
-    //I'm not sure if dropdown menus work here, because will need to be dynamically fetching
-    //available robots and rooms so can't predetermine the dropdown (number of items and contents)
 };

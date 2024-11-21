@@ -247,6 +247,11 @@ robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString&
 	removeRobotButton = new wxButton( this, wxID_ANY, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
 	robotInfoFrameSizer->Add( removeRobotButton, 0, wxALL, 5 );
 
+	fixRobotButton = new wxButton( this, wxID_ANY, _("Fix"), wxDefaultPosition, wxDefaultSize, 0 );
+	fixRobotButton->Enable( false );
+
+	robotInfoFrameSizer->Add( fixRobotButton, 0, wxALL, 5 );
+
 
 	this->SetSizer( robotInfoFrameSizer );
 	this->Layout();
@@ -255,6 +260,7 @@ robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString&
 
 	// Connect Events
 	removeRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( robotInfoFrame::OnRemoveRobotButtonClick ), NULL, this );
+	fixRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( robotInfoFrame::OnFixRobotButtonClick ), NULL, this );
 }
 
 robotInfoFrame::~robotInfoFrame()
@@ -294,6 +300,8 @@ addTaskFrame::addTaskFrame( wxWindow* parent, wxWindowID id, const wxString& tit
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	roomSelectionListBox->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( addTaskFrame::OnRoomTaskSelect ), NULL, this );
+	robotSelectionListBox->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( addTaskFrame::OnRobotTaskSelect ), NULL, this );
 	createTaskButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( addTaskFrame::OnCreateTaskButtonClick ), NULL, this );
 }
 

@@ -6,10 +6,23 @@ MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame)
     : addTaskFrame(parent), my_feFrame(feFrame) // Initializes values
 {
     createTaskButton->Bind(wxEVT_BUTTON, &MyAddTaskFrame::OnCreateTaskButtonClick, this);
+    roomSelectionListBox->Append("room1");
+    roomSelectionListBox->Append("room2");
+    robotSelectionListBox->Append("robot1");
+    robotSelectionListBox->Append("robot2");
 }
 
-//some function to check room selected for task (change isRoomSelected), calls CheckSelections when done
-//some function to check robot assigned for task (change isRobotSelected), calls CheckSelections when done
+void MyAddTaskFrame::OnRoomTaskSelect(wxCommandEvent& event)
+{
+    isRoomSelected = (roomSelectionListBox->GetSelection() != wxNOT_FOUND);
+    CheckSelections(); //checks if create task button can be made accessible
+}
+
+void MyAddTaskFrame::OnRobotTaskSelect(wxCommandEvent& event)
+{
+    isRobotSelected = (robotSelectionListBox->GetSelection() != wxNOT_FOUND);
+    CheckSelections(); //checks if create task button can be made accessible
+}
 
 void MyAddTaskFrame::CheckSelections()
 {
@@ -18,8 +31,14 @@ void MyAddTaskFrame::CheckSelections()
 
 void MyAddTaskFrame::OnCreateTaskButtonClick(wxCommandEvent& event)
 {
-    //implement logic for creating task on button click, must first validate that selection have been made
+    //implement logic for creating task on button click, must first validate that selections have been made
 
+
+    wxString taskRoomAssignment = roomSelectionListBox->GetStringSelection();
+    wxString taskRobotAssignment = robotSelectionListBox->GetStringSelection();
+
+    // Pass the robot description to feFrame's list box (if creating a new feFrame, will need to use refresh button, or will automtically refresh when addind/deleting a robot)
+    my_feFrame->AddTaskToList(taskRoomAssignment, taskRobotAssignment);
 
     // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
     my_feFrame->OnFERefreshButtonClick(event);

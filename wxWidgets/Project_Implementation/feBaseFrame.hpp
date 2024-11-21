@@ -17,8 +17,13 @@ public:
 
     // Method to set the text to write into the field engineer window
     // void SetText(const wxString& text);
+
     // Method to add a robot to the wxListBox that holds robot info
     void AddRobotToList(const wxString& robotSize, const wxString& robotFunction);
+
+    // Method to add a task to the wxListBox that holds task info
+    void AddTaskToList(const wxString& robotSize, const wxString& robotFunction);
+
     // Event for selecting a robot from wxListBox
     void OnRobotSelected(wxCommandEvent& event);
 

@@ -196,9 +196,11 @@ class robotInfoFrame : public wxFrame
 		wxStaticText* errorLogLabelText;
 		wxStaticText* robotErrorLogText;
 		wxButton* removeRobotButton;
+		wxButton* fixRobotButton;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnRemoveRobotButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnFixRobotButtonClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
@@ -224,6 +226,8 @@ class addTaskFrame : public wxFrame
 		wxButton* createTaskButton;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void OnRoomTaskSelect( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRobotTaskSelect( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCreateTaskButtonClick( wxCommandEvent& event ) { event.Skip(); }
 
 

@@ -12,8 +12,10 @@ public:
     void SetRobotData(robots::Robots robot);
 
 protected:
-    // Override the virtual method
+    // Override the virtual button press methods
     void OnRemoveRobotButtonClick(wxCommandEvent& event) override;
+    void OnFixRobotButtonClick(wxCommandEvent& event) override;
+    
     robots::Robots localRobot;
     DataManager* dataManager;
 };

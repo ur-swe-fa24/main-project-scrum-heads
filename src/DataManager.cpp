@@ -102,3 +102,16 @@ void DataManager::DeleteRobot(int robotId)
         }
     }
 }
+
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
+void DataManager::AddTask(TaskData& task) {
+    // Convert wxString to std::string for task room selection and task robot selection
+    std::string room_str = std::string(task.taskRoom.mb_str());
+    std::string robot_str = std::string(task.taskRobot.mb_str());
+
+    //getallrobotinfo for input robot ID (retrived from struct)
+    //then manually update stuff
+    
+    // Write the new robot to the MongoDB database (not literally a new robot, but database treats it as one)
+    mongo_database.write_task(task_assigned_robot);
+}
