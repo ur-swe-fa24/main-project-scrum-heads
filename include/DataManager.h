@@ -18,7 +18,7 @@ struct RobotData {
 //struct for TaskData
 struct TaskData {
     wxString taskRoom;
-    wxString taskRobot;
+    RobotData taskRobot;
 };
 
 
@@ -34,12 +34,16 @@ public:
 
     //getter function for vector of RobotData
     std::vector<RobotData>& GetRobots();
+
+    //getter function for vector of TaskData
+    std::vector<TaskData>& GetTasks();
+
     //method for adding robot (receiving robotdata from UI)
     void AddRobot(RobotData& robot);
     void UpdateIds();
     std::string GetIDString(); //this is for the UI to access id easily when robot is made
 
-    //method for adding task (receiving taskdata from UI)
+    //method for adding task (after receiving taskdata from UI)
     void AddTask(TaskData& task);
 
     robots::Robots GetAllRobotInfo(int robotId);
@@ -52,6 +56,7 @@ private:
     int id;
 
     std::vector<RobotData> robots;  // Stores robot data in a local vector
+    std::vector<TaskData> tasks;  // Stores task data in a local vector
     std::vector<int> ids;  // Stores robot IDs currently in the database
     adapters::Mongo_Adapter mongo_database{};  // MongoDB adapter to interact with the database
 };

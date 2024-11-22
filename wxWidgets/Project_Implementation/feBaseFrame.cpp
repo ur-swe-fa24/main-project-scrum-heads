@@ -42,13 +42,23 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
     //this is just used to display simple information (id, size, function) to user
     std::vector<RobotData>& robots = dataManager->GetRobots();
 
-    // Clear the existing display in the wxListBox
+    std::vector<TaskData>& tasks = dataManager->GetTasks();
+
+    // Clear the existing display in the robotListBox (so same robot doesn't get added multiple times)
     robotListBox->Clear();
+
+    // Clear the existing display in the taskListBox (so same task doesn't get added multiple times)
+    taskListBox->Clear();
 
     // Iterate through the vector and display each robot's information
     for (RobotData& robot : robots) {
         wxString robotInfo = wxString::Format("ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //will be ugly for now a placeholder for ID or whatever else later
         robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
+    }
+
+    for (TaskData& task : tasks) {
+        wxString taskInfo = wxString::Format("Room: " + task.taskRoom + ", Robot: " + task.taskRobot.robotID); //will be ugly for now a placeholder for ID or whatever else later
+        taskListBox->Append(taskInfo);  // Adding each robot info to the ListBox
     }
 
     // // Pass the robots data to the controller
@@ -117,6 +127,28 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
 void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
 {
     //implement logic to open task info window by double clicking task here
+        //retrieves the updated vector of RobotData
+    std::vector<TaskData>& tasks = dataManager->GetTasks();
+
+    int selectionIndex = taskListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
+
+    //if selection index is found and smaller than vector of RobotData (should always be the case)
+    if (selectionIndex != wxNOT_FOUND && selectionIndex < tasks.size()) {
+
+        TaskData selectedTask = tasks[selectionIndex]; //finds the coordinated task from the tasks vector
+
+        // //converts robot ID to integer to use as key for database
+        // int robotId = std::stoi(selectedRobot.robotID);
+
+        // //complete robot information, accessed using the robot's ID
+        // const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
+
+        // Create viewTaskFrame
+        MyViewTaskFrame* taskInfoFrame = new MyViewTaskFrame(this, this);
+
+        //NOW NEED to pass through info to set frame data as necessary (use robotInfoFrame as model)
+        taskInfoFrame->Show();
+    }
 }
 
 void MyFEBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
@@ -125,11 +157,11 @@ void MyFEBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
     // First this: makes the current feFrame the parent window of the created addTaskFrame
     // Second this: passes instance of feFrame as a pointer to itself, allowing created addTaskFrame to communicate directly with it
     // necessary for taking the robot info added in the addTaskFrame and transporting it to feBaseFrame where field engineer can view
-    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, this);
+    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, this, dataManager);
     addTaskFrame->Show();
 }
 
-void MyFEBaseFrame::AddTaskToList(const wxString& roomSelection, const wxString& robotSelection)
+void MyFEBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection)
 {
     //create robot with user-specified size and function. ID string created as 0, actually assigned in DataManager::AddRobot()
     TaskData task = {roomSelection, robotSelection};
@@ -137,7 +169,7 @@ void MyFEBaseFrame::AddTaskToList(const wxString& roomSelection, const wxString&
     //adds created task to vector of TaskData in data manager
     dataManager->AddTask(task);
 
-    wxMessageBox("Task created in room: " + roomSelection + ", using robot: " + robotSelection, "Success!", wxOK | wxICON_INFORMATION);
+    wxMessageBox("Task created in room: " + roomSelection + ", using robot with ID: " + robotSelection.robotID, "Success!", wxOK | wxICON_INFORMATION);
 
     //task is actually appended to the list on refresh button click, which is being called in the addTaskFrame
 }

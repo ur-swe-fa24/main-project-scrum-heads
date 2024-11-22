@@ -5,7 +5,7 @@
 class MyAddTaskFrame : public addTaskFrame
 {
 public:
-    MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame);
+    MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame, DataManager* dataManager);
 
 protected:
     //override button
@@ -25,4 +25,9 @@ private:
 
     // Method that checks the above boolean values are both set to true
     void CheckSelections();
+
+    DataManager* dataManager;
+
+    //variable to hold target robot to display UI info when giving robot a task
+    RobotData targetRobot;
 };

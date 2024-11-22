@@ -2,14 +2,16 @@
 #include <wx/wx.h>
 
 // Takes feBaseFrame as both a parent and a pointer to the frame so it can pass it data from the created robots
-MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame)
-    : addTaskFrame(parent), my_feFrame(feFrame) // Initializes values
+MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame, DataManager* dataManager)
+    : addTaskFrame(parent), my_feFrame(feFrame), dataManager(dataManager) // Initializes values
 {
     createTaskButton->Bind(wxEVT_BUTTON, &MyAddTaskFrame::OnCreateTaskButtonClick, this);
+
+    //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
     roomSelectionListBox->Append("room1");
     roomSelectionListBox->Append("room2");
-    robotSelectionListBox->Append("robot1");
-    robotSelectionListBox->Append("robot2");
+    robotSelectionListBox->Append("18");
+    robotSelectionListBox->Append("2");
 }
 
 void MyAddTaskFrame::OnRoomTaskSelect(wxCommandEvent& event)
@@ -37,8 +39,27 @@ void MyAddTaskFrame::OnCreateTaskButtonClick(wxCommandEvent& event)
     wxString taskRoomAssignment = roomSelectionListBox->GetStringSelection();
     wxString taskRobotAssignment = robotSelectionListBox->GetStringSelection();
 
+    //NEED TO somehow get this parameter to be RobotData
+    //maybe extract robot ID from the string, and then use that to find appropriate robot in RobotData vector from datamanager
+    //or, maybe there's a GetStringSelection() equivalent that would be able to retrieve RobotData instead?
+
+    //convert robotID from wxString to string
+    std::string robotID = std::string(taskRobotAssignment.mb_str());
+
+    //get vector of RobotData from dataManager
+    std::vector<RobotData>& robotVector = dataManager->GetRobots();
+
+    //iterate through RobotData vector until finding appropriate robot
+    for (RobotData& robot : robotVector) {
+        if (robot.robotID == robotID)
+        {
+            targetRobot = robot;
+            break;
+        }
+    }
+
     // Pass the robot description to feFrame's list box (if creating a new feFrame, will need to use refresh button, or will automtically refresh when addind/deleting a robot)
-    my_feFrame->AddTaskToList(taskRoomAssignment, taskRobotAssignment);
+    my_feFrame->AddTaskToList(taskRoomAssignment, targetRobot);
 
     // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
     my_feFrame->OnFERefreshButtonClick(event);

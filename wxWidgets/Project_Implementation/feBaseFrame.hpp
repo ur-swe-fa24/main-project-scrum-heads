@@ -22,7 +22,7 @@ public:
     void AddRobotToList(const wxString& robotSize, const wxString& robotFunction);
 
     // Method to add a task to the wxListBox that holds task info
-    void AddTaskToList(const wxString& robotSize, const wxString& robotFunction);
+    void AddTaskToList(const wxString& taskRoom, const RobotData& taskRobot);
 
     // Event for selecting a robot from wxListBox
     void OnRobotSelected(wxCommandEvent& event);
