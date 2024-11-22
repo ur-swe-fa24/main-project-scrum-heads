@@ -146,6 +146,8 @@ void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
         // Create viewTaskFrame
         MyViewTaskFrame* taskInfoFrame = new MyViewTaskFrame(this, this);
 
+        //READ THIS!!!!!! Have unsynced changes, need to figure out how to sync
+
         //NOW NEED to pass through info to set frame data as necessary (use robotInfoFrame as model)
         taskInfoFrame->Show();
     }
