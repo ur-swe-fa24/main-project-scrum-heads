@@ -5,6 +5,7 @@
 MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robots::Robots robot, DataManager* dataManager) //set title to "Robot: " + robotId
     :robotInfoFrame(parent), localRobot(robot), dataManager(dataManager) //localRobot and dataManager can now be used to call respective functions
 {
+    titleText->SetLabel(title);
     //need to add necessary text display in wxFormBuilder, can then assign this title parameter to it
 }
 
@@ -38,4 +39,12 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
     robotStatusText->SetLabel("Status");
     robotErrorLogText->SetLabel("Errors");
     Layout();
+}
+
+void MyRobotInfoFrame::OnFixRobotButtonClick(wxCommandEvent& event)
+{
+    //fix robot here
+    //need to figure out how you're going to receive bugged robot signal in order to enable button
+    //also need to figure out how to update this so the user can actually view bugged status
+    //also need to figure out how to hide this button (along with the remove robot button) in other user views (to avoid making different frames for everyone)
 }
