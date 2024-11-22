@@ -23,6 +23,14 @@ namespace adapters {
             void delete_all_robots() override;
             void update_robot(int id, int water_level, int battery_level) override;
             std::vector<int> get_all_ids() override;
+            // Task tables
+            void write_task(robots::Robots new_task) override;
+            robots::Robots read_ongoing_task(int id) override;
+            std::vector<robots::Robots> read_robot_tasks(int id) override;
+            std::vector<robots::Robots> read_all_tasks() override;
+            void update_task_status(std::vector<robots::Robots> updates) override;
+            void delete_all_tasks() override;
+
             
         private:
         // Database is created here so that db_ can be accessed throughout the class
