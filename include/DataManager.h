@@ -46,9 +46,15 @@ public:
     //method for adding task (after receiving taskdata from UI)
     void AddTask(TaskData& task);
 
+    //gets complete robot info (whole robot of type robots)
     robots::Robots GetAllRobotInfo(int robotId);
 
+    //deletes a robot given ID from UI
     void DeleteRobot(int robotId);
+
+    // //need implementation!!
+    // std::vector<robots::Robots> GetAvailableRobots();
+    // std::vector<rooms::Rooms> GetAvailableRooms();
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID

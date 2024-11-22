@@ -127,7 +127,7 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
 void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
 {
     //implement logic to open task info window by double clicking task here
-        //retrieves the updated vector of RobotData
+    //retrieves the updated vector of RobotData
     std::vector<TaskData>& tasks = dataManager->GetTasks();
 
     int selectionIndex = taskListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
@@ -150,7 +150,6 @@ void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
 
         taskInfoFrame->SetTaskData(completeRobot);
 
-        //NOW NEED to pass through info to set frame data as necessary (use robotInfoFrame as model)
         taskInfoFrame->Show();
     }
 }
