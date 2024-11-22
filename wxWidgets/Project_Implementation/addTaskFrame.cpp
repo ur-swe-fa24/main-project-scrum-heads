@@ -10,7 +10,7 @@ MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame, DataMan
     //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
     roomSelectionListBox->Append("room1");
     roomSelectionListBox->Append("room2");
-    robotSelectionListBox->Append("18");
+    robotSelectionListBox->Append("23");
     robotSelectionListBox->Append("2");
 }
 

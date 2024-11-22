@@ -137,16 +137,18 @@ void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
 
         TaskData selectedTask = tasks[selectionIndex]; //finds the coordinated task from the tasks vector
 
-        // //converts robot ID to integer to use as key for database
-        // int robotId = std::stoi(selectedRobot.robotID);
-
-        // //complete robot information, accessed using the robot's ID
-        // const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
+        wxString taskStatus = "need to get task status here";
 
         // Create viewTaskFrame
         MyViewTaskFrame* taskInfoFrame = new MyViewTaskFrame(this, this);
+    
+        //converts robot ID to integer to use as key for database
+        int robotId = std::stoi(selectedTask.taskRobot.robotID);
 
-        //READ THIS!!!!!! Have unsynced changes, need to figure out how to sync
+        //complete robot information, accessed using the robot's ID
+        const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
+
+        taskInfoFrame->SetTaskData(completeRobot);
 
         //NOW NEED to pass through info to set frame data as necessary (use robotInfoFrame as model)
         taskInfoFrame->Show();
