@@ -165,8 +165,8 @@ TEST_CASE("Mongo Adapter Read All Robots test") {
 
 
 // int robot_id, std::string robotSize, int waterLevel, 
-//                     int batteryLevel, std::string errorStatus, std::string taskStatus, 
-//                     int taskRoom, std::string functionType, int task_percent
+// int batteryLevel, std::string errorStatus, std::string taskStatus, 
+// int taskRoom, std::string functionType, int task_percent
 TEST_CASE("Mongo Adapter Write Task test") {
 
     robots::Robots temp_robot2(1, "Large", 50, 100, "", "", 3, "Scrub", 0);
@@ -176,10 +176,10 @@ TEST_CASE("Mongo Adapter Write Task test") {
 
     robots::Robots information = mongo_other.read_ongoing_task(1);
     REQUIRE( information.get_id() == temp_robot2.get_id());  
-    // REQUIRE( information.get_size() == temp_robot2.get_size() ); 
-    // REQUIRE( information.get_water_level() == temp_robot2.get_water_level() ); 
-    // REQUIRE( information.get_battery_level() == temp_robot2.get_battery_level() ); 
-    // REQUIRE( information.get_function_type() == temp_robot2.get_function_type() ); 
+    REQUIRE( information.get_size() == temp_robot2.get_size() ); 
+    REQUIRE( information.get_water_level() == temp_robot2.get_water_level() ); 
+    REQUIRE( information.get_battery_level() == temp_robot2.get_battery_level() ); 
+    REQUIRE( information.get_function_type() == temp_robot2.get_function_type() ); 
     REQUIRE( information.get_error_status() == temp_robot2.get_error_status() ); 
     REQUIRE( information.get_task_status() == "Ongoing" ); 
     REQUIRE( information.get_task_percent() == temp_robot2.get_task_percent() ); 
@@ -198,10 +198,146 @@ TEST_CASE("Mongo Adapter Write Task test") {
     mongo_other.delete_all_tasks();  
 }
 
-// TEST_CASE("Mongo Adapter Attempt to give robot two tasks") {
-    
-// }
+TEST_CASE("Mongo Adapter Write Task Test Second Option") {
 
-// TEST_CASE("Mongo Adapter Update Status") {
+    robots::Robots temp_robot2(1, "Large", 50, 100, "", "", 0, "Scrub", 0);
+    mongo_other.write_robot(temp_robot2);
+    mongo_other.write_task(1, 3);
+
+
+    robots::Robots information = mongo_other.read_ongoing_task(1);
+    REQUIRE( information.get_id() == 1);  
+    REQUIRE( information.get_size() == "Large" ); 
+    REQUIRE( information.get_water_level() == 50 ); 
+    REQUIRE( information.get_battery_level() == 100 ); 
+    REQUIRE( information.get_function_type() == "Scrub" ); 
+    REQUIRE( information.get_error_status() == "" ); 
+    REQUIRE( information.get_task_status() == "Ongoing" ); 
+    REQUIRE( information.get_task_percent() == 0 ); 
+    REQUIRE( information.get_task_room() == 3 );
     
-// }
+    robots::Robots information2 = mongo_other.read_robot(1);
+    REQUIRE( information2.get_id() == 1);  
+    REQUIRE( information2.get_size() == "Large"); 
+    REQUIRE( information2.get_water_level() == 50 ); 
+    REQUIRE( information2.get_battery_level() == 100 ); 
+    REQUIRE( information2.get_function_type() == "Scrub" ); 
+    REQUIRE( information2.get_error_status() == "" ); 
+    REQUIRE( information2.get_task_status() == "Ongoing" ); 
+
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();  
+}
+
+TEST_CASE("Mongo Adapter Write Task test 2") {
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks(); 
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", 3, "Scrub", 0);
+    robots::Robots temp_robot2(2, "Small", 75, 90, "", "", 2, "Scrub", 0);
+    robots::Robots temp_robot3(3, "Medium", 90, 68, "", "", 1, "Scrub", 0);
+    mongo_other.write_robot(temp_robot1);
+    mongo_other.write_robot(temp_robot2);
+    mongo_other.write_robot(temp_robot3);
+
+    mongo_other.write_task(temp_robot2);
+
+    robots::Robots information = mongo_other.read_ongoing_task(2);
+    REQUIRE( information.get_id() == temp_robot2.get_id());  
+    REQUIRE( information.get_size() == temp_robot2.get_size() ); 
+    REQUIRE( information.get_water_level() == temp_robot2.get_water_level() ); 
+    REQUIRE( information.get_battery_level() == temp_robot2.get_battery_level() ); 
+    REQUIRE( information.get_function_type() == temp_robot2.get_function_type() ); 
+    REQUIRE( information.get_error_status() == temp_robot2.get_error_status() ); 
+    REQUIRE( information.get_task_status() == "Ongoing" ); 
+    REQUIRE( information.get_task_percent() == temp_robot2.get_task_percent() ); 
+    REQUIRE( information.get_task_room() == temp_robot2.get_task_room() );
+    
+    robots::Robots information2 = mongo_other.read_robot(2);
+    REQUIRE( information2.get_id() == 2);  
+    REQUIRE( information2.get_size() == "Small"); 
+    REQUIRE( information2.get_water_level() == 75 ); 
+    REQUIRE( information2.get_battery_level() == 90 ); 
+    REQUIRE( information2.get_function_type() == "Scrub" ); 
+    REQUIRE( information2.get_error_status() == "" ); 
+    REQUIRE( information2.get_task_status() == "Ongoing" );
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();  
+}
+
+TEST_CASE("Mongo Adapter Write Task test error") {
+
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", 3, "Scrub", 0);
+    mongo_other.write_robot(temp_robot1);
+    mongo_other.write_task(temp_robot1);
+
+    robots::Robots temp_robot2(1, "Large", 50, 100, "", "", 3, "Scrub", 0);
+    REQUIRE_THROWS( mongo_other.write_task(temp_robot2) );  
+
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();  
+}
+
+
+
+TEST_CASE("Mongo Adapter Update Status") {
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks(); 
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", 0, "Scrub", 0);
+    robots::Robots temp_robot2(2, "Small", 75, 90, "", "", 0, "Scrub", 0);
+    robots::Robots temp_robot3(3, "Medium", 90, 68, "", "", 0, "Scrub", 0);
+    mongo_other.write_robot(temp_robot1);
+    mongo_other.write_robot(temp_robot2);
+    mongo_other.write_robot(temp_robot3);
+
+    mongo_other.write_task(1, 3);
+    mongo_other.write_task(2, 2);
+    mongo_other.write_task(3, 1);
+
+    std::vector<robots::Robots> updates;
+    robots::Robots temp_robot4(1, "Large", 40, 96, "Error", "Ongoing", 3, "Scrub", 10);
+    updates.push_back(temp_robot4);
+
+    robots::Robots temp_robot5(2, "Small", 65, 70, "", "Ongoing", 2, "Scrub", 20);
+    updates.push_back(temp_robot5);
+
+    robots::Robots temp_robot6(3, "Medium", 80, 60, "", "Ongoing", 1, "Scrub", 30);
+    updates.push_back(temp_robot6);
+
+    mongo_other.update_task_status(updates);
+
+    robots::Robots update_1 = mongo_other.read_ongoing_task(1);
+    REQUIRE( update_1.get_id() == 1);  
+    REQUIRE( update_1.get_size() == "Large" ); 
+    REQUIRE( update_1.get_water_level() == 40 ); 
+    REQUIRE( update_1.get_battery_level() == 96 ); 
+    REQUIRE( update_1.get_function_type() == "Scrub" ); 
+    REQUIRE( update_1.get_error_status() == "Error" ); 
+    REQUIRE( update_1.get_task_status() == "Ongoing" ); 
+    REQUIRE( update_1.get_task_percent() == 10 ); 
+    REQUIRE( update_1.get_task_room() == 3 );
+
+    robots::Robots update_2 = mongo_other.read_ongoing_task(2);
+    REQUIRE( update_2.get_id() == 2);  
+    REQUIRE( update_2.get_size() == "Small" ); 
+    REQUIRE( update_2.get_water_level() == 65 ); 
+    REQUIRE( update_2.get_battery_level() == 70 ); 
+    REQUIRE( update_2.get_function_type() == "Scrub" ); 
+    REQUIRE( update_2.get_error_status() == "" ); 
+    REQUIRE( update_2.get_task_status() == "Ongoing" ); 
+    REQUIRE( update_2.get_task_percent() == 20 ); 
+    REQUIRE( update_2.get_task_room() == 2 );
+
+    robots::Robots update_3 = mongo_other.read_ongoing_task(3);
+    REQUIRE( update_3.get_id() == 3);  
+    REQUIRE( update_3.get_size() == "Medium" ); 
+    REQUIRE( update_3.get_water_level() == 80 ); 
+    REQUIRE( update_3.get_battery_level() == 60 ); 
+    REQUIRE( update_3.get_function_type() == "Scrub" ); 
+    REQUIRE( update_3.get_error_status() == "" ); 
+    REQUIRE( update_3.get_task_status() == "Ongoing" ); 
+    REQUIRE( update_3.get_task_percent() == 30 ); 
+    REQUIRE( update_3.get_task_room() == 1 );
+
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks(); 
+}

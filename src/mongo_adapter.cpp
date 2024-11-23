@@ -182,9 +182,36 @@ void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
 
 }
 
+void adapters::Mongo_Adapter::write_task(int id, int room){
+    // Make sure the robot is not already doing a task
+    auto result = db_["robot"].find_one(make_document(kvp("_id", id), kvp("Task Status", "Ongoing")));
+    if(result){
+        throw std::invalid_argument{ "Robot In Progress of Task" };
+    }
+
+    robots::Robots robot_info = read_robot(id);
+    // If the robot is not doing task then we should write this new task to a table
+    db_["task"].insert_one(make_document(
+                kvp("robot_id", id),
+                kvp("Room", room),
+                kvp("Error Status", robot_info.get_error_status()),
+                kvp("Task Status", "Ongoing"),
+                kvp("Task Percent", robot_info.get_task_percent())
+                //add task status
+    ));
+    
+    // Update the robot in the robot class to say that it now has a new task and is busy
+    auto query_filter = make_document(kvp("_id", id));
+    // Create documents with the new task status
+    auto update_doc1 = make_document(kvp("$set", make_document(kvp("Task Status", "Ongoing"))));
+    // Update robot
+    db_["robot"].update_one(query_filter.view(), update_doc1.view());
+
+}
+
 void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> updates){
     // Update all tasks
-    for(auto update : updates) {
+    for(robots::Robots update : updates) {
         // Check if this task we want to update has alrady been started and stored
         // It should already be stored because we initially called write_task()
         auto result = db_["task"].find_one(make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing")));   
@@ -193,14 +220,16 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
             auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
             // Make the new task with updated information
-            auto replace_doc = make_document(
+            auto replace_doc = make_document(kvp("$set", 
+            make_document(
                 kvp("robot_id", update.get_id()),
                 kvp("Room", update.get_task_room()),
                 kvp("Error Status", update.get_error_status()),
                 kvp("Task Status", update.get_task_status()),
                 kvp("Task Percent", update.get_task_percent())
-                //add task status
-            );
+                )
+            ));
+
             // Update the task
             db_["task"].update_one(task_query_filter.view(), replace_doc.view());
 
@@ -238,31 +267,32 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
         auto task_information = bsoncxx::to_json(*task_result);
         json task_Doc = json::parse(task_information);
 
+        robots::Robots robot_info = read_robot(id);
         // auto robot_information = bsoncxx::to_json(*robot_result);
         // json robot_Doc = json::parse(robot_information);
 
         // Assuming Doc is a JSON object, access fields by their keys.
         auto Id = task_Doc["robot_id"];
-        std::cout << Id << std::endl;
+        // std::cout << Id << std::endl;
         auto Room = task_Doc["Room"];
-        std::cout << Room << std::endl;
-        // auto Function_type = robot_Doc["Function Type"];
+        // std::cout << Room << std::endl;
+        auto Function_type = robot_info.get_function_type();
         // std::cout << Function_type << std::endl;
         auto Error_Status = task_Doc["Error Status"];
-        std::cout << Error_Status << std::endl;
+        // std::cout << Error_Status << std::endl;
         auto Task_Status = task_Doc["Task Status"];
-        std::cout << Task_Status << std::endl;
+        // std::cout << Task_Status << std::endl;
         auto Task_Percent = task_Doc["Task Percent"];
-        std::cout << Task_Percent << std::endl;
-        // auto Size = robot_Doc["size"];
+        // std::cout << Task_Percent << std::endl;
+        auto Size = robot_info.get_size();
         // std::cout << Size << std::endl;
-        // auto Water_Level = robot_Doc["water_level"];
+        auto Water_Level = robot_info.get_water_level();
         // std::cout << Water_Level << std::endl;
-        // auto Battery_Level = robot_Doc["battery level"];
+        auto Battery_Level = robot_info.get_battery_level();
         // std::cout << Battery_Level << std::endl;
 
 
-        robots::Robots new_robot = robots::Robots{Id, "Size", 0, 0, Error_Status, Task_Status, Room, "Function_type", Task_Percent} ;
+        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
         
         return new_robot;
     } 

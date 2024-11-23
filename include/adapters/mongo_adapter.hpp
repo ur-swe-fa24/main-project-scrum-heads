@@ -25,6 +25,7 @@ namespace adapters {
             std::vector<int> get_all_ids() override;
             // Task tables
             void write_task(robots::Robots new_task) override;
+            void write_task(int id, int room) override;
             robots::Robots read_ongoing_task(int id) override;
             std::vector<robots::Robots> read_robot_tasks(int id) override;
             std::vector<robots::Robots> read_all_tasks() override;

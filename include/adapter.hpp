@@ -19,6 +19,7 @@ class Adapter {
 
         // Task table functions
         virtual void write_task(robots::Robots new_task) = 0;
+        virtual void write_task(int id, int room) = 0;
         virtual robots::Robots read_ongoing_task(int id) = 0;
         virtual std::vector<robots::Robots> read_robot_tasks(int id) = 0;
         virtual std::vector<robots::Robots> read_all_tasks() = 0;
