@@ -180,7 +180,7 @@ TEST_CASE("Mongo Adapter Write Task test") {
     REQUIRE( information.get_water_level() == temp_robot2.get_water_level() ); 
     REQUIRE( information.get_battery_level() == temp_robot2.get_battery_level() ); 
     REQUIRE( information.get_function_type() == temp_robot2.get_function_type() ); 
-    REQUIRE( information.get_error_status() == temp_robot2.get_error_status() ); 
+    REQUIRE( information.get_error_status() == "" ); 
     REQUIRE( information.get_task_status() == "Ongoing" ); 
     REQUIRE( information.get_task_percent() == temp_robot2.get_task_percent() ); 
     REQUIRE( information.get_task_room() == temp_robot2.get_task_room() );
@@ -199,7 +199,8 @@ TEST_CASE("Mongo Adapter Write Task test") {
 }
 
 TEST_CASE("Mongo Adapter Write Task Test Second Option") {
-
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();
     robots::Robots temp_robot2(1, "Large", 50, 100, "", "", 0, "Scrub", 0);
     mongo_other.write_robot(temp_robot2);
     mongo_other.write_task(1, 3);
@@ -337,6 +338,7 @@ TEST_CASE("Mongo Adapter Update Status") {
     REQUIRE( update_3.get_task_status() == "Ongoing" ); 
     REQUIRE( update_3.get_task_percent() == 30 ); 
     REQUIRE( update_3.get_task_room() == 1 );
+
 
     mongo_other.delete_all_robots();  
     mongo_other.delete_all_tasks(); 

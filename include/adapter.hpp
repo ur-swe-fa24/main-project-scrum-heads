@@ -26,8 +26,6 @@ class Adapter {
         virtual void update_task_status(std::vector<robots::Robots> updates) = 0;
         virtual void delete_all_tasks() = 0;
 
-
-
 };
 
 #endif // ADAPTER_HPP
