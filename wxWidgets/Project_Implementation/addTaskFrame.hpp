@@ -30,4 +30,6 @@ private:
 
     //variable to hold target robot to display UI info when giving robot a task
     RobotData targetRobot;
+
+    std::vector <robots::Robots> availableRobotVector;
 };

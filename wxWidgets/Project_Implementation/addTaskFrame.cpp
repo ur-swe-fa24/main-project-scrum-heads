@@ -16,8 +16,17 @@ MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame, DataMan
     //replace with something like:
     // dataManager->GetAvailableRooms();
     // iterate through vector of rooms, need getters for room number, floor type, size so I can append
-    // dataManager->GetAvailableRobots();
-    // iterate through vector of robots and append necessary info
+    
+    //get available robots for task
+    availableRobotVector = dataManager->GetAvailableRobots();
+    //iterate through available robots and append options
+    for (robots::Robots robot : availableRobotVector) {
+        std::string robotID = std::to_string(robot.get_id());
+        std::string robotSize = robot.get_size();
+        std::string robotFunction = robot.get_function_type();
+        std::string robotInfo = "ID: " + robotID + " (Size: " + robotSize + ", Function: " + robotFunction + ")";
+        robotSelectionListBox->Append(robotInfo);
+    }
 }
 
 void MyAddTaskFrame::OnRoomTaskSelect(wxCommandEvent& event)

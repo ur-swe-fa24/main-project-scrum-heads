@@ -44,7 +44,7 @@ void DataManager::AddRobot(RobotData& robot) {
     std::string function_str = std::string(robot.robotFunction.mb_str());
 
     // Create a new robot instance with the new ID and the provided robot data
-    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Idle", 0, function_str, 0);
+    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", 0, function_str, 0);
     
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
@@ -121,4 +121,28 @@ void DataManager::AddTask(TaskData& task) {
     
     // // Write the new robot to the MongoDB database (not literally a new robot, but database treats it as one)
     // mongo_database.write_task(task_assigned_robot);
+}
+
+//gets all robots from database, then filters for available robots
+//this part should be fully functional, but right now read_all_robots doesn't include task status string
+std::vector<robots::Robots> DataManager::GetAvailableRobots()
+{
+    //holds all robots
+    std::vector <robots::Robots> robotVector = mongo_database.read_all_robots();
+
+    //holds available robots
+    std::vector <robots::Robots> availableRobotVector;
+
+    //iterate through robot vector to find available robots
+    for (robots::Robots robot : robotVector) {
+        // std::cout << robot.get_id() << std::endl;
+        // std::cout << robot.get_task_status() << std::endl;
+        if (robot.get_task_status() == "Available")
+        {
+            // std::cout << "added" << std::endl;
+            availableRobotVector.push_back(robot);
+        }
+    }
+
+    return availableRobotVector;
 }
