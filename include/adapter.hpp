@@ -21,9 +21,11 @@ class Adapter {
         virtual void write_task(robots::Robots new_task) = 0;
         virtual void write_task(int id, int room) = 0;
         virtual robots::Robots read_ongoing_task(int id) = 0;
+        virtual std::vector<robots::Robots> read__all_ongoing_tasks() = 0;
         virtual std::vector<robots::Robots> read_robot_tasks(int id) = 0;
         virtual std::vector<robots::Robots> read_all_tasks() = 0;
         virtual void update_task_status(std::vector<robots::Robots> updates) = 0;
+        virtual std::string cancel_task(int id) = 0;
         virtual void delete_all_tasks() = 0;
 
 };

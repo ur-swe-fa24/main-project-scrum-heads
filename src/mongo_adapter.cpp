@@ -196,7 +196,7 @@ void adapters::Mongo_Adapter::write_task(int id, int room){
                 kvp("Room", room),
                 kvp("Error Status", robot_info.get_error_status()),
                 kvp("Task Status", "Ongoing"),
-                kvp("Task Percent", robot_info.get_task_percent())
+                kvp("Task Percent", 0)
                 //add task status
     ));
     
@@ -302,6 +302,43 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
     }
 }
 
+std::vector<robots::Robots> adapters::Mongo_Adapter::read__all_ongoing_tasks(){
+    std::vector<robots::Robots> ongoing_tasks;
+    auto cursor = db_["task"].find(make_document(kvp("Task Status", "Ongoing")));
+    for( auto&& doc : cursor) {
+        auto task_information = bsoncxx::to_json(doc);
+        json task_Doc = json::parse(task_information);
+
+        // auto robot_information = bsoncxx::to_json(*robot_result);
+        // json robot_Doc = json::parse(robot_information);
+
+        // Assuming Doc is a JSON object, access fields by their keys.
+        auto Id = task_Doc["robot_id"];
+        robots::Robots robot_info = read_robot(Id);
+        // std::cout << Id << std::endl;
+        auto Room = task_Doc["Room"];
+        // std::cout << Room << std::endl;
+        auto Function_type = robot_info.get_function_type();
+        // std::cout << Function_type << std::endl;
+        auto Error_Status = task_Doc["Error Status"];
+        // std::cout << Error_Status << std::endl;
+        auto Task_Status = task_Doc["Task Status"];
+        // std::cout << Task_Status << std::endl;
+        auto Task_Percent = task_Doc["Task Percent"];
+        // std::cout << Task_Percent << std::endl;
+        auto Size = robot_info.get_size();
+        // std::cout << Size << std::endl;
+        auto Water_Level = robot_info.get_water_level();
+        // std::cout << Water_Level << std::endl;
+        auto Battery_Level = robot_info.get_battery_level();
+        // std::cout << Battery_Level << std::endl;
+
+
+        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
+        ongoing_tasks.push_back(new_task);
+    }
+    return ongoing_tasks;
+}
 
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_robot_tasks(int id){
     std::vector<robots::Robots> tasks;
@@ -357,6 +394,26 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_tasks(){
     return all_tasks;
 }
 
+std::string adapters::Mongo_Adapter::cancel_task(int id){
+    auto task_result = db_["task"].find_one(make_document(kvp("robot_id", id), kvp("Task Status", "Ongoing"))); 
+    if (task_result) {
+        auto task_query_filter = make_document(kvp("_id", id), kvp("Task Status", "Ongoing"));
+        auto update_doc = make_document(kvp("$set", make_document(
+            kvp("Task Status", "Complete")
+        )));
+        db_["task"].update_one(task_query_filter.view(), update_doc.view());
+        auto robot_query_filter = make_document(kvp("_id", id));
+        auto update_doc2 = make_document(kvp("$set", make_document(
+            kvp("Task Status", "Complete")
+        )));
+        db_["robot"].update_one(task_query_filter.view(), update_doc2.view());
+        return "1";
+    } 
+    else{
+        std::cout << "No instance of robot with id " << id << std::endl;
+        return "No instance of robot with id " + std::to_string(id);
+    }
+}
 
 void adapters::Mongo_Adapter::delete_all_tasks(){
     db_["task"].drop( {} );

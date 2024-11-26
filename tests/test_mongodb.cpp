@@ -343,3 +343,73 @@ TEST_CASE("Mongo Adapter Update Status") {
     mongo_other.delete_all_robots();  
     mongo_other.delete_all_tasks(); 
 }
+
+TEST_CASE("Mongo Adapter Write Task test new task") {
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();  
+
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", 3, "Scrub", 0);
+    mongo_other.write_robot(temp_robot1);
+    mongo_other.write_task(temp_robot1);
+
+    robots::Robots temp_robot2(1, "Large", 0, 50, "", "Complete", 3, "Scrub", 0);
+    std::vector<robots::Robots> updates;
+
+    updates.push_back(temp_robot2);
+
+    mongo_other.update_task_status(updates);
+    mongo_other.write_task(1, 5);
+    
+    robots::Robots new_task = mongo_other.read_ongoing_task(1);
+    REQUIRE( new_task.get_id() == 1);  
+    REQUIRE( new_task.get_size() == "Large" ); 
+    REQUIRE( new_task.get_water_level() == 0 ); 
+    REQUIRE( new_task.get_battery_level() == 50 ); 
+    REQUIRE( new_task.get_function_type() == "Scrub" ); 
+    REQUIRE( new_task.get_error_status() == "" ); 
+    REQUIRE( new_task.get_task_status() == "Ongoing" ); 
+    REQUIRE( new_task.get_task_percent() == 0 ); 
+    REQUIRE( new_task.get_task_room() == 5 );
+
+    std::vector<robots::Robots> total_tasks;
+    total_tasks = mongo_other.read_robot_tasks(1);
+
+    REQUIRE( total_tasks.size() == 2 );
+
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();  
+}
+
+TEST_CASE("Mongo Adapter Write Task test delete task") {
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();  
+
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", 3, "Scrub", 0);
+    mongo_other.write_robot(temp_robot1);
+    mongo_other.write_task(temp_robot1);
+
+    std::string check = mongo_other.cancel_task(1);
+    robots::Robots new_task(1, "Large", 50, 100, "", "Complete", 3, "Scrub", 0);
+    // robots::Robots canceled_task = mongo_other.read_ongoing_task(1);
+
+    std::vector<robots::Robots> tasks;
+    tasks.push_back(new_task);
+    mongo_other.update_task_status(tasks);
+
+    robots::Robots canceled_task = mongo_other.read_ongoing_task(1);
+
+    // REQUIRE( total_tasks.size() == 2 );
+    REQUIRE( check == "1" );  
+    REQUIRE( canceled_task.get_id() == 1 );  
+    REQUIRE( canceled_task.get_size() == "" ); 
+    REQUIRE( canceled_task.get_water_level() == 0 ); 
+    REQUIRE( canceled_task.get_battery_level() == 0 ); 
+    REQUIRE( canceled_task.get_function_type() == "" ); 
+    REQUIRE( canceled_task.get_error_status() == "No instance of ongoing task with robot id" ); 
+    REQUIRE( canceled_task.get_task_status() == "" ); 
+    REQUIRE( canceled_task.get_task_percent() == 0 ); 
+    REQUIRE( canceled_task.get_task_room() == 0 );
+
+    mongo_other.delete_all_robots();  
+    mongo_other.delete_all_tasks();  
+}
