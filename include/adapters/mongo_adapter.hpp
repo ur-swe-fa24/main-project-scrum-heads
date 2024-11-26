@@ -31,7 +31,7 @@ namespace adapters {
             std::vector<robots::Robots> read_robot_tasks(int id) override;
             std::vector<robots::Robots> read_all_tasks() override;
             void update_task_status(std::vector<robots::Robots> updates) override;
-            std::string cancel_task(int id) override;
+            // std::string cancel_task(int id) override;
             void delete_all_tasks() override;
 
             
