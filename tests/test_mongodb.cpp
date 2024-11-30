@@ -169,8 +169,12 @@ TEST_CASE("Mongo Adapter Read All Robots test no robots ") {
     
 
     std::vector<robots::Robots> robots = mongo_other.read_all_robots();
-
-    
+    std::vector<robots::Robots> robots1;
+    for(robots::Robots robot : robots){
+        if(robot.get_task_status() == "Avaiiable" ){
+            std::cout << 1 << std::endl;
+        }
+    }
     //Check that the lists is indeed empty
     // int count = 1;
     // for(auto robot : robots){

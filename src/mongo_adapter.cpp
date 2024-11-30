@@ -83,7 +83,7 @@ robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
  * Outputs all robots currently in the robot collection
  */
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_robots(){
-    std::vector<robots::Robots> robots;
+    std::vector<robots::Robots> robots = {};
     auto cursor = db_["robot"].find({});
     for( auto&& doc : cursor) {
         auto information = bsoncxx::to_json(doc);
