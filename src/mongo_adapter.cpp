@@ -96,8 +96,12 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_robots(){
         auto Error_Status = Doc["Error Status"];
         auto Task_Status = Doc["Task Status"];
 
-        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, 0, Function_type, 0};
-        robots.push_back(new_robot);
+        //temporary placeholder to only retrieve "newer" robots that were created with a task status
+        if (!Task_Status.is_null())
+        {
+            robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, 0, Function_type, 0};
+            robots.push_back(new_robot);
+        }
     }
     return robots;
 }

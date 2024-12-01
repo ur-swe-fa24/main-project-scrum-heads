@@ -52,8 +52,11 @@ public:
     //deletes a robot given ID from UI
     void DeleteRobot(int robotId);
 
-    // //need implementation!!
-    // std::vector<robots::Robots> GetAvailableRobots();
+    //gets available robots for task allocation
+    std::vector<robots::Robots> GetAvailableRobots();
+
+    //needs implementation!
+    //gets available rooms for task allocation
     // std::vector<rooms::Rooms> GetAvailableRooms();
 
 private:
