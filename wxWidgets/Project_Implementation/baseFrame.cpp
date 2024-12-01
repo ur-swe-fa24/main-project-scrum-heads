@@ -41,7 +41,7 @@ void MyBaseFrame::OnBSSelectButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
     // wxMessageBox("Building Staff Frame", "Info", wxOK | wxICON_INFORMATION);
-    MyBSBaseFrame* bsFrame = new MyBSBaseFrame(nullptr);
+    MyBSBaseFrame* bsFrame = new MyBSBaseFrame(nullptr, dataManager, this);
     bsFrame->Show(true);
 }
 
