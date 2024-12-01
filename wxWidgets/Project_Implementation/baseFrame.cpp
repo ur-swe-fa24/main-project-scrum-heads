@@ -49,7 +49,7 @@ void MyBaseFrame::OnBMSelectButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
     // wxMessageBox("Building Manager Frame", "Info", wxOK | wxICON_INFORMATION);
-    MyBMBaseFrame* bmFrame = new MyBMBaseFrame(nullptr, this);
+    MyBMBaseFrame* bmFrame = new MyBMBaseFrame(nullptr, dataManager, this);
     bmFrame->Show(true);
 }
 
@@ -170,5 +170,18 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
     // if (dataManager) {
     //     dataManager->SendRobotsData(robots);
     // }
+}
+
+void MyBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection)
+{
+    //create robot with user-specified size and function. ID string created as 0, actually assigned in DataManager::AddRobot()
+    TaskData task = {roomSelection, robotSelection};
+
+    //adds created task to vector of TaskData in data manager
+    dataManager->AddTask(task);
+
+    wxMessageBox("Task created in room: " + roomSelection + ", using robot with ID: " + robotSelection.robotID, "Success!", wxOK | wxICON_INFORMATION);
+
+    //task is actually appended to the list on refresh button click, which is being called in the addTaskFrame
 }
 

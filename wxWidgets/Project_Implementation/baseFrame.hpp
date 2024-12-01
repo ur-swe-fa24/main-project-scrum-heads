@@ -23,8 +23,12 @@ public:
     MyBaseFrame(wxWindow* parent, DataManager* dataManager);
 
     void HandleRobotListBoxDClick(wxWindow* parent, wxListBox* robotListBox);
+    
     void HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListBox);
+
     void HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox);
+
+    void AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection);
 
 protected:
     // Override the virtual method for various button clicks

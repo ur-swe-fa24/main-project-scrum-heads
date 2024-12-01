@@ -2,8 +2,8 @@
 #include <wx/wx.h>
 
 // Takes feBaseFrame as both a parent and a pointer to the frame so it can pass it data from the created robots
-MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame, DataManager* dataManager)
-    : addTaskFrame(parent), my_feFrame(feFrame), dataManager(dataManager) // Initializes values
+MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxListBox* taskListBox, DataManager* dataManager, MyBaseFrame* baseFrame)
+    : addTaskFrame(parent), localRobotListBox(robotListBox), localTaskListBox(taskListBox), dataManager(dataManager), baseFrame(baseFrame) // Initializes values
 {
     createTaskButton->Bind(wxEVT_BUTTON, &MyAddTaskFrame::OnCreateTaskButtonClick, this);
 
@@ -82,11 +82,15 @@ void MyAddTaskFrame::OnCreateTaskButtonClick(wxCommandEvent& event)
         }
     }
 
-    // Pass the robot description to feFrame's list box (if creating a new feFrame, will need to use refresh button, or will automtically refresh when addind/deleting a robot)
-    my_feFrame->AddTaskToList(taskRoomAssignment, targetRobot);
+    // // Pass the robot description to feFrame's list box (if creating a new feFrame, will need to use refresh button, or will automtically refresh when addind/deleting a robot)
+    // my_feFrame->AddTaskToList(taskRoomAssignment, targetRobot);
 
-    // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
-    my_feFrame->OnFERefreshButtonClick(event);
+    baseFrame->AddTaskToList(taskRoomAssignment, targetRobot);
+
+    // // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
+    // my_feFrame->OnFERefreshButtonClick(event);
+
+    baseFrame->HandleRefreshButton(event, localRobotListBox, localTaskListBox);
 
     //automatically close task creation window
     Close();

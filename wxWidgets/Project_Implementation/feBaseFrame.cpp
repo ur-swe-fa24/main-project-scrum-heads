@@ -191,21 +191,23 @@ void MyFEBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
     // First this: makes the current feFrame the parent window of the created addTaskFrame
     // Second this: passes instance of feFrame as a pointer to itself, allowing created addTaskFrame to communicate directly with it
     // necessary for taking the robot info added in the addTaskFrame and transporting it to feBaseFrame where field engineer can view
-    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, this, dataManager);
+    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, robotListBox, taskListBox, dataManager, baseFrame);
     addTaskFrame->Show();
 }
 
 void MyFEBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection)
 {
-    //create robot with user-specified size and function. ID string created as 0, actually assigned in DataManager::AddRobot()
-    TaskData task = {roomSelection, robotSelection};
+    // //create robot with user-specified size and function. ID string created as 0, actually assigned in DataManager::AddRobot()
+    // TaskData task = {roomSelection, robotSelection};
 
-    //adds created task to vector of TaskData in data manager
-    dataManager->AddTask(task);
+    // //adds created task to vector of TaskData in data manager
+    // dataManager->AddTask(task);
 
-    wxMessageBox("Task created in room: " + roomSelection + ", using robot with ID: " + robotSelection.robotID, "Success!", wxOK | wxICON_INFORMATION);
+    // wxMessageBox("Task created in room: " + roomSelection + ", using robot with ID: " + robotSelection.robotID, "Success!", wxOK | wxICON_INFORMATION);
 
-    //task is actually appended to the list on refresh button click, which is being called in the addTaskFrame
+    // //task is actually appended to the list on refresh button click, which is being called in the addTaskFrame
+
+    baseFrame->AddTaskToList(roomSelection, robotSelection);
 }
 
 // // Getter for the vector of robots

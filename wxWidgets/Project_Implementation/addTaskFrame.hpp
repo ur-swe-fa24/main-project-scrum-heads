@@ -5,7 +5,8 @@
 class MyAddTaskFrame : public addTaskFrame
 {
 public:
-    MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame, DataManager* dataManager);
+    MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxListBox* taskListBox, DataManager* dataManager, MyBaseFrame* baseFrame);
+
 
 protected:
     //override button
@@ -32,4 +33,10 @@ private:
     RobotData targetRobot;
 
     std::vector <robots::Robots> availableRobotVector;
+
+    //pointers to list boxes
+    wxListBox* localRobotListBox;
+    wxListBox* localTaskListBox;
+
+    MyBaseFrame* baseFrame;  // Pointer to the baseFrame
 };

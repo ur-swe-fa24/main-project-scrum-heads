@@ -4,8 +4,8 @@
 #include "viewTaskFrame.hpp"
 #include <wx/wx.h>
 
-MyBMBaseFrame::MyBMBaseFrame(wxWindow* parent, MyBaseFrame* baseFrame)
-    : bmBaseFrame(parent), baseFrame(baseFrame)  // Call the base class constructor
+MyBMBaseFrame::MyBMBaseFrame(wxWindow* parent, DataManager* dataManager, MyBaseFrame* baseFrame)
+    : bmBaseFrame(parent), dataManager(dataManager), baseFrame(baseFrame)  // Call the base class constructor
 {
     // Connect the button event to the overridden method
     bmRefreshButton->Bind(wxEVT_BUTTON, &MyBMBaseFrame::OnBMRefreshButtonClick, this);
@@ -37,25 +37,17 @@ void MyBMBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
     baseFrame->HandleTaskListBoxDClick(this, taskListBox);
 }
 
-// void MyBMBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
-// {
-//     // Create and show the AddTaskFrame (window where field engineer can add tasks)
-//     // First this: makes the current feFrame the parent window of the created addTaskFrame
-//     // Second this: passes instance of feFrame as a pointer to itself, allowing created addTaskFrame to communicate directly with it
-//     // necessary for taking the robot info added in the addTaskFrame and transporting it to feBaseFrame where field engineer can view
-//     MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, this, dataManager);
-//     addTaskFrame->Show();
-// }
+void MyBMBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
+{
+    // Create and show the AddTaskFrame (window where field engineer can add tasks)
+    // First this: makes the current feFrame the parent window of the created addTaskFrame
+    // Second this: passes instance of feFrame as a pointer to itself, allowing created addTaskFrame to communicate directly with it
+    // necessary for taking the robot info added in the addTaskFrame and transporting it to feBaseFrame where field engineer can view
+    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, robotListBox, taskListBox, dataManager, baseFrame);
+    addTaskFrame->Show();
+}
 
-// void MyBMBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection)
-// {
-//     //create robot with user-specified size and function. ID string created as 0, actually assigned in DataManager::AddRobot()
-//     TaskData task = {roomSelection, robotSelection};
-
-//     //adds created task to vector of TaskData in data manager
-//     dataManager->AddTask(task);
-
-//     wxMessageBox("Task created in room: " + roomSelection + ", using robot with ID: " + robotSelection.robotID, "Success!", wxOK | wxICON_INFORMATION);
-
-//     //task is actually appended to the list on refresh button click, which is being called in the addTaskFrame
-// }
+void MyBMBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection)
+{
+    baseFrame->AddTaskToList(roomSelection, robotSelection);
+}

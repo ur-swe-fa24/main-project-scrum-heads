@@ -10,13 +10,11 @@ class MyBaseFrame;
 class MyBMBaseFrame : public bmBaseFrame
 {
 public:
-    MyBMBaseFrame(wxWindow* parent, MyBaseFrame* baseFrame);
+    MyBMBaseFrame(wxWindow* parent, DataManager* dataManager, MyBaseFrame* baseFrame);
 
     void OnBMRefreshButtonClick(wxCommandEvent& event);
 
 protected:
-    // Method to add a robot to the wxListBox that holds robot info
-    void AddRobotToList(const wxString& robotSize, const wxString& robotFunction);
 
     // Method to add a task to the wxListBox that holds task info
     void AddTaskToList(const wxString& taskRoom, const RobotData& taskRobot);
@@ -27,8 +25,12 @@ protected:
     // Override virtual method for double clicking task in wxListBox
     void OnTaskListBoxDClick(wxCommandEvent& event) override;
 
+    void OnAddTaskButtonClick(wxCommandEvent& event) override;
+
 
 private:
+
+    DataManager* dataManager;  // Pointer to the data manager
 
     MyBaseFrame* baseFrame;  // Pointer to the baseFrame
 
