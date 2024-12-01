@@ -164,6 +164,32 @@ TEST_CASE("Mongo Adapter Read All Robots test") {
 }
 
 
+TEST_CASE("Mongo Adapter Read All Robots test no robots ") {
+    mongo_other.delete_all_robots();
+    
+
+    std::vector<robots::Robots> robots = mongo_other.read_all_robots();
+    std::vector<robots::Robots> robots1;
+    for(robots::Robots robot : robots){
+        if(robot.get_task_status() == "Avaiiable" ){
+            std::cout << 1 << std::endl;
+        }
+    }
+    //Check that the lists is indeed empty
+    // int count = 1;
+    // for(auto robot : robots){
+    //     REQUIRE( robot.get_id() == count);  
+    //     REQUIRE( temp_robot1.get_size() == robot.get_size() ); 
+    //     REQUIRE( temp_robot1.get_water_level() == robot.get_water_level() ); 
+    //     REQUIRE( temp_robot1.get_battery_level() == robot.get_battery_level() ); 
+    //     REQUIRE( temp_robot1.get_function_type() == robot.get_function_type() ); 
+    //     REQUIRE( temp_robot1.get_error_status() == robot.get_error_status() ); 
+    //     REQUIRE( temp_robot1.get_task_status() == robot.get_task_status() ); 
+    //     count++;
+    // }  
+    mongo_other.delete_all_robots();  
+}
+
 // int robot_id, std::string robotSize, int waterLevel, 
 // int batteryLevel, std::string errorStatus, std::string taskStatus, 
 // int taskRoom, std::string functionType, int task_percent

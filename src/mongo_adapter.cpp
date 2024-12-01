@@ -83,7 +83,7 @@ robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
  * Outputs all robots currently in the robot collection
  */
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_robots(){
-    std::vector<robots::Robots> robots;
+    std::vector<robots::Robots> robots = {};
     auto cursor = db_["robot"].find({});
     for( auto&& doc : cursor) {
         auto information = bsoncxx::to_json(doc);
@@ -215,7 +215,23 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
         // Check if this task we want to update has alrady been started and stored
         // It should already be stored because we initially called write_task()
         auto result = db_["task"].find_one(make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing")));   
-       if(result){
+
+        if(result){
+            if(update.get_error_status() != ""){
+                //add the error to the error table for safe keeping to grab things later. if we are inquiring about an error log
+                db_["error"].insert_one(make_document(
+                    kvp("robot_id", update.get_id()),
+                    kvp("Size", update.get_size()),
+                    kvp("Water Level", update.get_water_level()),
+                    kvp("Battery Level", update.get_battery_level()),
+                    kvp("Function Type", update.get_function_type()),
+                    kvp("Error Status", update.get_error_status()),
+                    kvp("Task Status", update.get_task_status()),
+                    kvp("Room", update.get_task_room()),
+                    kvp("Task Percent", update.get_task_percent())
+                    //add task status
+                ));
+            }
             // Find the specific task to update
             auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
@@ -233,15 +249,36 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
             // Update the task
             db_["task"].update_one(task_query_filter.view(), replace_doc.view());
 
-            // Update the Robot in the Robot class
-            auto robot_query_filter = make_document(kvp("_id", update.get_id()));
-            auto update_doc = make_document(kvp("$set", make_document(
-                kvp("battery level", update.get_battery_level()), 
-                kvp("water_level", update.get_water_level()),
-                kvp("Task Status", update.get_task_status()), 
-                kvp("Task Percent", update.get_task_percent())
-            )));
-            db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            if(update.get_task_status() == "Complete" ){
+                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                auto update_doc = make_document(kvp("$set", make_document(
+                    kvp("battery level", update.get_battery_level()), 
+                    kvp("water_level", update.get_water_level()),
+                    kvp("Task Status", "Available"),
+                    kvp("Error Status", update.get_error_status())
+                )));
+                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            }
+            else if(update.get_task_status() == "Canceled" && update.get_error_status() == ""){
+                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                auto update_doc = make_document(kvp("$set", make_document(
+                    kvp("battery level", update.get_battery_level()), 
+                    kvp("water_level", update.get_water_level()),
+                    kvp("Task Status", update.get_task_status()),
+                    kvp("Error Status", update.get_error_status())
+                )));
+                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            }
+            else{
+                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                auto update_doc = make_document(kvp("$set", make_document(
+                    kvp("battery level", update.get_battery_level()), 
+                    kvp("water_level", update.get_water_level()),
+                    kvp("Task Status", update.get_task_status()),
+                    kvp("Error Status", update.get_error_status())
+                )));
+                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            }
         }
     }
 }
@@ -257,23 +294,14 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
 
         // Assuming Doc is a JSON object, access fields by their keys.
         auto Id = task_Doc["robot_id"];
-        // std::cout << Id << std::endl;
         auto Room = task_Doc["Room"];
-        // std::cout << Room << std::endl;
         auto Function_type = robot_info.get_function_type();
-        // std::cout << Function_type << std::endl;
         auto Error_Status = task_Doc["Error Status"];
-        // std::cout << Error_Status << std::endl;
         auto Task_Status = task_Doc["Task Status"];
-        // std::cout << Task_Status << std::endl;
         auto Task_Percent = task_Doc["Task Percent"];
-        // std::cout << Task_Percent << std::endl;
         auto Size = robot_info.get_size();
-        // std::cout << Size << std::endl;
         auto Water_Level = robot_info.get_water_level();
-        // std::cout << Water_Level << std::endl;
         auto Battery_Level = robot_info.get_battery_level();
-        // std::cout << Battery_Level << std::endl;
 
 
         robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
@@ -370,6 +398,8 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_tasks(){
     return all_tasks;
 }
 
+
+
 // std::string adapters::Mongo_Adapter::cancel_task(int id){
 //     auto task_result = db_["task"].find_one(make_document(kvp("robot_id", id), kvp("Task Status", "Ongoing"))); 
 //     if (task_result) {
@@ -393,6 +423,45 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_tasks(){
 
 void adapters::Mongo_Adapter::delete_all_tasks(){
     db_["task"].drop( {} );
+}
+
+
+// kvp("robot_id", update.get_id()),
+//                     kvp("Size", update.get_size()),
+//                     kvp("Water Level", update.get_water_level()),
+//                     kvp("Battery Level", update.get_battery_level()),
+//                     kvp("Function Type", update.get_function_type()),
+//                     kvp("Error Status", update.get_error_status()),
+//                     kvp("Task Status", update.get_task_status()),
+//                     kvp("Room", update.get_task_room()),
+//                     kvp("Task Percent", update.get_task_percent())
+std::string adapters::Mongo_Adapter::get_error_log(int id){
+    auto cursor = db_["error"].find(make_document(kvp("robot_id", id)));
+    //Loop through all the tasks of the robot
+    std::string error_log;
+    for( auto&& doc : cursor) {
+        auto error_information = bsoncxx::to_json(doc);
+        json error_Doc = json::parse(error_information);
+        
+
+        // Assuming Doc is a JSON object, access fields by their keys.
+        auto Id = error_Doc["robot_id"];
+        auto Room = error_Doc["Room"];
+        std::string Function_type = error_Doc["Function Type"];
+        std::string Error_Status = error_Doc["Error Status"];
+        std::string Task_Status = error_Doc["Task Status"];
+        auto Task_Percent = error_Doc["Task Percent"];
+        std::string Size = error_Doc["Size"];
+        auto Water_Level = error_Doc["Water Level"];
+        auto Battery_Level = error_Doc["Battery Level"];
+
+        std::string new_error = "Robot Id: " + to_string(Id) + ", Error Status: " + Error_Status + ", Task Percent: " + to_string(Task_Percent) + ", Function Type: " + Function_type + ", Room: " + to_string(Room) + "\n";
+        // robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
+        // all_tasks.push_back(new_task);
+        error_log = error_log + new_error;
+    }
+
+    return error_log;
 }
 
 

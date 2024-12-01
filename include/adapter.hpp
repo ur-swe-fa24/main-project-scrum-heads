@@ -28,6 +28,9 @@ class Adapter {
         // virtual std::string cancel_task(int id) = 0;
         virtual void delete_all_tasks() = 0;
 
+        // Error Log stuff
+        virtual std::string get_error_log(int id) = 0;
+
 };
 
 #endif // ADAPTER_HPP
