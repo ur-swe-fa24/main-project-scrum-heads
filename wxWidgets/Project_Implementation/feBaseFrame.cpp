@@ -52,7 +52,29 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 
     // Iterate through the vector and display each robot's information
     for (RobotData& robot : robots) {
-        wxString robotInfo = wxString::Format("ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //will be ugly for now a placeholder for ID or whatever else later
+
+        //creates string to hold status as color
+        std::string statusBubble;
+        //gets task status of each robot, sets status bubble accordingly
+        //note: this may not be the best implementation moving forward, as this needs live updates from simulation, but it is proof of concept
+        //could transfer to wxListCtrl if you want to use colored text
+        robots::Robots localRobot = dataManager->GetAllRobotInfo(std::stoi(robot.robotID));
+        std::string robotStatus = localRobot.get_task_status();
+        if (robotStatus == "Available")
+        {
+            statusBubble = "🟢";
+        }
+        else if (robotStatus == "Ongoing")
+        {
+            statusBubble = "🟡";
+        }
+        else if (robotStatus == "Error")
+        {
+            statusBubble = "🔴";
+        }
+
+
+        wxString robotInfo = wxString::Format(statusBubble + " ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //will be ugly for now a placeholder for ID or whatever else later
         robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
     }
 

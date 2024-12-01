@@ -7,11 +7,11 @@ MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, MyFEBaseFrame* feFrame, DataMan
 {
     createTaskButton->Bind(wxEVT_BUTTON, &MyAddTaskFrame::OnCreateTaskButtonClick, this);
 
-    //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
+    // //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
     roomSelectionListBox->Append("room1");
-    roomSelectionListBox->Append("room2");
-    robotSelectionListBox->Append("24");
-    robotSelectionListBox->Append("2");
+    // roomSelectionListBox->Append("room2");
+    // robotSelectionListBox->Append("24");
+    // robotSelectionListBox->Append("2");
 
     //replace with something like:
     // dataManager->GetAvailableRooms();
@@ -54,19 +54,28 @@ void MyAddTaskFrame::OnCreateTaskButtonClick(wxCommandEvent& event)
     wxString taskRoomAssignment = roomSelectionListBox->GetStringSelection();
     wxString taskRobotAssignment = robotSelectionListBox->GetStringSelection();
 
+    std::string robotInfoString = std::string(taskRobotAssignment.mb_str());
+
+    //extracts robot ID number from robot info string
+    size_t idPos = robotInfoString.find("ID: ");
+    size_t idStart = idPos + 4; // Position right after "ID: "
+    size_t idEnd = robotInfoString.find(" ", idStart); // Find the space after the ID number
+    std::string robotIDString = robotInfoString.substr(idStart, idEnd - idStart);
+
     //NEED TO somehow get this parameter to be RobotData
     //maybe extract robot ID from the string, and then use that to find appropriate robot in RobotData vector from datamanager
     //or, maybe there's a GetStringSelection() equivalent that would be able to retrieve RobotData instead?
 
-    //convert robotID from wxString to string
-    std::string robotID = std::string(taskRobotAssignment.mb_str());
+    // //convert robotID from wxString to string
+    // std::string robotID = std::string(taskRobotAssignment.mb_str());
+    // std::cout << robotID << std::endl;
 
     //get vector of RobotData from dataManager
     std::vector<RobotData>& robotVector = dataManager->GetRobots();
 
     //iterate through RobotData vector until finding appropriate robot
     for (RobotData& robot : robotVector) {
-        if (robot.robotID == robotID)
+        if (robot.robotID == robotIDString)
         {
             targetRobot = robot;
             break;
