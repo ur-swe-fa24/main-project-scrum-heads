@@ -4,74 +4,38 @@
 #include "viewTaskFrame.hpp"
 #include <wx/wx.h>
 
-MyBMBaseFrame::MyBMBaseFrame(wxWindow* parent)
-    : bmBaseFrame(parent)  // Call the base class constructor
+MyBMBaseFrame::MyBMBaseFrame(wxWindow* parent, MyBaseFrame* baseFrame)
+    : bmBaseFrame(parent), baseFrame(baseFrame)  // Call the base class constructor
 {
+    // Connect the button event to the overridden method
+    bmRefreshButton->Bind(wxEVT_BUTTON, &MyBMBaseFrame::OnBMRefreshButtonClick, this);
 
+    //this is just to refresh the info when opening a new window
+    //right now its cutting off the text, not sure why, doesn't happen when automatically refreshing when adding/removing robots/tasks
+    wxCommandEvent dummyEvent; // Create a dummy event
+    OnBMRefreshButtonClick(dummyEvent); // Call the method with the dummy event
 }
 
-// // void MyBMBaseFrame::OnBMButtonClick(wxCommandEvent& event)
-// // {
-// //     // Implement necessary button press logic here
-// //     wxMessageBox("Building Manager Frame", "Info", wxOK | wxICON_INFORMATION);
-// // }
+void MyBMBaseFrame::OnBMRefreshButtonClick(wxCommandEvent& event)
+{
+    baseFrame->HandleRefreshButton(event, robotListBox, taskListBox);
+}
 
-// void MyBMBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
+// void MyBMBaseFrame::OnBMButtonClick(wxCommandEvent& event)
 // {
-//     //retrieves the updated vector of RobotData
-//     std::vector<RobotData>& robots = dataManager->GetRobots();
-
-//     int selectionIndex = robotListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
-
-//     //if selection index is found and smaller than vector of RobotData (should always be the case)
-//     if (selectionIndex != wxNOT_FOUND && selectionIndex < robots.size()) {
-
-//         RobotData selectedRobot = robots[selectionIndex]; //finds the coordinated robot from the robots vector
-
-//         //converts robot ID to integer to use as key for database
-//         int robotId = std::stoi(selectedRobot.robotID);
-
-//         //complete robot information, accessed using the robot's ID
-//         const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
-
-//         // Create robotInfoFrame, passes through string to function as title to display robotID (not currently implemented visually)
-//         //also passed through the completed robot information (full robot class info) and instance of dataManager
-//         MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: " + selectedRobot.robotID, completeRobot, dataManager);
-//         // Set the appropriate data and show the frame
-//         infoFrame->SetRobotData(completeRobot);
-//         infoFrame->Show();
-//     }
+//     // Implement necessary button press logic here
+//     wxMessageBox("Building Manager Frame", "Info", wxOK | wxICON_INFORMATION);
 // }
 
-// void MyBMBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
-// {
-//     //implement logic to open task info window by double clicking task here
-//     //retrieves the updated vector of RobotData
-//     std::vector<TaskData>& tasks = dataManager->GetTasks();
+void MyBMBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
+{
+    baseFrame->HandleRobotListBoxDClick(this, robotListBox);
+}
 
-//     int selectionIndex = taskListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
-
-//     //if selection index is found and smaller than vector of RobotData (should always be the case)
-//     if (selectionIndex != wxNOT_FOUND && selectionIndex < tasks.size()) {
-
-//         TaskData selectedTask = tasks[selectionIndex]; //finds the coordinated task from the tasks vector
-
-//         wxString taskStatus = "need to get task status here";
-
-//         // Create viewTaskFrame
-//         MyViewTaskFrame* taskInfoFrame = new MyViewTaskFrame(this, this);
-    
-//         //converts robot ID to integer to use as key for database
-//         int robotId = std::stoi(selectedTask.taskRobot.robotID);
-
-//         //complete robot information, accessed using the robot's ID
-//         const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
-
-//         taskInfoFrame->SetTaskData(completeRobot);
-
-//         taskInfoFrame->Show();
-//     }
-// }
+void MyBMBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
+{
+    baseFrame->HandleTaskListBoxDClick(this, taskListBox);
+}
 
 // void MyBMBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
 // {

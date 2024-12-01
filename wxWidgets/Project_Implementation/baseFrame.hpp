@@ -24,6 +24,7 @@ public:
 
     void HandleRobotListBoxDClick(wxWindow* parent, wxListBox* robotListBox);
     void HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListBox);
+    void HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox);
 
 protected:
     // Override the virtual method for various button clicks

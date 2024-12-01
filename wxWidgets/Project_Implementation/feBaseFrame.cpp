@@ -16,6 +16,11 @@ MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent, DataManager* dataManager, MyBaseF
     // Connect the button event to the overridden method
     feRefreshButton->Bind(wxEVT_BUTTON, &MyFEBaseFrame::OnFERefreshButtonClick, this);
 
+    //this is just to refresh the info when opening a new window
+    //right now its cutting off the text, not sure why, doesn't happen when automatically refreshing when adding/removing robots/tasks
+    wxCommandEvent dummyEvent; // Create a dummy event
+    OnFERefreshButtonClick(dummyEvent); // Call the method with the dummy event
+
     // Pass this frame instance to DataManager
     // DataManager* dataManager = new DataManager(this); 
     // bindEvents();
@@ -29,64 +34,65 @@ MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent, DataManager* dataManager, MyBaseF
 
 void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
 {
-    // Implement necessary button press logic here
-    //this refresh button click will have similar logic to the creation of the original feFrame,
-    //interacting with the system manager to fetch all the new data that might not be displayed on screen.
-    //For example, after adding a new robot, the user will need to refresh this window
+    // // Implement necessary button press logic here
+    // //this refresh button click will have similar logic to the creation of the original feFrame,
+    // //interacting with the system manager to fetch all the new data that might not be displayed on screen.
+    // //For example, after adding a new robot, the user will need to refresh this window
 
-    // wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
+    // // wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
 
-    // std::vector<RobotData>& robots = GetRobots();
+    // // std::vector<RobotData>& robots = GetRobots();
 
-    // Access the shared RobotData vector from DataManager and display each robot
-    //this is just used to display simple information (id, size, function) to user
-    std::vector<RobotData>& robots = dataManager->GetRobots();
+    // // Access the shared RobotData vector from DataManager and display each robot
+    // //this is just used to display simple information (id, size, function) to user
+    // std::vector<RobotData>& robots = dataManager->GetRobots();
 
-    std::vector<TaskData>& tasks = dataManager->GetTasks();
+    // std::vector<TaskData>& tasks = dataManager->GetTasks();
 
-    // Clear the existing display in the robotListBox (so same robot doesn't get added multiple times)
-    robotListBox->Clear();
+    // // Clear the existing display in the robotListBox (so same robot doesn't get added multiple times)
+    // robotListBox->Clear();
 
-    // Clear the existing display in the taskListBox (so same task doesn't get added multiple times)
-    taskListBox->Clear();
+    // // Clear the existing display in the taskListBox (so same task doesn't get added multiple times)
+    // taskListBox->Clear();
 
-    // Iterate through the vector and display each robot's information
-    for (RobotData& robot : robots) {
+    // // Iterate through the vector and display each robot's information
+    // for (RobotData& robot : robots) {
 
-        //creates string to hold status as color
-        std::string statusBubble;
-        //gets task status of each robot, sets status bubble accordingly
-        //note: this may not be the best implementation moving forward, as this needs live updates from simulation, but it is proof of concept
-        //could transfer to wxListCtrl if you want to use colored text
-        robots::Robots localRobot = dataManager->GetAllRobotInfo(std::stoi(robot.robotID));
-        std::string robotStatus = localRobot.get_task_status();
-        if (robotStatus == "Available")
-        {
-            statusBubble = "🟢";
-        }
-        else if (robotStatus == "Ongoing")
-        {
-            statusBubble = "🟡";
-        }
-        else if (robotStatus == "Error")
-        {
-            statusBubble = "🔴";
-        }
+    //     //creates string to hold status as color
+    //     std::string statusBubble;
+    //     //gets task status of each robot, sets status bubble accordingly
+    //     //note: this may not be the best implementation moving forward, as this needs live updates from simulation, but it is proof of concept
+    //     //could transfer to wxListCtrl if you want to use colored text
+    //     robots::Robots localRobot = dataManager->GetAllRobotInfo(std::stoi(robot.robotID));
+    //     std::string robotStatus = localRobot.get_task_status();
+    //     if (robotStatus == "Available")
+    //     {
+    //         statusBubble = "🟢";
+    //     }
+    //     else if (robotStatus == "Ongoing")
+    //     {
+    //         statusBubble = "🟡";
+    //     }
+    //     else if (robotStatus == "Error")
+    //     {
+    //         statusBubble = "🔴";
+    //     }
 
 
-        wxString robotInfo = wxString::Format(statusBubble + " ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //will be ugly for now a placeholder for ID or whatever else later
-        robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
-    }
-
-    for (TaskData& task : tasks) {
-        wxString taskInfo = wxString::Format("Room: " + task.taskRoom + ", Robot: " + task.taskRobot.robotID); //will be ugly for now a placeholder for ID or whatever else later
-        taskListBox->Append(taskInfo);  // Adding each robot info to the ListBox
-    }
-
-    // // Pass the robots data to the controller
-    // if (dataManager) {
-    //     dataManager->SendRobotsData(robots);
+    //     wxString robotInfo = wxString::Format(statusBubble + " ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //will be ugly for now a placeholder for ID or whatever else later
+    //     robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
     // }
+
+    // for (TaskData& task : tasks) {
+    //     wxString taskInfo = wxString::Format("Room: " + task.taskRoom + ", Robot: " + task.taskRobot.robotID); //will be ugly for now a placeholder for ID or whatever else later
+    //     taskListBox->Append(taskInfo);  // Adding each robot info to the ListBox
+    // }
+
+    // // // Pass the robots data to the controller
+    // // if (dataManager) {
+    // //     dataManager->SendRobotsData(robots);
+    // // }
+    baseFrame->HandleRefreshButton(event, robotListBox, taskListBox);
 }
 
 void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)

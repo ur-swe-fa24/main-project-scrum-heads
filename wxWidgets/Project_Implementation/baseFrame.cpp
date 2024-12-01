@@ -49,7 +49,7 @@ void MyBaseFrame::OnBMSelectButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
     // wxMessageBox("Building Manager Frame", "Info", wxOK | wxICON_INFORMATION);
-    MyBMBaseFrame* bmFrame = new MyBMBaseFrame(nullptr);
+    MyBMBaseFrame* bmFrame = new MyBMBaseFrame(nullptr, this);
     bmFrame->Show(true);
 }
 
@@ -108,5 +108,67 @@ void MyBaseFrame::HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListB
 
         taskInfoFrame->Show();
     }
+}
+
+void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox)
+{
+    // Implement necessary button press logic here
+    //this refresh button click will have similar logic to the creation of the original feFrame,
+    //interacting with the system manager to fetch all the new data that might not be displayed on screen.
+    //For example, after adding a new robot, the user will need to refresh this window
+
+    // wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
+
+    // std::vector<RobotData>& robots = GetRobots();
+
+    // Access the shared RobotData vector from DataManager and display each robot
+    //this is just used to display simple information (id, size, function) to user
+    std::vector<RobotData>& robots = dataManager->GetRobots();
+
+    std::vector<TaskData>& tasks = dataManager->GetTasks();
+
+    // Clear the existing display in the robotListBox (so same robot doesn't get added multiple times)
+    robotListBox->Clear();
+
+    // Clear the existing display in the taskListBox (so same task doesn't get added multiple times)
+    taskListBox->Clear();
+
+    // Iterate through the vector and display each robot's information
+    for (RobotData& robot : robots) {
+
+        //creates string to hold status as color
+        std::string statusBubble;
+        //gets task status of each robot, sets status bubble accordingly
+        //note: this may not be the best implementation moving forward, as this needs live updates from simulation, but it is proof of concept
+        //could transfer to wxListCtrl if you want to use colored text
+        robots::Robots localRobot = dataManager->GetAllRobotInfo(std::stoi(robot.robotID));
+        std::string robotStatus = localRobot.get_task_status();
+        if (robotStatus == "Available")
+        {
+            statusBubble = "🟢";
+        }
+        else if (robotStatus == "Ongoing")
+        {
+            statusBubble = "🟡";
+        }
+        else if (robotStatus == "Error")
+        {
+            statusBubble = "🔴";
+        }
+
+
+        wxString robotInfo = wxString::Format(statusBubble + " ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //will be ugly for now a placeholder for ID or whatever else later
+        robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
+    }
+
+    for (TaskData& task : tasks) {
+        wxString taskInfo = wxString::Format("Room: " + task.taskRoom + ", Robot: " + task.taskRobot.robotID); //will be ugly for now a placeholder for ID or whatever else later
+        taskListBox->Append(taskInfo);  // Adding each robot info to the ListBox
+    }
+
+    // // Pass the robots data to the controller
+    // if (dataManager) {
+    //     dataManager->SendRobotsData(robots);
+    // }
 }
 
