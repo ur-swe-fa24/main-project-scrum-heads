@@ -7,8 +7,8 @@
 
 // #include "DataManager.hpp"  // need for data manager
 
-MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent, DataManager* dataManager)
-    : feBaseFrame(parent), dataManager(dataManager)  // Call the base class constructor
+MyFEBaseFrame::MyFEBaseFrame(wxWindow* parent, DataManager* dataManager, MyBaseFrame* baseFrame)
+    : feBaseFrame(parent), dataManager(dataManager), baseFrame(baseFrame)  // Call the base class constructor
 {
     // Connect the button event to the overridden method
     // feButton->Bind(wxEVT_BUTTON, &MyFEBaseFrame::OnFEButtonClick, this);
@@ -121,59 +121,62 @@ void MyFEBaseFrame::AddRobotToList(const wxString& robotSize, const wxString& ro
 
 void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
 {
-    //retrieves the updated vector of RobotData
-    std::vector<RobotData>& robots = dataManager->GetRobots();
+    // //retrieves the updated vector of RobotData
+    // std::vector<RobotData>& robots = dataManager->GetRobots();
 
-    int selectionIndex = robotListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
+    // int selectionIndex = robotListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
 
-    //if selection index is found and smaller than vector of RobotData (should always be the case)
-    if (selectionIndex != wxNOT_FOUND && selectionIndex < robots.size()) {
+    // //if selection index is found and smaller than vector of RobotData (should always be the case)
+    // if (selectionIndex != wxNOT_FOUND && selectionIndex < robots.size()) {
 
-        RobotData selectedRobot = robots[selectionIndex]; //finds the coordinated robot from the robots vector
+    //     RobotData selectedRobot = robots[selectionIndex]; //finds the coordinated robot from the robots vector
 
-        //converts robot ID to integer to use as key for database
-        int robotId = std::stoi(selectedRobot.robotID);
+    //     //converts robot ID to integer to use as key for database
+    //     int robotId = std::stoi(selectedRobot.robotID);
 
-        //complete robot information, accessed using the robot's ID
-        const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
+    //     //complete robot information, accessed using the robot's ID
+    //     const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
 
-        // Create robotInfoFrame, passes through string to function as title to display robotID (not currently implemented visually)
-        //also passed through the completed robot information (full robot class info) and instance of dataManager
-        MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: " + selectedRobot.robotID, completeRobot, dataManager);
-        // Set the appropriate data and show the frame
-        infoFrame->SetRobotData(completeRobot);
-        infoFrame->Show();
-    }
+    //     // Create robotInfoFrame, passes through string to function as title to display robotID (not currently implemented visually)
+    //     //also passed through the completed robot information (full robot class info) and instance of dataManager
+    //     MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(this, "Robot ID: " + selectedRobot.robotID, completeRobot, dataManager);
+    //     // Set the appropriate data and show the frame
+    //     infoFrame->SetRobotData(completeRobot);
+    //     infoFrame->Show();
+    // }
+    baseFrame->HandleRobotListBoxDClick(this, robotListBox);
 }
 
 void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)
 {
-    //implement logic to open task info window by double clicking task here
-    //retrieves the updated vector of RobotData
-    std::vector<TaskData>& tasks = dataManager->GetTasks();
+    // //implement logic to open task info window by double clicking task here
+    // //retrieves the updated vector of RobotData
+    // std::vector<TaskData>& tasks = dataManager->GetTasks();
 
-    int selectionIndex = taskListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
+    // int selectionIndex = taskListBox->GetSelection(); //gets the selection index of whichever robot you clicked on in the wxListBox
 
-    //if selection index is found and smaller than vector of RobotData (should always be the case)
-    if (selectionIndex != wxNOT_FOUND && selectionIndex < tasks.size()) {
+    // //if selection index is found and smaller than vector of RobotData (should always be the case)
+    // if (selectionIndex != wxNOT_FOUND && selectionIndex < tasks.size()) {
 
-        TaskData selectedTask = tasks[selectionIndex]; //finds the coordinated task from the tasks vector
+    //     TaskData selectedTask = tasks[selectionIndex]; //finds the coordinated task from the tasks vector
 
-        wxString taskStatus = "need to get task status here";
+    //     wxString taskStatus = "need to get task status here";
 
-        // Create viewTaskFrame
-        MyViewTaskFrame* taskInfoFrame = new MyViewTaskFrame(this, this);
+    //     // Create viewTaskFrame
+    //     MyViewTaskFrame* taskInfoFrame = new MyViewTaskFrame(this);
     
-        //converts robot ID to integer to use as key for database
-        int robotId = std::stoi(selectedTask.taskRobot.robotID);
+    //     //converts robot ID to integer to use as key for database
+    //     int robotId = std::stoi(selectedTask.taskRobot.robotID);
 
-        //complete robot information, accessed using the robot's ID
-        const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
+    //     //complete robot information, accessed using the robot's ID
+    //     const robots::Robots& completeRobot = dataManager->GetAllRobotInfo(robotId);
 
-        taskInfoFrame->SetTaskData(completeRobot);
+    //     taskInfoFrame->SetTaskData(completeRobot);
 
-        taskInfoFrame->Show();
-    }
+    //     taskInfoFrame->Show();
+    // }
+
+    baseFrame->HandleTaskListBoxDClick(this, taskListBox);
 }
 
 void MyFEBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
