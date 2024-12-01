@@ -249,15 +249,36 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
             // Update the task
             db_["task"].update_one(task_query_filter.view(), replace_doc.view());
 
-            // Update the Robot in the Robot class
-            auto robot_query_filter = make_document(kvp("_id", update.get_id()));
-            auto update_doc = make_document(kvp("$set", make_document(
-                kvp("battery level", update.get_battery_level()), 
-                kvp("water_level", update.get_water_level()),
-                kvp("Task Status", update.get_task_status()),
-                kvp("Error Status", update.get_error_status())
-            )));
-            db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            if(update.get_task_status() == "Complete" ){
+                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                auto update_doc = make_document(kvp("$set", make_document(
+                    kvp("battery level", update.get_battery_level()), 
+                    kvp("water_level", update.get_water_level()),
+                    kvp("Task Status", "Available"),
+                    kvp("Error Status", update.get_error_status())
+                )));
+                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            }
+            else if(update.get_task_status() == "Canceled" && update.get_error_status() == ""){
+                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                auto update_doc = make_document(kvp("$set", make_document(
+                    kvp("battery level", update.get_battery_level()), 
+                    kvp("water_level", update.get_water_level()),
+                    kvp("Task Status", update.get_task_status()),
+                    kvp("Error Status", update.get_error_status())
+                )));
+                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            }
+            else{
+                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                auto update_doc = make_document(kvp("$set", make_document(
+                    kvp("battery level", update.get_battery_level()), 
+                    kvp("water_level", update.get_water_level()),
+                    kvp("Task Status", update.get_task_status()),
+                    kvp("Error Status", update.get_error_status())
+                )));
+                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            }
         }
     }
 }
