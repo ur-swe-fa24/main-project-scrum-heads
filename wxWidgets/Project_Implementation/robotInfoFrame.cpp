@@ -2,11 +2,18 @@
 #include "feBaseFrame.hpp"
 #include <wx/wx.h>
 
-MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robots::Robots robot, DataManager* dataManager) //set title to "Robot: " + robotId
-    :robotInfoFrame(parent), localRobot(robot), dataManager(dataManager) //localRobot and dataManager can now be used to call respective functions
+MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robots::Robots robot, DataManager* dataManager, std::string userRole) //set title to "Robot: " + robotId
+    :robotInfoFrame(parent), localRobot(robot), dataManager(dataManager), userRole(userRole) //localRobot and dataManager can now be used to call respective functions
 {
     //sets title text to robot ID
     titleText->SetLabel(title);
+
+    if (userRole != "FE")
+    {
+        //remove the remove and fix robot buttons for non-FE so they don't see it
+        removeRobotButton->Show(false);
+        fixRobotButton->Show(false);
+    }
 }
 
 //method for removing a robot from the database by a button click

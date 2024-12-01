@@ -53,7 +53,7 @@ void MyBaseFrame::OnBMSelectButtonClick(wxCommandEvent& event)
     bmFrame->Show(true);
 }
 
-void MyBaseFrame::HandleRobotListBoxDClick(wxWindow* parent, wxListBox* robotListBox)
+void MyBaseFrame::HandleRobotListBoxDClick(wxWindow* parent, wxListBox* robotListBox, std::string userRole)
 {
     //retrieves the updated vector of RobotData
     std::vector<RobotData>& robots = dataManager->GetRobots();
@@ -73,7 +73,7 @@ void MyBaseFrame::HandleRobotListBoxDClick(wxWindow* parent, wxListBox* robotLis
 
         // Create robotInfoFrame, passes through string to function as title to display robotID (not currently implemented visually)
         //also passed through the completed robot information (full robot class info) and instance of dataManager
-        MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(parent, "Robot ID: " + selectedRobot.robotID, completeRobot, dataManager);
+        MyRobotInfoFrame* infoFrame = new MyRobotInfoFrame(parent, "Robot ID: " + selectedRobot.robotID, completeRobot, dataManager, userRole);
         // Set the appropriate data and show the frame
         infoFrame->SetRobotData(completeRobot);
         infoFrame->Show();

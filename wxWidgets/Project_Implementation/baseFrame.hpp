@@ -22,8 +22,8 @@ class MyBaseFrame : public baseFrame
 public:
     MyBaseFrame(wxWindow* parent, DataManager* dataManager);
 
-    void HandleRobotListBoxDClick(wxWindow* parent, wxListBox* robotListBox);
-    
+    void HandleRobotListBoxDClick(wxWindow* parent, wxListBox* robotListBox, std::string userRole);
+
     void HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListBox);
 
     void HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox);

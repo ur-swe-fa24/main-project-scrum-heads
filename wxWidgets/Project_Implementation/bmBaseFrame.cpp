@@ -29,7 +29,7 @@ void MyBMBaseFrame::OnBMRefreshButtonClick(wxCommandEvent& event)
 
 void MyBMBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
 {
-    baseFrame->HandleRobotListBoxDClick(this, robotListBox);
+    baseFrame->HandleRobotListBoxDClick(this, robotListBox, "BM");
 }
 
 void MyBMBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)

@@ -150,7 +150,7 @@ void MyFEBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
     //     infoFrame->SetRobotData(completeRobot);
     //     infoFrame->Show();
     // }
-    baseFrame->HandleRobotListBoxDClick(this, robotListBox);
+    baseFrame->HandleRobotListBoxDClick(this, robotListBox, "FE");
 }
 
 void MyFEBaseFrame::OnTaskListBoxDClick(wxCommandEvent& event)

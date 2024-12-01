@@ -5,7 +5,7 @@
 //generic MyRobotInfoFrame class that is used to populate frame with robot-specific data when robot is selected
 class MyRobotInfoFrame : public robotInfoFrame {
 public:
-    MyRobotInfoFrame(wxWindow* parent, const wxString& title, robots::Robots robot, DataManager* dataManager);
+    MyRobotInfoFrame(wxWindow* parent, const wxString& title, robots::Robots robot, DataManager* dataManager, std::string userRole);
 
     // Method to set and display robot details
     //CHANGE THIS to work by retrieving data from database using robot ID number!!
@@ -20,4 +20,5 @@ protected:
 
     robots::Robots localRobot;
     DataManager* dataManager;
+    std::string userRole;
 };
