@@ -3,25 +3,59 @@
 #include <wx/string.h>
 #include <chrono>  // For std::chrono_literals
 
-// Constructor: Initializes the MongoDB client, updates the list of robot IDs, and starts the update thread.
-DataManager::DataManager() 
-    : running(true)  // Set running to true to keep the thread running initially
-{
+DataManager::DataManager() {
     // Initialize the MongoDB client and update the list of IDs
     UpdateIds();
-    // Start the thread that will handle periodic updates of robot status
-    update_thread = std::thread(&DataManager::UpdateRobotStatusLoop, this);
+    StartTaskUpdateThread();  // Start the thread to update task progress
 }
 
-// Destructor: Handles cleanup, stops the thread safely.
 DataManager::~DataManager() {
-    running = false;  // Set running to false to signal the thread to stop
-    if (update_thread.joinable()) {
-        update_thread.join();  // Wait for the thread to finish
+    StopTaskUpdateThread();  // Ensure the thread is stopped when the DataManager is destroyed
+}
+
+// Thread to keep checking and updating robot task progress every second
+void DataManager::StartTaskUpdateThread() {
+    running_ = true;
+    task_update_thread_ = std::thread(&DataManager::TaskUpdateLoop, this);
+}
+
+// Method to stop the task update thread safely
+void DataManager::StopTaskUpdateThread() {
+    running_ = false;
+    if (task_update_thread_.joinable()) {
+        task_update_thread_.join();
     }
 }
 
-// Method to receive and process robots data (placeholder for possible future usage).
+// Main loop for the task update thread
+void DataManager::TaskUpdateLoop() {
+    while (running_) {
+        // Get all ongoing tasks from the database
+        std::vector<robots::Robots> ongoing_tasks = mongo_database.read__all_ongoing_tasks();
+
+        // Update tasks in the database
+        for (auto& robot : ongoing_tasks) {
+            // Simulate task progress update here
+            int current_progress = robot.get_task_percent();
+            if (current_progress < 100) {
+                current_progress += 10;  // Simulate 10% progress
+                robot.update_task_status("Ongoing");
+                robot.set_task_percent(current_progress);
+                if (current_progress >= 100) {
+                    robot.update_task_status("Complete");
+                }
+            }
+
+            // Update the task and robot in the database
+            mongo_database.update_task_status({robot});
+        }
+
+        // Wait for 1 second before the next update
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
+// Method to receive and process robots data
 // void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
 //     // Process each robot and prepare for database insertion or other actions
 //     for (const auto& robot : robots) {
@@ -31,156 +65,128 @@ DataManager::~DataManager() {
 //     // You can then call the database model to save or update robot data here
 // }
 
-// Getter method for vector of RobotData (simplified version for UI use).
+
+// Getter method for vector of RobotData (just ID, size, and function)
 std::vector<RobotData>& DataManager::GetRobots() {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
     return robots;
 }
 
-// Getter method for vector of TaskData (used for managing tasks).
+// Getter method for vector of RobotData (just ID, size, and function)
 std::vector<TaskData>& DataManager::GetTasks() {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
     return tasks;
 }
 
-// Method to add a new robot to the system.
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
 void DataManager::AddRobot(RobotData& robot) {
-    int new_id = GetNextAvailableRobotId();  // Get a new unique ID for the robot.
+    int new_id = GetNextAvailableRobotId();  // Get a new unique ID, assigned by data manager to avoid user error
 
-    // Convert wxString to std::string for robotSize and robotFunction.
+    // robot.robotID = new_id;
+    // std::cout << robot.robotID << std::endl;
+
+    // Convert wxString to std::string for robotSize and robotFunction
     std::string size_str = std::string(robot.robotSize.mb_str());
     std::string function_str = std::string(robot.robotFunction.mb_str());
 
-    // Create a new robot instance with the new ID and provided robot data.
+    // Create a new robot instance with the new ID and the provided robot data
     robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", 0, function_str, 0);
     
-    {
-        // Lock the mutex while interacting with shared data.
-        std::lock_guard<std::mutex> lock(data_mutex);
+    // Write the new robot to the MongoDB database
+    mongo_database.write_robot(new_robot);
 
-        // Write the new robot to the MongoDB database.
-        mongo_database.write_robot(new_robot);
+    //update the RobotData of the added robot with its assigned ID
+    robot.robotID = std::to_string(new_id);
+    // Add the new robot data to the local list of robots
+    robots.push_back(robot);
 
-        // Update the RobotData of the added robot with its assigned ID.
-        robot.robotID = std::to_string(new_id);
-
-        // Add the new robot data to the local list of robots.
-        robots.push_back(robot);
-
-        // Append the new ID to the list of IDs.
-        ids.push_back(new_id);
-    }
+    // Append the new ID to the list of IDs
+    ids.push_back(new_id);
 }
 
-// Method to update the list of robot IDs from the MongoDB database.
+// Method to update the list of robot IDs from the MongoDB database
 void DataManager::UpdateIds() {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
     ids = mongo_database.get_all_ids();
 }
 
-// Method to find the next available robot ID that is not in use.
+// Method to find the next available robot ID
 int DataManager::GetNextAvailableRobotId() {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
-    id = 1;  // Start ID from 1.
+    id = 1;  // Start from ID 1
 
-    // Find the next available ID that is not already used.
+    // Find the next available ID that is not already used
     while (std::find(ids.begin(), ids.end(), id) != ids.end()) {
-        ++id;  // Increment ID until an available one is found.
+        ++id;  // Increment the ID until an available one is found
     }
 
     return id;
 }
 
-// Method to get the current robot ID as a string (used for easy interaction with the UI).
+// Returns current ID as string for easy UI use
 std::string DataManager::GetIDString() {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
-    return std::to_string(id);
+    std::string IDString = std::to_string(id);
+    return IDString;
 }
 
-// Method to get all information of a robot by its ID (used to display details in the GUI).
+//gets all robot info (i.e., all of the info specified in robot class) for a specified ID
+//used to display necessary information to the user in GUI
 robots::Robots DataManager::GetAllRobotInfo(int robotId)
 {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
+    //temporary placeholder that just creates a robot pre-database integration
+    // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
     robots::Robots clicked_robot = mongo_database.read_robot(robotId);
     return clicked_robot;
 }
 
-// Method to delete a robot from the system given its ID.
 void DataManager::DeleteRobot(int robotId)
 {
-    {
-        std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
-
-        // First, remove the robot from the MongoDB database.
-        mongo_database.delete_robot(robotId);
-
-        // Then, remove the robot from the local vector of RobotData.
-        std::string robotIdStr = std::to_string(robotId);
-        for (auto iterator = robots.begin(); iterator != robots.end(); ++iterator) {
-            if (iterator->robotID == robotIdStr) {
-                robots.erase(iterator);  // Remove the robot from the vector.
-                break;  // Exit the loop after removal.
-            }
+    //first remove the robot from the database
+    mongo_database.delete_robot(robotId);
+    
+    //then remove the robot from the vector of RobotData
+    //convert id to string (same type as in RobotData struct)
+    std::string robotIdStr = std::to_string(robotId);
+    //auto allows compiler to take care of type
+    for (auto iterator = robots.begin(); iterator != robots.end(); ++iterator) {
+        if (iterator->robotID == robotIdStr) {
+            robots.erase(iterator);  // Remove the robot from the vector
+            break;  // Exit the loop after removal
         }
     }
 }
 
-// Method to add a new task to the system.
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
 void DataManager::AddTask(TaskData& task) {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
-
-    // Convert wxString to std::string for task room selection and robot ID selection.
+    // Convert wxString to std::string for task room selection and task robot selection
     std::string room_str = std::string(task.taskRoom.mb_str());
     std::string robot_str = task.taskRobot.robotID;
 
-    // Add the new task to the local list of tasks.
-    tasks.push_back(task); 
+    tasks.push_back(task); //adds task to vector of TaskData
+
+    //getallrobotinfo for input robot ID (retrived from struct)
+    //then manually update stuff
+    
+    // // Write the new robot to the MongoDB database (not literally a new robot, but database treats it as one)
+    // mongo_database.write_task(task_assigned_robot);
 }
 
-// Method to get a list of available robots for task assignment.
+//gets all robots from database, then filters for available robots
+//this part should be fully functional, but right now read_all_robots doesn't include task status string
 std::vector<robots::Robots> DataManager::GetAvailableRobots()
 {
-    std::lock_guard<std::mutex> lock(data_mutex);  // Lock the mutex to ensure safe access
+    //holds all robots
+    std::vector <robots::Robots> robotVector = mongo_database.read_all_robots();
 
-    // Retrieve all robots from the MongoDB database.
-    std::vector<robots::Robots> robotVector = mongo_database.read_all_robots();
+    //holds available robots
+    std::vector <robots::Robots> availableRobotVector;
 
-    // Create a vector to hold available robots.
-    std::vector<robots::Robots> availableRobotVector;
-
-    // Iterate through the robot list to find robots with status "Available".
+    //iterate through robot vector to find available robots
     for (robots::Robots robot : robotVector) {
-        if (robot.get_task_status() == "Available") {
+        // std::cout << robot.get_id() << std::endl;
+        // std::cout << robot.get_task_status() << std::endl;
+        if (robot.get_task_status() == "Available")
+        {
+            // std::cout << "added" << std::endl;
             availableRobotVector.push_back(robot);
         }
     }
 
-    return availableRobotVector;  // Return the list of available robots.
-}
-
-// Background thread loop that updates robot statuses in the MongoDB database every second.
-void DataManager::UpdateRobotStatusLoop() {
-    using namespace std::chrono_literals;
-
-    while (running) {
-        {
-            // Lock the mutex while interacting with shared data.
-            std::lock_guard<std::mutex> lock(data_mutex);
-
-            // Iterate through all robots and update their status in the MongoDB database.
-            for (auto& robot : robots) {
-                int robotId = std::stoi(robot.robotID);
-                robots::Robots full_robot_info = mongo_database.read_robot(robotId);
-
-                // Example of modifying battery level to simulate work progress.
-                //int updated_battery_level = full_robot_info.get_battery_level() - 1;  // Decrease battery by 1%
-                //if (updated_battery_level < 0) updated_battery_level = 0;  // Prevent negative battery levels.
-
-                // Update the robot's battery level in the database.
-                //mongo_database.update_robot(robotId, full_robot_info.get_water_level(), updated_battery_level);
-            }
-        }
-        
-        std::this_thread::sleep_for(1s);  // Wait for 1 second before the next update.
-    }
+    return availableRobotVector;
 }

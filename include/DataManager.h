@@ -1,66 +1,56 @@
 #pragma once
 
 #include <string>
+#include <thread>  // For threading
+#include <atomic>  // For atomic variables to control the thread
 #include <wx/string.h>
 #include "adapters/mongo_adapter.hpp"
 #include "robot.hpp"
-#include <thread>
-#include <atomic>  // For atomic flag control
-#include <mutex>   // To synchronize access to shared data
 
-// Struct for RobotData - Simplified representation of a robot for UI use.
+// Struct for RobotData
 struct RobotData {
     std::string robotID;
     wxString robotSize;
     wxString robotFunction;
 };
 
-// Struct for TaskData - Represents a task to be assigned to a robot.
+// Struct for TaskData
 struct TaskData {
-    wxString taskRoom;  // The room where the task needs to be performed.
-    RobotData taskRobot;  // The robot assigned to perform the task.
+    wxString taskRoom;
+    RobotData taskRobot;
 };
 
 // DataManager class manages data operations between the GUI, simulation, and the MongoDB database.
 class DataManager {
 public:
-    DataManager();  // Constructor to initialize MongoDB and update IDs.
-    ~DataManager();  // Destructor to stop the thread and clean up.
+    DataManager();
+    ~DataManager();
 
-    void SendRobotsData(const std::vector<RobotData>& robots);  // Placeholder function.
-
-    // Getter functions for RobotData and TaskData vectors.
-    std::vector<RobotData>& GetRobots();  // Get a vector of all current robots in the system.
-    std::vector<TaskData>& GetTasks();  // Get a vector of all current tasks.
-
-    // Methods for adding robots and tasks to the system.
-    void AddRobot(RobotData& robot);  // Add a new robot to the system.
-    void AddTask(TaskData& task);  // Add a new task to the system.
-
-    void UpdateIds();  // Update the list of robot IDs from the MongoDB database.
-    std::string GetIDString();  // Get the current ID as a string for easy use in UI.
-
-    // Get complete robot information based on robot ID.
+    void SendRobotsData(const std::vector<RobotData>& robots);
+    std::vector<RobotData>& GetRobots();
+    std::vector<TaskData>& GetTasks();
+    void AddRobot(RobotData& robot);
+    void UpdateIds();
+    std::string GetIDString(); // this is for the UI to access ID easily when robot is made
+    void AddTask(TaskData& task);
     robots::Robots GetAllRobotInfo(int robotId);
-
-    // Delete a robot from the system using its ID.
     void DeleteRobot(int robotId);
-
-    // Get a list of available robots (not currently assigned to a task).
     std::vector<robots::Robots> GetAvailableRobots();
 
 private:
-    void UpdateRobotStatusLoop();  // Background loop to update robot statuses in the database.
-    int GetNextAvailableRobotId();  // Find the next available robot ID that is not in use.
+    int GetNextAvailableRobotId();  // New method to find the next available robot ID
 
-    int id;  // Tracks the current ID for robots.
-    std::vector<RobotData> robots;  // Stores a list of all robots.
-    std::vector<TaskData> tasks;  // Stores a list of tasks.
-    std::vector<int> ids;  // Stores robot IDs currently in the database.
-    adapters::Mongo_Adapter mongo_database{};  // MongoDB adapter to interact with the database.
+    // Thread control members
+    void StartTaskUpdateThread();
+    void StopTaskUpdateThread();
+    void TaskUpdateLoop(); // Thread loop to update task progress
 
-    // Threading elements
-    std::thread update_thread;  // Thread that will update the robots' status.
-    std::atomic<bool> running;  // Control flag to stop the thread safely.
-    std::mutex data_mutex;  // Mutex to prevent race conditions.
+    int id;
+    std::vector<RobotData> robots;  // Stores robot data in a local vector
+    std::vector<TaskData> tasks;  // Stores task data in a local vector
+    std::vector<int> ids;  // Stores robot IDs currently in the database
+    adapters::Mongo_Adapter mongo_database{};  // MongoDB adapter to interact with the database
+
+    std::thread task_update_thread_;  // Thread for task updates
+    std::atomic<bool> running_{false};  // Controls the thread execution
 };
