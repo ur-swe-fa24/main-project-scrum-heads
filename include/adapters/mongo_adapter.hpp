@@ -27,7 +27,7 @@ namespace adapters {
             void write_task(robots::Robots new_task) override;
             void write_task(int id, int room) override;
             robots::Robots read_ongoing_task(int id) override;
-            std::vector<robots::Robots> read__all_ongoing_tasks() override;
+            std::vector<robots::Robots> read_all_ongoing_tasks() override;
             std::vector<robots::Robots> read_robot_tasks(int id) override;
             std::vector<robots::Robots> read_all_tasks() override;
             void update_task_status(std::vector<robots::Robots> updates) override;
@@ -37,6 +37,7 @@ namespace adapters {
 
             //Error Log
             std::string get_error_log(int id) override;
+            void delete_error_log() override;
 
             
         private:
