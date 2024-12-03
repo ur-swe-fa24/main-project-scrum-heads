@@ -68,4 +68,7 @@ private:
     std::vector<TaskData> tasks;  // Stores task data in a local vector
     std::vector<int> ids;  // Stores robot IDs currently in the database
     adapters::Mongo_Adapter mongo_database{};  // MongoDB adapter to interact with the database
+
+    void AddRooms();
+    //add vector of rooms here
 };

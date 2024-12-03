@@ -1,11 +1,16 @@
 #include "DataManager.h"
 #include <algorithm>  // Include for std::find
 #include <wx/string.h>
+#include <fstream>
+#include <sstream>
 
 DataManager::DataManager() 
 {
     // Initialize the MongoDB client and update the list of IDs
     UpdateIds();
+
+    // Add rooms from the text file
+    AddRooms();
 }
 
 // Destructor: Handles cleanup, if necessary.
@@ -20,6 +25,54 @@ DataManager::~DataManager() {}
 
 //     // You can then call the database model to save or update robot data here
 // }
+
+void DataManager::AddRooms()
+{
+    // Open the file
+    std::ifstream file("../include/rooms.txt");
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file!" << std::endl;
+    }
+
+    // Read file line by line
+    std::string line;
+    while (std::getline(file, line)) {
+
+        //ignore empty lines or lines starting with comments
+        if (line.empty() || line[0] == '#') {
+            continue;
+        }
+
+        //used for parsing string
+        std::stringstream ss(line);
+
+        //room id, size, type, and availability
+        int roomID;
+        std::string roomSize, floorType, roomAvailability;
+
+        // Read the room ID
+        std::string temp;
+        std::getline(ss, temp, ','); // Extract up to the first comma
+        roomID = std::stoi(temp);        // Convert to an integer
+
+        // Read the strings
+        std::getline(ss, roomSize, ',');  // Extract the second field
+        std::getline(ss, floorType, ',');  // Extract the third field
+        std::getline(ss, roomAvailability, '.'); // Extract the fourth field
+
+        // std::cout << roomID << std::endl;
+        // std::cout << roomSize << std::endl;
+        // std::cout << floorType << std::endl;
+        // std::cout << roomAvailability << std::endl;
+
+        //make room with 4 parameters here, append to vector of rooms
+    }
+
+    // Close the file
+    file.close();
+
+    //write vector of rooms to database and simulation
+}
 
 
 // Getter method for vector of RobotData (just ID, size, and function)
