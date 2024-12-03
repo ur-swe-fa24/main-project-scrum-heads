@@ -1,140 +1,146 @@
 #include "robot_do_task.hpp"
+#include "RobotManager.hpp"
 #include "spdlog/spdlog.h"
 #include <random>
 #include <thread>
 #include <chrono>
+#include <atomic>
 #include <vector> 
 
 namespace robot_tasks {
 
-bool check_robot(const std::string& room_size, int water_level, int battery_level) {
-
-    // Pre-check conditions based on water and battery levels and room size
-    if ((battery_level < 10 || water_level < 10) &&
-        (room_size == "small" || 
-         room_size == "medium" || 
-         room_size == "large")) {
-        return false;
-    }
-
-    if ((battery_level < 40 || water_level < 40) &&
-        (room_size == "medium" || 
-         room_size == "large")) {
-        return false;
-    }
-
-    if ((battery_level < 90 || water_level < 90) &&
-        (room_size == "large")) {
-        return false;
-    }
-    return true;
-}
-
-int do_task(robots::Robots& robot, const std::string& room_size) {
-    bool error_status;
-    int task_counter = 0;
-
-    //the duration of time for each 10% of task for different size of room
-    int task_duration = tasks::RoomTask::calculate_task_duration(room_size);
-
-    //get water level and battery level
-    int wlevel = robot.get_water_level();
-    int blevel = robot.get_battery_level();
-
-    //check if the water and battery levels are enough for this task
-    bool check_levels = check_robot(room_size, wlevel, blevel);
-    if (!check_levels) {
-        robot.update_task_status("canceled");
-        return 0; //exit the program if  water and battery levels are not enough for this task
-    }
-
-    //the amount of battery & water consume for every 10% of task for different size of room
-    int resource_usage = tasks::RoomTask::get_resource_usage(room_size);
-
-    while (task_counter < 100) {
-
-        // Check if error
-        if (error_status == true) {
-            robot.update_error_status("ERROR!");
-            return 0;
-        }
-
-        // Check if cancel
-        if (robot.get_task_status() == "cancel") {
-            return 0;
-        }
-
-        //Only adding 10% every loop
-        task_counter += 10;
-        robot.update_task_percent(task_counter);
-
-        //water and battery used for each 10% of the task depends on room size.
-        wlevel -= resource_usage;
-        blevel -= resource_usage;
-
-        // Update robot attributes
-        robot.update_water_level(wlevel);
-        robot.update_battery_level(blevel);
-
-        // sleep for 1 second
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    }
-
-    //complete!
-    robot.update_task_status("complete");
+int calculate_task_duration(const std::string& room_size) {
+    if (room_size == "small") return 2;
+    if (room_size == "medium") return 4;
+    if (room_size == "large") return 6;
     return 0;
 }
 
-// takes a list of robots
-int robot_charge(std::vector<robots::Robots>& robot_list) {
-    // Helper function to charge a single robot
-    auto charge_robot = [](robots::Robots& robot) {
-        std::string size = robot.get_size();
-        int battery_max, water_max;
-
-        // Determine max levels based on robot size
-        if (size == "small") {
-            battery_max = 100;
-            water_max = 100;
-        } else if (size == "medium") {
-            battery_max = 120;
-            water_max = 120;
-        } else {
-            battery_max = 140;
-            water_max = 140;
-        }
-
-        int water = robot.get_water_level();
-        int battery = robot.get_battery_level();
-
-        // Charge the robot
-        while (water < water_max || battery < battery_max) {
-            if (water < water_max) {
-                water += 1;
-                robot.update_water_level(water);
-            }
-            if (battery < battery_max) {
-                battery += 1;
-                robot.update_battery_level(battery);
-            }
-            std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate charging time
-        }
-    };
-
-    // Create a vector to store threads
-    std::vector<std::thread> threads;
-
-    // Start a thread for each robot
-    for (auto& robot : robot_list) {
-        threads.emplace_back(charge_robot, std::ref(robot));
-    }
-
-    // Join all threads to ensure completion
-    for (auto& t : threads) {
-        t.join();
-    }
-
+int get_resource_usage(const std::string& room_size) {
+    if (room_size == "small") return 1;
+    if (room_size == "medium") return 4;
+    if (room_size == "large") return 9;
     return 0;
 }
+
+//check if the robot have enough water and battery to finish this task
+bool check_robot(robots::Robots& robot) {
+    int water = robot.get_water_level();
+    int battery = robot.get_battery_level();
+    int percent = robot.get_task_percent();
+    int left = (100 - percent) / 10; // Remaining task chunks
+    int usage = get_resource_usage(robot.get_task_room().getRoomSize());
+    return !(usage * left > battery || usage * left > water);
 }
+
+void fix(robots::Robots& robot) {
+    if (!robot.get_error_status().empty()) {
+        robot.update_task_status("Available");
+        robot.update_error_status("");
+        robot.update_task_percent(0);
+        robot.update_water_level(100);
+        robot.update_battery_level(100);
+    }
+}
+
+void calculate_error_status(robots::Robots& robot) {
+    std::vector<std::string> failures = {"Overheat", "Motor Failure", "Sensor Failure"};
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> error_chance(1, 100);
+    if (error_chance(gen) == 1) {
+        std::uniform_int_distribution<> dist(0, failures.size() - 1);
+        robot.update_error_status(failures[dist(gen)]);
+        robot.update_task_status("Cancelled");
+    }
+}
+
+std::atomic<bool> is_canceled = true;
+std::mutex robot_mutex;
+
+void execute() {
+    const auto loop_interval = std::chrono::milliseconds(100);
+    std::map<int, std::thread> active_tasks;
+
+    while (is_canceled) {
+        auto start_time = std::chrono::steady_clock::now();
+
+        {
+            std::lock_guard<std::mutex> lock(robot_mutex);
+            for (robots::Robots& robot : robot_list_) {
+                if (robot.get_task_status() == "Cancelled" && robot.get_error_status() == "") {
+                    robot.update_task_status("Available");
+                    robot.update_task_percent(0);
+                    continue;
+                }
+                if (!check_robot(robot)) {
+                    robot.update_task_status("Cancelled");
+                    continue;
+                }
+                if (robot.get_task_percent() < 100 && robot.get_task_status() == "Ongoing" && robot.get_error_status().empty()) {
+                    if (active_tasks.find(robot.get_id()) == active_tasks.end()) {
+                        int robot_id = robot.get_id();
+                        std::string room_size = robot.get_task_room().getRoomSize();
+                        int resource_usage = get_resource_usage(room_size);
+                        int task_duration = calculate_task_duration(room_size);
+
+                        active_tasks[robot_id] = std::thread([&, robot_id, room_size, resource_usage, task_duration]() {
+                            std::this_thread::sleep_for(std::chrono::seconds(task_duration));
+                            {
+                                std::lock_guard<std::mutex> lock(robot_mutex);
+                                for (auto& r : robot_list_) {
+                                    if (r.get_id() == robot_id) {
+                                        r.update_water_level(r.get_water_level() - resource_usage);
+                                        r.update_battery_level(r.get_battery_level() - resource_usage);
+                                        r.update_task_percent(r.get_task_percent() + 10);
+                                        if (r.get_task_percent() >= 100) {
+                                            r.update_task_status("Complete");
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    continue;
+                }
+                if (robot.get_task_percent() == 100 && robot.get_task_status() == "Ongoing") {
+                    robot.update_task_status("Complete");
+                }
+            }
+        }
+
+        for (auto it = active_tasks.begin(); it != active_tasks.end();) {
+            if (it->second.joinable()) {
+                it->second.join();
+            }
+            it = active_tasks.erase(it);
+        }
+
+        auto elapsed_time = std::chrono::steady_clock::now() - start_time;
+        if (elapsed_time < loop_interval) {
+            std::this_thread::sleep_for(loop_interval - elapsed_time);
+        }
+    }
+
+    for (auto& [id, task] : active_tasks) {
+        if (task.joinable()) {
+            task.join();
+        }
+    }
+}
+
+std::thread execute_thread;
+
+void start_execute_thread() {
+    execute_thread = std::thread([]() { execute(); });
+}
+
+void stop_execute_thread() {
+    is_canceled = false;
+    if (execute_thread.joinable()) {
+        execute_thread.join();
+    }
+}
+
+} // namespace robot_tasks
