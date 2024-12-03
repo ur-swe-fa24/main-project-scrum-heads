@@ -1,7 +1,7 @@
 #ifndef ROBOT_MANAGER_HPP
 #define ROBOT_MANAGER_HPP
 
-#include "Robot.hpp"
+#include "robot.hpp"
 #include <vector>
 #include <string>
 #include <optional>
@@ -22,11 +22,10 @@ public:
     // Remove a robot by its ID
     bool remove_robot_by_id(int robot_id);
 
-    // Display all robots' statuses (e.g., for a field engineer)
-    void display_all_robots_status() const;
-
     // Get the total number of robots
     int get_robot_count() const { return robot_list_.size(); }
+
+    std::vector<Robots>& get_list();
 
 private:
     // List of robots managed by this class
