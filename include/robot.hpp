@@ -3,20 +3,20 @@
 
 #include <string>
 #include <vector>  // For std::vector
-#include <utility>  // for std::pair
+#include <utility> // For std::pair
+#include "room.hpp" // Include the Room class
 
 namespace robots {
 
 class Robots {
-
 public:
     // Constructor
     explicit Robots(int robot_id, std::string robotSize, int waterLevel, 
                     int batteryLevel, std::string errorStatus, std::string taskStatus, 
-                    int taskRoom, std::string functionType, int task_percent)
+                    const Room& taskRoom, std::string functionType, int task_percent)
         : robot_id_(robot_id), size_(robotSize), water_level_(waterLevel), battery_level_(batteryLevel),
           error_status_(errorStatus), task_status_(taskStatus), task_room_(taskRoom), 
-          function_type_(functionType), task_percent_(task_percent){}
+          function_type_(functionType), task_percent_(task_percent) {}
 
     // Getter functions
     int get_id() const { return robot_id_; }
@@ -25,7 +25,7 @@ public:
     int get_battery_level() const { return battery_level_; }
     std::string get_error_status() const { return error_status_; }
     std::string get_task_status() const { return task_status_; }
-    int get_task_room() const { return task_room_; }
+    const Room& get_task_room() const { return task_room_; } // Return a const reference to the Room
     int get_task_percent() const { return task_percent_; }
 
     // Calculate how long the task takes in seconds
@@ -43,10 +43,7 @@ public:
     void update_error_status(std::string status) { error_status_ = status; }
     void update_task_status(std::string status) { task_status_ = status; }
     void update_task_percent(int new_percent) { task_percent_ = new_percent; }
-
-    // Function to add a robot to a list
-    static void add_robot(std::vector<Robots>& robot_list, const Robots& new_robot);
-
+    void update_task_room(const Room& new_task_room) { task_room_ = new_task_room; } // Update the task room
 
 private:
     int robot_id_;
@@ -55,7 +52,7 @@ private:
     int battery_level_;
     std::string error_status_;
     std::string task_status_;
-    int task_room_;
+    Room task_room_; // Now using Room instead of int
     std::string function_type_;
     int task_percent_;
 };

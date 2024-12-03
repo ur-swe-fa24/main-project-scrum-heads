@@ -1,14 +1,27 @@
-#include <iostream>
-#include "robot.hpp"
-#include <vector>
-
-using namespace robots;
-using namespace std;
+#include "RobotManager.hpp"
+#include <iostream> // For demonstration
 
 int main() {
-    Robots temp_robot(0, "small", 100, 100, "", "", 0, "scrub", 0);
-    vector<Robots> robot_list;
-    robots::Robots::add_robot(robot_list, temp_robot);
-    cout << "Number of robots in the list: " << robot_list.size() << endl;
+    robots::RobotManager manager;
+
+    // Create some robots
+    robots::Robots robot1(1, "Small", 50, 80, "None", "Idle", 0, "Cleaning", 0);
+    robots::Robots robot2(2, "Medium", 60, 70, "Low Battery", "In Progress", 101, "Mapping", 50);
+
+    // Add robots to the manager
+    manager.add_robot(robot1);
+    manager.add_robot(robot2);
+
+    // Get all robot statuses
+    auto statuses = manager.get_all_robot_statuses();
+
+    // Display each robot's status
+    for (const auto& status : statuses) {
+        for (const auto& field : status) {
+            std::cout << field << " ";
+        }
+        std::cout << "\n";
+    }
+
     return 0;
 }
