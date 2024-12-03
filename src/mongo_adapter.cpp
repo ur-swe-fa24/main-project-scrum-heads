@@ -1,5 +1,6 @@
 #include "adapters/mongo_adapter.hpp"
 #include "robot.hpp"
+#include "room.hpp"
 #include <memory>
 #include <utility>
 #include <vector>
@@ -18,7 +19,7 @@ using bsoncxx::builder::basic::make_array;
 using bsoncxx::builder::basic::make_document;
 using json = nlohmann::json;
 
-
+//Store robot and room separately and extract from the robot table
 /**
  * Create a Mongo_Adapter instance
  */
@@ -69,12 +70,14 @@ robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
         auto Error_Status = Doc["Error Status"];
         auto Task_Status = Doc["Task Status"];
 
-        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, 0, Function_type, 0} ;
+        Room room(0, "", "", "");
+        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, 0} ;
         
         return new_robot;
     } 
+    Room room(0, "", "", "");
     std::cout << "No instance of robot with id " << id << std::endl;
-    robots::Robots new_robot = robots::Robots(id, "", 0, 0, "No instance of robot with id", "", 0, "", 0);
+    robots::Robots new_robot = robots::Robots(id, "", 0, 0, "No instance of robot with id", "", room, "", 0);
     return new_robot;
 }
 
@@ -98,7 +101,8 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_robots(){
         //temporary placeholder to only retrieve "newer" robots that were created with a task status
         if (!Task_Status.is_null())
         {
-            robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, 0, Function_type, 0};
+            Room room(0, "", "", "");
+            robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, 0};
             robots.push_back(new_robot);
         }
     }
@@ -160,6 +164,88 @@ std::vector<int> adapters::Mongo_Adapter::get_all_ids(){
     return ids;
 }
 
+//Room Stuff
+
+    // int getRoomNumber() const { return room_number_; }
+    // std::string getRoomSize() const { return room_size_; }
+    // std::string getFloorType() const { return floor_type_; }
+    // std::string getAvailability() const { return availability_; }
+
+
+void adapters::Mongo_Adapter::write_rooms(std::vector<Room> rooms){
+    //Write all the rooms to the collection of rooms
+    for(Room room : rooms){
+        //Write room with id, size, floor type, and Availability
+        db_["room"].insert_one(make_document(
+            kvp("Room Id", room.getRoomNumber()),
+            kvp("Room Size", room.getRoomSize()),
+            kvp("Floor Type", room.getFloorType()),
+            kvp("Availability", room.getAvailability())
+        ));
+    }
+}
+
+
+void adapters::Mongo_Adapter::update_room_availability(int id, std::string availability){
+    auto result = db_["room"].find_one(make_document(kvp("Room Id", id)));
+    if(result){
+        // Update the robot in the robot class to say that it now has a new task and is busy
+        auto query_filter = make_document(kvp("Room Id", id));
+        // Create documents with the new task status
+        auto update_doc1 = make_document(kvp("$set", make_document(kvp("Availability", availability))));
+        // Update robot
+        db_["room"].update_one(query_filter.view(), update_doc1.view());
+    }
+}
+
+Room adapters::Mongo_Adapter::read_room(int id){
+    auto result = db_["room"].find_one(make_document(kvp("Room Id", id)));
+    if(result){
+        auto information = bsoncxx::to_json(*result);
+        json room_Doc = json::parse(information);
+
+        // Assuming Doc is a JSON object, access fields by their keys.
+        auto Id = room_Doc["Room Id"];
+        auto Size = room_Doc["Room Size"];
+        auto Availability = room_Doc["Availability"];
+        auto Floor_type = room_Doc["Floor Type"];
+
+        Room room(Id, Size, Floor_type, Availability);
+
+        return room;        
+    }
+    else{
+        Room room(id, "", "", "No Room with id");
+        return room;
+    }
+}
+
+void adapters::Mongo_Adapter::delete_rooms(){
+    db_["room"].drop( {} );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Task Stuff
 
 /**
  * Write task to data base using robot object for the information
@@ -173,7 +259,7 @@ void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
     // If the robot is not doing task then we should write this new task to a table
     db_["task"].insert_one(make_document(
                 kvp("robot_id", new_task.get_id()),
-                kvp("Room", new_task.get_task_room()),
+                kvp("Room", new_task.get_task_room().getRoomNumber()),
                 kvp("Error Status", new_task.get_error_status()),
                 kvp("Task Status", "Ongoing"),
                 kvp("Task Percent", new_task.get_task_percent())
@@ -186,6 +272,8 @@ void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
     // Update robot
     db_["robot"].update_one(query_filter.view(), update_doc1.view());
 
+    //Update room to be unavailable
+    update_room_availability(new_task.get_task_room().getRoomNumber(), "Unavailable");
 }
 
 /**
@@ -214,7 +302,10 @@ void adapters::Mongo_Adapter::write_task(int id, int room){
     auto update_doc1 = make_document(kvp("$set", make_document(kvp("Task Status", "Ongoing"))));
     // Update robot
     db_["robot"].update_one(query_filter.view(), update_doc1.view());
+    //Also update the room to unavailable
 
+    //Update room to be unavailable
+    update_room_availability(room, "Unavailable");
 }
 
 /**
@@ -239,7 +330,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                     kvp("Battery Level", update.get_battery_level()),
                     kvp("Function Type", update.get_function_type()),
                     kvp("Error Status", update.get_error_status()),
-                    kvp("Room", update.get_task_room()),
+                    kvp("Room", update.get_task_room().getRoomNumber()),
                     kvp("Task Percent", update.get_task_percent())
                     //add task status
                 ));
@@ -250,7 +341,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 auto replace_doc = make_document(kvp("$set", 
                 make_document(
                     kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room()),
+                    kvp("Room", update.get_task_room().getRoomNumber()),
                     kvp("Error Status", update.get_error_status()),
                     kvp("Task Status", update.get_task_status()),
                     kvp("Task Percent", update.get_task_percent())
@@ -269,6 +360,9 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                     kvp("Error Status", update.get_error_status())
                 )));
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+
+                //Update room to now be available
+                update_room_availability(update.get_task_room().getRoomNumber(), "Available");
             }
             else if(update.get_task_status() == "Complete" ){
                 // Find the specific task to update
@@ -278,7 +372,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 auto replace_doc = make_document(kvp("$set", 
                 make_document(
                     kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room()),
+                    kvp("Room", update.get_task_room().getRoomNumber()),
                     kvp("Error Status", update.get_error_status()),
                     kvp("Task Status", update.get_task_status()),
                     kvp("Task Percent", update.get_task_percent())
@@ -298,6 +392,9 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 )));
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
 
+                //Update the Room availability
+                update_room_availability(update.get_task_room().getRoomNumber(), "Available");
+
             }
             else if(update.get_task_status() == "Cancelled" && update.get_error_status() == ""){
                 // Find the specific task to update
@@ -307,7 +404,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 auto replace_doc = make_document(kvp("$set", 
                 make_document(
                     kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room()),
+                    kvp("Room", update.get_task_room().getRoomNumber()),
                     kvp("Error Status", update.get_error_status()),
                     kvp("Task Status", update.get_task_status()),
                     kvp("Task Percent", update.get_task_percent())
@@ -326,6 +423,9 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                     kvp("Error Status", update.get_error_status())
                 )));
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+
+                //Update the Room Availability
+                update_room_availability(update.get_task_room().getRoomNumber(), "Available");
             }
             else{
                 std::cout << "in available" << std::endl;
@@ -337,7 +437,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 auto replace_doc = make_document(kvp("$set", 
                 make_document(
                     kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room()),
+                    kvp("Room", update.get_task_room().getRoomNumber()),
                     kvp("Error Status", update.get_error_status()),
                     kvp("Task Status", update.get_task_status()),
                     kvp("Task Percent", update.get_task_percent())
@@ -356,6 +456,8 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                     kvp("Error Status", update.get_error_status())
                 )));
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+
+                //Room should still be unavailiable because the only things that are in the else statement are ongoing tasks
             }
         }else{
             // If the robot task is available and not ongoing then just update the robot class as only the water and battery level are changing
@@ -367,6 +469,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 kvp("Error Status", update.get_error_status())
             )));
             db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            //No need to update room because these robots are charging and not a part of an ongoing tasks attached to a room
         }
     }
 }
@@ -384,7 +487,7 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
 
         // Assuming Doc is a JSON object, access fields by their keys.
         auto Id = task_Doc["robot_id"];
-        auto Room = task_Doc["Room"];
+        auto Room_Number = task_Doc["Room"];
         auto Function_type = robot_info.get_function_type();
         auto Error_Status = task_Doc["Error Status"];
         auto Task_Status = task_Doc["Task Status"];
@@ -393,8 +496,8 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
         auto Water_Level = robot_info.get_water_level();
         auto Battery_Level = robot_info.get_battery_level();
 
-
-        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
+        Room room = read_room(Room_Number);
+        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
         
         return new_robot;
     } 
@@ -412,7 +515,8 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
         std::cout << Function_type << std::endl;
         auto Task_Status = robot_info.get_task_status();
         std::cout << Task_Status << std::endl;
-        robots::Robots new_robot = robots::Robots(id, Size, Water_Level, Battery_Level, "", Task_Status, 0, Function_type, 0);
+        Room room(0, "", "", "");
+        robots::Robots new_robot = robots::Robots(id, Size, Water_Level, Battery_Level, "", Task_Status, room, Function_type, 0);
         return new_robot;
     }
 }
@@ -429,7 +533,7 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_ongoing_tasks(){
         // Assuming Doc is a JSON object, access fields by their keys.
         auto Id = task_Doc["robot_id"];
         robots::Robots robot_info = read_robot(Id);
-        auto Room = task_Doc["Room"];
+        auto Room_Number = task_Doc["Room"];
         auto Function_type = robot_info.get_function_type();
         auto Error_Status = task_Doc["Error Status"];
         auto Task_Status = task_Doc["Task Status"];
@@ -438,8 +542,8 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_ongoing_tasks(){
         auto Water_Level = robot_info.get_water_level();
         auto Battery_Level = robot_info.get_battery_level();
 
-
-        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
+        Room room = read_room(Room_Number);
+        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
         ongoing_tasks.push_back(new_task);
     }
     return ongoing_tasks;
@@ -460,7 +564,7 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_robot_tasks(int id){
         // Assuming Doc is a JSON object, access fields by their keys.
         auto Id = task_Doc["robot_id"];
         robots::Robots robot_info = read_robot(Id);
-        auto Room = task_Doc["Room"];
+        auto Room_Number = task_Doc["Room"];
         auto Function_type = robot_info.get_function_type();
         auto Error_Status = task_Doc["Error Status"];
         auto Task_Status = task_Doc["Task Status"];
@@ -469,8 +573,8 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_robot_tasks(int id){
         auto Water_Level = robot_info.get_water_level();
         auto Battery_Level = robot_info.get_battery_level();
 
-
-        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
+        Room room = read_room(Room_Number);
+        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
         tasks.push_back(new_task);
     }
     return tasks;
@@ -492,7 +596,7 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_tasks(){
         // Assuming Doc is a JSON object, access fields by their keys.
         auto Id = task_Doc["robot_id"];
         robots::Robots robot_info = read_robot(Id);
-        auto Room = task_Doc["Room"];
+        auto Room_Number = task_Doc["Room"];
         auto Function_type = robot_info.get_function_type();
         auto Error_Status = task_Doc["Error Status"];
         auto Task_Status = task_Doc["Task Status"];
@@ -501,8 +605,8 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_tasks(){
         auto Water_Level = robot_info.get_water_level();
         auto Battery_Level = robot_info.get_battery_level();
 
-
-        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, Room, Function_type, Task_Percent} ;
+        Room room = read_room(Room_Number);
+        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
         all_tasks.push_back(new_task);
     }
     return all_tasks;
@@ -530,7 +634,7 @@ std::string adapters::Mongo_Adapter::get_error_log(int id){
 
         // Assuming Doc is a JSON object, access fields by their keys.
         auto Id = error_Doc["robot_id"];
-        auto Room = error_Doc["Room"];
+        auto Room_Number = error_Doc["Room"];
         std::string Function_type = error_Doc["Function Type"];
         std::string Error_Status = error_Doc["Error Status"];
         auto Task_Percent = error_Doc["Task Percent"];
@@ -538,7 +642,8 @@ std::string adapters::Mongo_Adapter::get_error_log(int id){
         auto Water_Level = error_Doc["Water Level"];
         auto Battery_Level = error_Doc["Battery Level"];
 
-        std::string new_error = "Robot Id: " + to_string(Id) + ", Error Status: " + Error_Status + ", Task Percent: " + to_string(Task_Percent) + ", Function Type: " + Function_type + ", Room: " + to_string(Room) + "\n";
+        Room room = read_room(Room_Number);
+        std::string new_error = "Robot Id: " + to_string(Id) + ", Error Status: " + Error_Status + ", Task Percent: " + to_string(Task_Percent) + ", Function Type: " + Function_type + ", Room Number: " + to_string(Room_Number) + ", Room Size: " + room.getRoomSize() + ", Room Floor Type: "+ room.getFloorType() + "\n";
         error_log = error_log + new_error;
     }
 

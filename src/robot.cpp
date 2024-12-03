@@ -1,11 +1,11 @@
-#include <iostream>
-#include "robot.hpp"
+// #include <iostream>
+// #include "robot.hpp"
 
-namespace robots {
-    void Robots::add_robot(std::vector<Robots>& robot_list, const Robots& new_robot) {
-        robot_list.push_back(new_robot);
-    }
-}
+// namespace robots {
+//     void Robots::add_robot(std::vector<Robots>& robot_list, const Robots& new_robot) {
+//         robot_list.push_back(new_robot);
+//     }
+// }
 
 // Function to display the robot's full status for field engineers
 // void robots::Robots::field_engineer_view_status() const {

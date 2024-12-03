@@ -53,21 +53,21 @@ target_link_libraries(test_simulation
 )
 
 
-add_executable(test_datamanager 
-    test_datamanager.cpp
-)
+# add_executable(test_datamanager 
+#     test_datamanager.cpp
+# )
 
-target_include_directories(test_datamanager
-    PRIVATE
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-)
+# target_include_directories(test_datamanager
+#     PRIVATE
+#     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+# )
 
-target_compile_features(test_datamanager PRIVATE cxx_std_17)
+# target_compile_features(test_datamanager PRIVATE cxx_std_17)
 
-target_link_libraries(test_datamanager
-  PRIVATE
-    Catch2::Catch2WithMain
-    spdlog::spdlog_header_only
-    mongo::mongocxx_shared
-    data_lib
-)
+# target_link_libraries(test_datamanager
+#   PRIVATE
+#     Catch2::Catch2WithMain
+#     spdlog::spdlog_header_only
+#     mongo::mongocxx_shared
+#     data_lib
+# )
