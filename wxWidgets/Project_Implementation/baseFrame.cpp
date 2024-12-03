@@ -33,7 +33,7 @@ void MyBaseFrame::OnSMSelectButtonClick(wxCommandEvent& event)
 {
     // Implement necessary button press logic here
     // wxMessageBox("Senior Management Frame", "Info", wxOK | wxICON_INFORMATION);
-    MySMBaseFrame* smFrame = new MySMBaseFrame(nullptr);
+    MySMBaseFrame* smFrame = new MySMBaseFrame(nullptr, dataManager, this);
     smFrame->Show(true);
 }
 

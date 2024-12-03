@@ -1,15 +1,21 @@
 #include "smBaseFrame.hpp"
 #include <wx/wx.h>
 
-MySMBaseFrame::MySMBaseFrame(wxWindow* parent)
-    : smBaseFrame(parent)  // Call the base class constructor
+MySMBaseFrame::MySMBaseFrame(wxWindow* parent, DataManager* dataManager, MyBaseFrame* baseFrame)
+    : smBaseFrame(parent), dataManager(dataManager), baseFrame(baseFrame)  // Call the base class constructor
 {
     // Connect the button event to the overridden method
-    smButton->Bind(wxEVT_BUTTON, &MySMBaseFrame::OnSMButtonClick, this);
+    smRefreshButton->Bind(wxEVT_BUTTON, &MySMBaseFrame::OnSMRefreshButtonClick, this);
+
+    //this is just to refresh the info when opening a new window
+    //right now its cutting off the text, not sure why, doesn't happen when automatically refreshing when adding/removing robots/tasks
+    wxCommandEvent dummyEvent; // Create a dummy event
+    OnSMRefreshButtonClick(dummyEvent); // Call the method with the dummy event
 }
 
-void MySMBaseFrame::OnSMButtonClick(wxCommandEvent& event)
+void MySMBaseFrame::OnSMRefreshButtonClick(wxCommandEvent& event)
 {
-    // Implement necessary button press logic here
-    wxMessageBox("Senior Management Frame", "Info", wxOK | wxICON_INFORMATION);
+    //get all the updated business metrics from the dataManager
 }
+
+//still need to figure out exactly which metrics we'd be using, and how to best display

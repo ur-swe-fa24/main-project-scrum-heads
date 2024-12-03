@@ -152,10 +152,11 @@ class smBaseFrame : public wxFrame
 	private:
 
 	protected:
-		wxButton* smButton;
+		wxButton* smRefreshButton;
+		wxStaticText* smTitleText;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void OnSMButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSMRefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:

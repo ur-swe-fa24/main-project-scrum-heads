@@ -176,8 +176,12 @@ smBaseFrame::smBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	wxBoxSizer* smBaseFrameSizer;
 	smBaseFrameSizer = new wxBoxSizer( wxVERTICAL );
 
-	smButton = new wxButton( this, wxID_ANY, _("Senior Management Info"), wxDefaultPosition, wxDefaultSize, 0 );
-	smBaseFrameSizer->Add( smButton, 0, wxALL, 5 );
+	smRefreshButton = new wxButton( this, wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
+	smBaseFrameSizer->Add( smRefreshButton, 0, wxALL, 5 );
+
+	smTitleText = new wxStaticText( this, wxID_ANY, _("Senior Management"), wxDefaultPosition, wxDefaultSize, 0 );
+	smTitleText->Wrap( -1 );
+	smBaseFrameSizer->Add( smTitleText, 0, wxALIGN_CENTER|wxALL, 5 );
 
 
 	this->SetSizer( smBaseFrameSizer );
@@ -186,7 +190,7 @@ smBaseFrame::smBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	smButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( smBaseFrame::OnSMButtonClick ), NULL, this );
+	smRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( smBaseFrame::OnSMRefreshButtonClick ), NULL, this );
 }
 
 smBaseFrame::~smBaseFrame()
