@@ -1,4 +1,4 @@
-#include "RobotManager.hpp"
+#include "robot_manager.hpp"
 #include <vector>
 
 namespace robots {
@@ -31,25 +31,11 @@ bool RobotManager::remove_robot_by_id(int robot_id) {
     return false; // Robot with the given ID not found
 }
 
-// Get all robots' statuses as a vector of vectors
-std::vector<std::vector<std::string>> RobotManager::get_all_robot_statuses() const {
-    std::vector<std::vector<std::string>> statuses;
-
-    for (const auto& robot : robot_list_) {
-        statuses.push_back({
-            std::to_string(robot.get_id()),             // Robot ID
-            robot.get_size(),                           // Size
-            std::to_string(robot.get_water_level()),    // Water Level
-            std::to_string(robot.get_battery_level()),  // Battery Level
-            robot.get_error_status(),                  // Error Status
-            robot.get_task_status(),                   // Task Status
-            std::to_string(robot.get_task_room()),      // Task Room
-            robot.get_function_type(),                 // Function Type
-            std::to_string(robot.get_task_percent())   // Task Completion
-        });
-    }
-
-    return statuses;
+// Get the list of all robots
+std::vector<Robots>& RobotManager::get_list() {
+    return robot_list_;
 }
+
+
 
 }  // namespace robots
