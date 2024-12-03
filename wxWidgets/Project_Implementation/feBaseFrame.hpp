@@ -1,6 +1,7 @@
 #pragma once
 #include "MyProjectBase.h"  // Include the generated base class
 #include "../include/DataManager.h"
+#include "baseFrame.hpp"
 
 
 //placeholder for database/system manager later
@@ -10,10 +11,12 @@
 // };
 class DataManager;
 
+class MyBaseFrame;
+
 class MyFEBaseFrame : public feBaseFrame
 {
 public:
-    MyFEBaseFrame(wxWindow* parent, DataManager* dataManager);
+    MyFEBaseFrame(wxWindow* parent, DataManager* dataManager, MyBaseFrame* baseFrame);
 
     // Method to set the text to write into the field engineer window
     // void SetText(const wxString& text);
@@ -50,4 +53,6 @@ private:
     // std::vector<RobotData> robots;
 
     DataManager* dataManager;  // Pointer to the data manager
+
+    MyBaseFrame* baseFrame;  // Pointer to the baseFrame
 };

@@ -64,7 +64,7 @@ class feBaseFrame : public wxFrame
 
 	protected:
 		wxButton* feRefreshButton;
-		wxStaticText* m_staticText16;
+		wxStaticText* feTitleText;
 		wxButton* addRobotButton;
 		wxListBox* robotListBox;
 		wxButton* addTaskButton;
@@ -94,10 +94,17 @@ class bmBaseFrame : public wxFrame
 	private:
 
 	protected:
-		wxButton* bmButton;
+		wxButton* bmRefreshButton;
+		wxStaticText* bmTitleText;
+		wxListBox* robotListBox;
+		wxButton* addTaskButton;
+		wxListBox* taskListBox;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void OnBMButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRobotListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAddTaskButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTaskListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
@@ -116,10 +123,17 @@ class bsBaseFrame : public wxFrame
 	private:
 
 	protected:
-		wxButton* bsButton;
+		wxButton* bsRefreshButton;
+		wxStaticText* bsTitleText;
+		wxListBox* robotListBox;
+		wxButton* addTaskButton;
+		wxListBox* taskListBox;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void OnBSButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRobotListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAddTaskButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTaskListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
