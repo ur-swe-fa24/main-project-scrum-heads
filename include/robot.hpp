@@ -12,11 +12,12 @@ class Robots {
 public:
     // Constructor
     explicit Robots(int robot_id, std::string robotSize, int waterLevel, 
-                    int batteryLevel, std::string errorStatus, std::string taskStatus, 
-                    Room& taskRoom, std::string functionType, int task_percent)
-        : robot_id_(robot_id), size_(robotSize), water_level_(waterLevel), battery_level_(batteryLevel),
-          error_status_(errorStatus), task_status_(taskStatus), task_room_(taskRoom), 
-          function_type_(functionType), task_percent_(task_percent) {}
+                int batteryLevel, std::string errorStatus, std::string taskStatus, 
+                Room& taskRoom, std::string functionType, int task_percent)
+    : robot_id_(robot_id), size_(robotSize), water_level_(waterLevel), 
+      battery_level_(batteryLevel), error_status_(errorStatus), task_status_(taskStatus), 
+      task_room_(taskRoom), function_type_(functionType), task_percent_(task_percent) {}
+
 
     // Getter functions
     int get_id() const { return robot_id_; }
@@ -25,7 +26,7 @@ public:
     int get_battery_level() const { return battery_level_; }
     std::string get_error_status() const { return error_status_; }
     std::string get_task_status() const { return task_status_; }
-    Room& get_task_room() const { return task_room_; } // Return a const reference to the Room
+    Room& get_task_room() { return task_room_; }
     int get_task_percent() const { return task_percent_; }
 
     // Calculate how long the task takes in seconds
