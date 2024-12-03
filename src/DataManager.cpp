@@ -17,9 +17,15 @@ std::vector<RobotData>& DataManager::GetRobots() {
     return robots;
 }
 
+
+// Getter method for vector of RobotData (just ID, size, and function)
 std::vector<TaskData>& DataManager::GetTasks() {
     return tasks;
 }
+
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
+void DataManager::AddRobot(RobotData& robot) {
+    int new_id = GetNextAvailableRobotId();  // Get a new unique ID, assigned by data manager to avoid user error
 
 void DataManager::AddRobot(RobotData& robot) {
     int new_id = GetNextAvailableRobotId();  // Get a new unique ID
@@ -30,6 +36,8 @@ void DataManager::AddRobot(RobotData& robot) {
 
     // Create a new robot instance with the new ID and the provided robot data
     robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", Room(), function_str, 0);
+//     robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", 0, function_str, 0);
+
     
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
@@ -174,4 +182,43 @@ void DataManager::taskUpdateLoop() {
         // Sleep for 1 second before the next update
         std::this_thread::sleep_for(1s);
     }
+}
+
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
+void DataManager::AddTask(TaskData& task) {
+    // Convert wxString to std::string for task room selection and task robot selection
+    std::string room_str = std::string(task.taskRoom.mb_str());
+    std::string robot_str = task.taskRobot.robotID;
+
+    tasks.push_back(task); //adds task to vector of TaskData
+
+    //getallrobotinfo for input robot ID (retrived from struct)
+    //then manually update stuff
+    
+    // // Write the new robot to the MongoDB database (not literally a new robot, but database treats it as one)
+    // mongo_database.write_task(task_assigned_robot);
+}
+
+//gets all robots from database, then filters for available robots
+//this part should be fully functional, but right now read_all_robots doesn't include task status string
+std::vector<robots::Robots> DataManager::GetAvailableRobots()
+{
+    //holds all robots
+    std::vector <robots::Robots> robotVector = mongo_database.read_all_robots();
+
+    //holds available robots
+    std::vector <robots::Robots> availableRobotVector;
+
+    //iterate through robot vector to find available robots
+    for (robots::Robots robot : robotVector) {
+        // std::cout << robot.get_id() << std::endl;
+        // std::cout << robot.get_task_status() << std::endl;
+        if (robot.get_task_status() == "Available")
+        {
+            // std::cout << "added" << std::endl;
+            availableRobotVector.push_back(robot);
+        }
+    }
+
+    return availableRobotVector;
 }

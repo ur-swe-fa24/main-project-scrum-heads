@@ -52,20 +52,24 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	wxBoxSizer* feBaseFrameSizer;
 	feBaseFrameSizer = new wxBoxSizer( wxVERTICAL );
 
-	feButton = new wxButton( this, wxID_ANY, _("Field Engineer Info"), wxDefaultPosition, wxDefaultSize, 0 );
-	feBaseFrameSizer->Add( feButton, 0, wxALL, 5 );
-
-	feTextControl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
-	feBaseFrameSizer->Add( feTextControl, 0, wxALL, 5 );
-
 	feRefreshButton = new wxButton( this, wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
 	feBaseFrameSizer->Add( feRefreshButton, 0, wxALL, 5 );
+
+	feTitleText = new wxStaticText( this, wxID_ANY, _("FIeld Engineer"), wxDefaultPosition, wxDefaultSize, 0 );
+	feTitleText->Wrap( -1 );
+	feBaseFrameSizer->Add( feTitleText, 0, wxALIGN_CENTER|wxALL, 5 );
 
 	addRobotButton = new wxButton( this, wxID_ANY, _("Add Robot"), wxDefaultPosition, wxDefaultSize, 0 );
 	feBaseFrameSizer->Add( addRobotButton, 0, wxALL, 5 );
 
 	robotListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
 	feBaseFrameSizer->Add( robotListBox, 0, wxALL, 5 );
+
+	addTaskButton = new wxButton( this, wxID_ANY, _("Add Task"), wxDefaultPosition, wxDefaultSize, 0 );
+	feBaseFrameSizer->Add( addTaskButton, 0, wxALL, 5 );
+
+	taskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	feBaseFrameSizer->Add( taskListBox, 0, wxALL, 5 );
 
 
 	this->SetSizer( feBaseFrameSizer );
@@ -74,10 +78,11 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	feButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFEButtonClick ), NULL, this );
 	feRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnFERefreshButtonClick ), NULL, this );
 	addRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnAddRobotButtonClick ), NULL, this );
 	robotListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( feBaseFrame::OnRobotListBoxDClick ), NULL, this );
+	addTaskButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( feBaseFrame::OnAddTaskButtonClick ), NULL, this );
+	taskListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( feBaseFrame::OnTaskListBoxDClick ), NULL, this );
 }
 
 feBaseFrame::~feBaseFrame()
@@ -91,8 +96,21 @@ bmBaseFrame::bmBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	wxBoxSizer* bmBaseFrameSizer;
 	bmBaseFrameSizer = new wxBoxSizer( wxVERTICAL );
 
-	bmButton = new wxButton( this, wxID_ANY, _("Building Manager Info"), wxDefaultPosition, wxDefaultSize, 0 );
-	bmBaseFrameSizer->Add( bmButton, 0, wxALL, 5 );
+	bmRefreshButton = new wxButton( this, wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
+	bmBaseFrameSizer->Add( bmRefreshButton, 0, wxALL, 5 );
+
+	bmTitleText = new wxStaticText( this, wxID_ANY, _("Building Manager"), wxDefaultPosition, wxDefaultSize, 0 );
+	bmTitleText->Wrap( -1 );
+	bmBaseFrameSizer->Add( bmTitleText, 0, wxALIGN_CENTER|wxALL, 5 );
+
+	robotListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	bmBaseFrameSizer->Add( robotListBox, 0, wxALL, 5 );
+
+	addTaskButton = new wxButton( this, wxID_ANY, _("Add Task"), wxDefaultPosition, wxDefaultSize, 0 );
+	bmBaseFrameSizer->Add( addTaskButton, 0, wxALL, 5 );
+
+	taskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	bmBaseFrameSizer->Add( taskListBox, 0, wxALL, 5 );
 
 
 	this->SetSizer( bmBaseFrameSizer );
@@ -101,7 +119,10 @@ bmBaseFrame::bmBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	bmButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bmBaseFrame::OnBMButtonClick ), NULL, this );
+	bmRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bmBaseFrame::OnFERefreshButtonClick ), NULL, this );
+	robotListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( bmBaseFrame::OnRobotListBoxDClick ), NULL, this );
+	addTaskButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bmBaseFrame::OnAddTaskButtonClick ), NULL, this );
+	taskListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( bmBaseFrame::OnTaskListBoxDClick ), NULL, this );
 }
 
 bmBaseFrame::~bmBaseFrame()
@@ -115,8 +136,21 @@ bsBaseFrame::bsBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	wxBoxSizer* bsBaseFrameSizer;
 	bsBaseFrameSizer = new wxBoxSizer( wxVERTICAL );
 
-	bsButton = new wxButton( this, wxID_ANY, _("Building Staff Info"), wxDefaultPosition, wxDefaultSize, 0 );
-	bsBaseFrameSizer->Add( bsButton, 0, wxALL, 5 );
+	bsRefreshButton = new wxButton( this, wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
+	bsBaseFrameSizer->Add( bsRefreshButton, 0, wxALL, 5 );
+
+	bsTitleText = new wxStaticText( this, wxID_ANY, _("Building Staff"), wxDefaultPosition, wxDefaultSize, 0 );
+	bsTitleText->Wrap( -1 );
+	bsBaseFrameSizer->Add( bsTitleText, 0, wxALIGN_CENTER|wxALL, 5 );
+
+	robotListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	bsBaseFrameSizer->Add( robotListBox, 0, wxALL, 5 );
+
+	addTaskButton = new wxButton( this, wxID_ANY, _("Add Task"), wxDefaultPosition, wxDefaultSize, 0 );
+	bsBaseFrameSizer->Add( addTaskButton, 0, wxALL, 5 );
+
+	taskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	bsBaseFrameSizer->Add( taskListBox, 0, wxALL, 5 );
 
 
 	this->SetSizer( bsBaseFrameSizer );
@@ -125,7 +159,10 @@ bsBaseFrame::bsBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	bsButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bsBaseFrame::OnBSButtonClick ), NULL, this );
+	bsRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bsBaseFrame::OnFERefreshButtonClick ), NULL, this );
+	robotListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( bsBaseFrame::OnRobotListBoxDClick ), NULL, this );
+	addTaskButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bsBaseFrame::OnAddTaskButtonClick ), NULL, this );
+	taskListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( bsBaseFrame::OnTaskListBoxDClick ), NULL, this );
 }
 
 bsBaseFrame::~bsBaseFrame()
@@ -211,6 +248,10 @@ robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString&
 	wxBoxSizer* robotInfoFrameSizer;
 	robotInfoFrameSizer = new wxBoxSizer( wxVERTICAL );
 
+	titleText = new wxStaticText( this, wxID_ANY, _("Title Placeholder"), wxDefaultPosition, wxDefaultSize, 0 );
+	titleText->Wrap( -1 );
+	robotInfoFrameSizer->Add( titleText, 0, wxALIGN_CENTER|wxALIGN_TOP|wxALL, 5 );
+
 	propertiesLabelText = new wxStaticText( this, wxID_ANY, _("Properties:"), wxDefaultPosition, wxDefaultSize, 0 );
 	propertiesLabelText->Wrap( -1 );
 	robotInfoFrameSizer->Add( propertiesLabelText, 0, wxALL, 5 );
@@ -238,6 +279,11 @@ robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString&
 	removeRobotButton = new wxButton( this, wxID_ANY, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
 	robotInfoFrameSizer->Add( removeRobotButton, 0, wxALL, 5 );
 
+	fixRobotButton = new wxButton( this, wxID_ANY, _("Fix"), wxDefaultPosition, wxDefaultSize, 0 );
+	fixRobotButton->Enable( false );
+
+	robotInfoFrameSizer->Add( fixRobotButton, 0, wxALL, 5 );
+
 
 	this->SetSizer( robotInfoFrameSizer );
 	this->Layout();
@@ -246,8 +292,91 @@ robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString&
 
 	// Connect Events
 	removeRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( robotInfoFrame::OnRemoveRobotButtonClick ), NULL, this );
+	fixRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( robotInfoFrame::OnFixRobotButtonClick ), NULL, this );
 }
 
 robotInfoFrame::~robotInfoFrame()
+{
+}
+
+addTaskFrame::addTaskFrame( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* addTaskFrameSizer;
+	addTaskFrameSizer = new wxBoxSizer( wxVERTICAL );
+
+	selectRoomsTitleText = new wxStaticText( this, wxID_ANY, _("Select Room:"), wxDefaultPosition, wxDefaultSize, 0 );
+	selectRoomsTitleText->Wrap( -1 );
+	addTaskFrameSizer->Add( selectRoomsTitleText, 0, wxALL, 5 );
+
+	roomSelectionListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	addTaskFrameSizer->Add( roomSelectionListBox, 0, wxALL, 5 );
+
+	selectRobotsTitleText = new wxStaticText( this, wxID_ANY, _("Select Robot:"), wxDefaultPosition, wxDefaultSize, 0 );
+	selectRobotsTitleText->Wrap( -1 );
+	addTaskFrameSizer->Add( selectRobotsTitleText, 0, wxALL, 5 );
+
+	robotSelectionListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	addTaskFrameSizer->Add( robotSelectionListBox, 0, wxALL, 5 );
+
+	createTaskButton = new wxButton( this, wxID_ANY, _("Create Task"), wxDefaultPosition, wxDefaultSize, 0 );
+	createTaskButton->Enable( false );
+
+	addTaskFrameSizer->Add( createTaskButton, 0, wxALL, 5 );
+
+
+	this->SetSizer( addTaskFrameSizer );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	roomSelectionListBox->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( addTaskFrame::OnRoomTaskSelect ), NULL, this );
+	robotSelectionListBox->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( addTaskFrame::OnRobotTaskSelect ), NULL, this );
+	createTaskButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( addTaskFrame::OnCreateTaskButtonClick ), NULL, this );
+}
+
+addTaskFrame::~addTaskFrame()
+{
+}
+
+viewTaskFrame::viewTaskFrame( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+	wxBoxSizer* viewTaskFrameSizer;
+	viewTaskFrameSizer = new wxBoxSizer( wxVERTICAL );
+
+	taskStatusTitleText = new wxStaticText( this, wxID_ANY, _("Task Status:"), wxDefaultPosition, wxDefaultSize, 0 );
+	taskStatusTitleText->Wrap( -1 );
+	viewTaskFrameSizer->Add( taskStatusTitleText, 0, wxALL, 5 );
+
+	taskStatusPlaceholderText = new wxStaticText( this, wxID_ANY, _("Task status placeholder"), wxDefaultPosition, wxDefaultSize, 0 );
+	taskStatusPlaceholderText->Wrap( -1 );
+	viewTaskFrameSizer->Add( taskStatusPlaceholderText, 0, wxALL, 5 );
+
+	roomTitleText = new wxStaticText( this, wxID_ANY, _("Room:"), wxDefaultPosition, wxDefaultSize, 0 );
+	roomTitleText->Wrap( -1 );
+	viewTaskFrameSizer->Add( roomTitleText, 0, wxALL, 5 );
+
+	roomTaskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	viewTaskFrameSizer->Add( roomTaskListBox, 0, wxALL, 5 );
+
+	robotTitleText = new wxStaticText( this, wxID_ANY, _("Robot:"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotTitleText->Wrap( -1 );
+	viewTaskFrameSizer->Add( robotTitleText, 0, wxALL, 5 );
+
+	robotTaskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	viewTaskFrameSizer->Add( robotTaskListBox, 0, wxALL, 5 );
+
+
+	this->SetSizer( viewTaskFrameSizer );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+}
+
+viewTaskFrame::~viewTaskFrame()
 {
 }
