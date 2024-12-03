@@ -42,8 +42,25 @@ void MyRobotInfoFrame::OnRemoveRobotButtonClick(wxCommandEvent& event)
 //in case other classes would benefit from example
 void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
     // robotPropertiesText->SetLabel("ID: " + robot.robotID + " (Size: " + robot.robotSize + ", Function: " + robot.robotFunction + ")"); //ugly for now just a placeholder
-    robotPropertiesText->SetLabel("(Size: " + robot.get_size() + ", Function: " + robot.get_function_type() + ")"); //ugly for now just a placeholder
-    robotStatusText->SetLabel(robot.get_task_status());
+    robotPropertiesText->SetLabel("Size: " + robot.get_size() + ", Function: " + robot.get_function_type()); //ugly for now just a placeholder
+
+    //errorStatus is being logged as "" if there is no error, so change to a more informative message for user
+    std::string errorStatus = robot.get_error_status();
+    if (errorStatus == "")
+    {
+        errorStatus = "None";
+    }
+
+    std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + "%, Water Level: " + std::to_string(robot.get_water_level()) + "%";
+
+    if (userRole == "FE")
+    {
+        robotStatusText->SetLabel(robotInfo + ", Error Status: " + errorStatus);
+    }
+    else
+    {
+        robotStatusText->SetLabel(robotInfo);
+    }
     robotErrorLogText->SetLabel("Errors");
     Layout();
 }

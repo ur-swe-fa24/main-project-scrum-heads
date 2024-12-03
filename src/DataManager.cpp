@@ -194,9 +194,12 @@ void DataManager::AddTask(TaskData& task) {
 
     //getallrobotinfo for input robot ID (retrived from struct)
     //then manually update stuff
+
+    int robot_id = std::stoi(robot_str);
+    int room_num = std::stoi(room_str);
     
-    // // Write the new robot to the MongoDB database (not literally a new robot, but database treats it as one)
-    // mongo_database.write_task(task_assigned_robot);
+    // Write task to the database
+    mongo_database.write_task(robot_id, room_num);
 }
 
 //gets all robots from database, then filters for available robots
