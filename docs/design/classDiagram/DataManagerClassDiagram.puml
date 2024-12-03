@@ -1,0 +1,65 @@
+@startuml DataManagerClassDiagram
+
+' Define the Mongo_Adapter class
+class Mongo_Adapter {
+    +Mongo_Adapter()
+    +void write_robot(const Robots& robot)
+    +Robots read_robot(int id)
+    +vector<Robots> read_all_robots()
+    +string delete_robot(int id)
+    +void delete_all_robots()
+    +void update_robot(int id, int water_level, int battery_level)
+    +vector<int> get_all_ids()
+}
+
+' Define the Robots class
+class Robots {
+    +Robots(int robot_id, string robotSize, int waterLevel, int batteryLevel, string errorStatus, string taskStatus, int taskRoom, string functionType, int location_x, int location_y)
+    +int get_id() const
+    +string get_size() const
+    +int get_water_level() const
+    +int get_battery_level() const
+    +string get_error_status() const
+    +string get_task_status() const
+    +int get_task_room() const
+    +int get_location_x() const
+    +int get_location_y() const
+    +string get_function_type() const
+    +void update_battery_level(int new_level)
+    +void update_water_level(int new_level)
+    +void update_error_status(string status)
+    +void update_task_status(string status)
+}
+
+' Define the RobotData struct
+class RobotData {
+    +string robotID
+    +wxString robotSize
+    +wxString robotFunction
+}
+
+' Define the DataManager class
+class DataManager {
+    +DataManager()
+    +~DataManager()
+    +void SendRobotsData(const vector<RobotData>& robots)
+    +vector<RobotData>& GetRobots()
+    +void AddRobot(RobotData& robot)
+    +void UpdateIds()
+    +string GetIDString()
+    +Robots GetAllRobotInfo(int robotId)
+    +void DeleteRobot(int robotId)
+    -int GetNextAvailableRobotId()
+    -int id
+    -vector<RobotData> robots
+    -vector<int> ids
+    -Mongo_Adapter mongo_database
+}
+
+' Relationships between classes
+DataManager --> Mongo_Adapter : uses
+DataManager --> RobotData : manages
+DataManager --> Robots : interacts
+Mongo_Adapter --> Robots : reads/writes
+
+@enduml

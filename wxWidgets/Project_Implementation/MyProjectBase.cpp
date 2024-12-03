@@ -235,11 +235,17 @@ robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString&
 	robotErrorLogText->Wrap( -1 );
 	robotInfoFrameSizer->Add( robotErrorLogText, 0, wxALL, 5 );
 
+	removeRobotButton = new wxButton( this, wxID_ANY, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotInfoFrameSizer->Add( removeRobotButton, 0, wxALL, 5 );
+
 
 	this->SetSizer( robotInfoFrameSizer );
 	this->Layout();
 
 	this->Centre( wxBOTH );
+
+	// Connect Events
+	removeRobotButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( robotInfoFrame::OnRemoveRobotButtonClick ), NULL, this );
 }
 
 robotInfoFrame::~robotInfoFrame()

@@ -108,5 +108,5 @@ The `Robot_Manager` manages a collection of robots. It stores a list of `Robot` 
 ![Mongo Adapter Class Diagram](MongoAdapterDiagram.png)
 The `Mongo Adapter` is the class that allows MongoDB to be called and utilized in the project easily.
 
-The `Mongo Adapter` implements `Adapter`. These functions allow another class to simply write and read robots. When calling write robots the `Mongo Adapter` will then call the getter functions of the robot passed and add these values into the database. The `Robot` is not changed, but utilized to easilycall the needed information.
+The `Mongo Adapter` implements `Adapter`. These functions allow another class to simply write and read robots. When calling write robots the `Mongo Adapter` will then call the getter functions of the robot passed and add these values into the database. The `Robot` is not changed, but utilized to easily call the needed information.
 

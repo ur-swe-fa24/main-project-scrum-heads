@@ -1,6 +1,12 @@
 #pragma once
 #include "MyProjectBase.h"  // Include the generated base class
 
+
+// struct RobotData {
+//     wxString robotSize;
+//     wxString robotFunction;
+// };
+
 class MyBaseFrame : public baseFrame
 {
 public:
