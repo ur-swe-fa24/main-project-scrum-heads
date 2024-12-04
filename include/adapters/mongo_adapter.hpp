@@ -23,6 +23,13 @@ namespace adapters {
             void delete_all_robots() override;
             void update_robot(int id, int water_level, int battery_level) override;
             std::vector<int> get_all_ids() override;
+
+            // Room table Information
+            void write_rooms(std::vector<Room> rooms) override;
+            void update_room_availability(int id, std::string availability) override;
+            Room read_room(int id) override;
+            void delete_rooms() override;
+
             // Task tables
             void write_task(robots::Robots new_task) override;
             void write_task(int id, int room) override;

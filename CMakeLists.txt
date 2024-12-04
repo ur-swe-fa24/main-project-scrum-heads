@@ -29,6 +29,7 @@ endif()
 include_directories(include)
 
 # Create libraries
+
 add_library(robot_lib simulation/robot_manager.cpp)
 target_include_directories(robot_lib PUBLIC include)
 add_library(adapter_lib src/mongo_adapter.cpp)
