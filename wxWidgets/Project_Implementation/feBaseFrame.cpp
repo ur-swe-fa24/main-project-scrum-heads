@@ -92,7 +92,7 @@ void MyFEBaseFrame::OnFERefreshButtonClick(wxCommandEvent& event)
     // // if (dataManager) {
     // //     dataManager->SendRobotsData(robots);
     // // }
-    baseFrame->HandleRefreshButton(event, robotListBox, taskListBox);
+    baseFrame->HandleRefreshButton(event, robotListBox, taskListBox, roomListBox);
 }
 
 void MyFEBaseFrame::OnAddRobotButtonClick(wxCommandEvent& event)
@@ -191,7 +191,7 @@ void MyFEBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
     // First this: makes the current feFrame the parent window of the created addTaskFrame
     // Second this: passes instance of feFrame as a pointer to itself, allowing created addTaskFrame to communicate directly with it
     // necessary for taking the robot info added in the addTaskFrame and transporting it to feBaseFrame where field engineer can view
-    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, robotListBox, taskListBox, dataManager, baseFrame);
+    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, robotListBox, taskListBox, roomListBox, dataManager, baseFrame);
     addTaskFrame->Show();
 }
 

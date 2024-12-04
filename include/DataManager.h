@@ -38,6 +38,9 @@ public:
     //getter function for vector of TaskData
     std::vector<TaskData>& GetTasks();
 
+    //getter function for vector of rooms from database
+    std::vector<Room> GetRooms();
+
     //method for adding robot (receiving robotdata from UI)
     void AddRobot(RobotData& robot);
     void UpdateIds();
@@ -55,6 +58,9 @@ public:
     //gets available robots for task allocation
     std::vector<robots::Robots> GetAvailableRobots();
 
+    //gets available rooms for task allocation
+    std::vector<Room> GetAvailableRooms();
+
     //needs implementation!
     //gets available rooms for task allocation
     // std::vector<rooms::Rooms> GetAvailableRooms();
@@ -71,4 +77,5 @@ private:
 
     void AddRooms();
     //add vector of rooms here
+    std::vector<Room> roomVector;
 };

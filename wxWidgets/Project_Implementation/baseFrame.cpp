@@ -110,7 +110,7 @@ void MyBaseFrame::HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListB
     }
 }
 
-void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox)
+void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox, wxListBox* roomListBox)
 {
     // Implement necessary button press logic here
     //this refresh button click will have similar logic to the creation of the original feFrame,
@@ -127,11 +127,16 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
 
     std::vector<TaskData>& tasks = dataManager->GetTasks();
 
+    std::vector<Room> rooms = dataManager->GetRooms();
+
     // Clear the existing display in the robotListBox (so same robot doesn't get added multiple times)
     robotListBox->Clear();
 
     // Clear the existing display in the taskListBox (so same task doesn't get added multiple times)
     taskListBox->Clear();
+
+    // Clear the existing display in the taskListBox (so same task doesn't get added multiple times)
+    roomListBox->Clear();
 
     // Iterate through the vector and display each robot's information
     for (RobotData& robot : robots) {
@@ -161,9 +166,56 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
         robotListBox->Append(robotInfo);  // Adding each robot info to the ListBox
     }
 
+    //iterate through tasks and append info to list box
+    //need to modify to get ongoing info
     for (TaskData& task : tasks) {
+        int robotID = std::stoi(task.taskRobot.robotID);
+
+        //creates string to hold status as color
+        std::string statusBubble;
+
+        //note: these availabilities may not be the correct words
+        std::string taskStatus = "need to get task status here";
+        if (taskStatus == "Ongoing")
+        {
+            statusBubble = "🟢";
+        }
+        else
+        {
+            statusBubble = "🔴";
+        }
+
+
         wxString taskInfo = wxString::Format("Room: " + task.taskRoom + ", Robot: " + task.taskRobot.robotID); //will be ugly for now a placeholder for ID or whatever else later
         taskListBox->Append(taskInfo);  // Adding each robot info to the ListBox
+    }
+
+    //iterate through rooms and append info to list box
+    for (Room room : rooms)
+    {
+        //creates string to hold status as color
+        std::string statusBubble;
+
+        //note: these availabilities may not be the correct words
+        std::string roomAvailability = room.getAvailability();
+        if (roomAvailability == "Available")
+        {
+            statusBubble = "🟢";
+        }
+        else if (roomAvailability == "Busy")
+        {
+            statusBubble = "🟡";
+        }
+        else if (roomAvailability == "Unavailable")
+        {
+            statusBubble = "🔴";
+        }
+
+        std::string roomID = std::to_string(room.getRoomNumber());
+        std::string roomSize = room.getRoomSize();
+        std::string floorType = room.getFloorType();
+        std::string roomInfo = statusBubble + "ID: " + roomID + " (Size: " + roomSize + ", Floor Type: " + floorType + ")";
+        roomListBox->Append(roomInfo);
     }
 
     // // Pass the robots data to the controller

@@ -26,7 +26,7 @@ public:
 
     void HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListBox);
 
-    void HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox);
+    void HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox, wxListBox* roomListBox);
 
     void AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection);
 

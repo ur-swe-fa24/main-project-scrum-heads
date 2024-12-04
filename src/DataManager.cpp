@@ -66,12 +66,15 @@ void DataManager::AddRooms()
         // std::cout << roomAvailability << std::endl;
 
         //make room with 4 parameters here, append to vector of rooms
+        Room room (roomID, roomSize, floorType, roomAvailability);
+        roomVector.push_back(room);
     }
 
     // Close the file
     file.close();
 
     //write vector of rooms to database and simulation
+    mongo_database.write_rooms(roomVector);
 }
 
 
@@ -183,7 +186,6 @@ void DataManager::AddTask(TaskData& task) {
 }
 
 //gets all robots from database, then filters for available robots
-//this part should be fully functional, but right now read_all_robots doesn't include task status string
 std::vector<robots::Robots> DataManager::GetAvailableRobots()
 {
     //holds all robots
@@ -204,4 +206,34 @@ std::vector<robots::Robots> DataManager::GetAvailableRobots()
     }
 
     return availableRobotVector;
+}
+
+//gets all rooms from database, then filters for available rooms
+std::vector<Room> DataManager::GetRooms()
+{
+    // //gets all rooms from the database
+    // std::vector<Room> roomVector = mongo_database.read_all_rooms();
+
+    // //returns all rooms
+    // return roomVector;
+}
+
+//gets all rooms from database, then filters for available rooms
+std::vector<Room> DataManager::GetAvailableRooms()
+{
+    // //holds all robots
+    // std::vector<Room> roomVector = mongo_database.read_all_rooms();
+
+    // //holds available robots
+    // std::vector<Room> availableRoomVector;
+
+    // //iterate through robot vector to find available robots
+    // for (Room room : roomVector) {
+    //     if (room.getAvailability() == "Available")
+    //     {
+    //         availableRoomVector.push_back(room);
+    //     }
+    // }
+
+    // return availableRoomVector;
 }
