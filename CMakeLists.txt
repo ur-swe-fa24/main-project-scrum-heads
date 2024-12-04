@@ -33,10 +33,10 @@ include_directories(include)
 # target_include_directories(robot_lib PUBLIC include)
 add_library(adapter_lib src/mongo_adapter.cpp)
 target_link_libraries(adapter_lib mongo::mongocxx_shared)
-# add_library(data_lib src/DataManager.cpp)
-# target_link_libraries(data_lib adapter_lib wx::net wx::core wx::base)
+add_library(data_lib src/DataManager.cpp)
+target_link_libraries(data_lib adapter_lib wx::net wx::core wx::base)
 
 # Add subdirectories for components
 add_subdirectory(app)
 add_subdirectory(tests)
-# add_subdirectory(wxWidgets)
+add_subdirectory(wxWidgets)
