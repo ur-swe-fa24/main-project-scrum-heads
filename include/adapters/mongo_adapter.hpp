@@ -23,11 +23,19 @@ namespace adapters {
             void delete_all_robots() override;
             void update_robot(int id, int water_level, int battery_level) override;
             std::vector<int> get_all_ids() override;
+
+            // Room table Information
+            void write_rooms(std::vector<Room> rooms) override;
+            void update_room_availability(int id, std::string availability) override;
+            Room read_room(int id) override;
+            void delete_rooms() override;
+            std::vector<Room> read_all_rooms() override;
+
             // Task tables
             void write_task(robots::Robots new_task) override;
             void write_task(int id, int room) override;
             robots::Robots read_ongoing_task(int id) override;
-            std::vector<robots::Robots> read__all_ongoing_tasks() override;
+            std::vector<robots::Robots> read_all_ongoing_tasks() override;
             std::vector<robots::Robots> read_robot_tasks(int id) override;
             std::vector<robots::Robots> read_all_tasks() override;
             void update_task_status(std::vector<robots::Robots> updates) override;
@@ -37,6 +45,7 @@ namespace adapters {
 
             //Error Log
             std::string get_error_log(int id) override;
+            void delete_error_log() override;
 
             
         private:

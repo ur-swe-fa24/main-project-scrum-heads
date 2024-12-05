@@ -41,7 +41,6 @@ target_include_directories(robot_lib PUBLIC
 
 # Link dependencies for robot_lib
 target_link_libraries(robot_lib PUBLIC)
-
 add_library(adapter_lib src/mongo_adapter.cpp)
 target_link_libraries(adapter_lib mongo::mongocxx_shared)
 add_library(data_lib src/DataManager.cpp)

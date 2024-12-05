@@ -43,8 +43,11 @@ void DataManager::AddRobot(RobotData& robot) {
     std::string size_str = std::string(robot.robotSize.mb_str());
     std::string function_str = std::string(robot.robotFunction.mb_str());
 
+    //temporary room placeholder
+    Room room(0, "", "", "");
+
     // Create a new robot instance with the new ID and the provided robot data
-    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", 0, function_str, 0);
+    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", room, function_str, 0);
     
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
@@ -118,9 +121,12 @@ void DataManager::AddTask(TaskData& task) {
 
     //getallrobotinfo for input robot ID (retrived from struct)
     //then manually update stuff
+
+    int robot_id = std::stoi(robot_str);
+    int room_num = std::stoi(room_str);
     
-    // // Write the new robot to the MongoDB database (not literally a new robot, but database treats it as one)
-    // mongo_database.write_task(task_assigned_robot);
+    // Write task to the database
+    mongo_database.write_task(robot_id, room_num);
 }
 
 //gets all robots from database, then filters for available robots

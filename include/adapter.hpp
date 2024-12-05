@@ -17,11 +17,18 @@ class Adapter {
         virtual void update_robot(int id, int water_level, int battery_level) = 0;
         virtual std::vector<int> get_all_ids() = 0;
 
+        //Room table information
+        virtual void write_rooms(std::vector<Room> rooms) = 0;
+        virtual void update_room_availability(int id, std::string availability) = 0;
+        virtual Room read_room(int id) = 0;
+        virtual void delete_rooms() = 0;
+        virtual std::vector<Room> read_all_rooms() = 0;
+
         // Task table functions
         virtual void write_task(robots::Robots new_task) = 0;
         virtual void write_task(int id, int room) = 0;
         virtual robots::Robots read_ongoing_task(int id) = 0;
-        virtual std::vector<robots::Robots> read__all_ongoing_tasks() = 0;
+        virtual std::vector<robots::Robots> read_all_ongoing_tasks() = 0;
         virtual std::vector<robots::Robots> read_robot_tasks(int id) = 0;
         virtual std::vector<robots::Robots> read_all_tasks() = 0;
         virtual void update_task_status(std::vector<robots::Robots> updates) = 0;
@@ -30,6 +37,7 @@ class Adapter {
 
         // Error Log stuff
         virtual std::string get_error_log(int id) = 0;
+        virtual void delete_error_log() = 0;
 
 };
 

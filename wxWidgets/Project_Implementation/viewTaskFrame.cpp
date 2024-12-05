@@ -23,7 +23,9 @@ void MyViewTaskFrame::SetTaskData(robots::Robots robot) {
     {
         taskStatusPlaceholderText->SetLabel(robot.get_task_status());
     }
-    roomTaskListBox->Append(std::to_string(robot.get_task_room()));
+    Room room = robot.get_task_room();
+    int roomID = room.getRoomNumber();
+    roomTaskListBox->Append(std::to_string(roomID));
     robotTaskListBox->Append(std::to_string(robot.get_id()));
     Layout();
 }
