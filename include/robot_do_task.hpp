@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "robot.hpp"
-#include "room_task.hpp"
 
 namespace robot_tasks {
 
