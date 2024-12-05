@@ -224,6 +224,25 @@ void adapters::Mongo_Adapter::delete_rooms(){
     db_["room"].drop( {} );
 }
 
+std::vector<Room> adapters::Mongo_Adapter::read_all_rooms(){
+    std::vector<Room> rooms = {};
+    auto cursor = db_["room"].find({});
+    for( auto&& doc : cursor) {
+        auto information = bsoncxx::to_json(doc);
+        json room_Doc = json::parse(information);
+
+        // Assuming Doc is a JSON object, access fields by their keys.
+        auto Id = room_Doc["Room Id"];
+        auto Size = room_Doc["Room Size"];
+        auto Availability = room_Doc["Availability"];
+        auto Floor_type = room_Doc["Floor Type"];
+
+        Room room(Id, Size, Floor_type, Availability);
+
+        rooms.push_back(room);
+    }
+    return rooms;
+}
 
 
 
@@ -253,8 +272,12 @@ void adapters::Mongo_Adapter::delete_rooms(){
 void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
     // Make sure the robot is not already doing a task
     auto result = db_["robot"].find_one(make_document(kvp("_id", new_task.get_id()), kvp("Task Status", "Ongoing")));
+    auto result1 = db_["room"].find_one(make_document(kvp("Room Id", new_task.get_task_room().getRoomNumber()), kvp("Availability", "Busy")));
     if(result){
         throw std::invalid_argument{ "Robot In Progress of Task" };
+    }
+    if(result1){
+        throw std::invalid_argument{ "Robot In Progress of In Room" };
     }
     // If the robot is not doing task then we should write this new task to a table
     db_["task"].insert_one(make_document(
@@ -273,7 +296,7 @@ void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
     db_["robot"].update_one(query_filter.view(), update_doc1.view());
 
     //Update room to be unavailable
-    update_room_availability(new_task.get_task_room().getRoomNumber(), "Unavailable");
+    update_room_availability(new_task.get_task_room().getRoomNumber(), "Busy");
 }
 
 /**
@@ -282,8 +305,12 @@ void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
 void adapters::Mongo_Adapter::write_task(int id, int room){
     // Make sure the robot is not already doing a task
     auto result = db_["robot"].find_one(make_document(kvp("_id", id), kvp("Task Status", "Ongoing")));
+    auto result1 = db_["room"].find_one(make_document(kvp("Room Id", room), kvp("Availability", "Busy")));
     if(result){
         throw std::invalid_argument{ "Robot In Progress of Task" };
+    }
+    if(result1){
+        throw std::invalid_argument{ "Robot In Progress of In Room" };
     }
 
     robots::Robots robot_info = read_robot(id);
@@ -305,7 +332,7 @@ void adapters::Mongo_Adapter::write_task(int id, int room){
     //Also update the room to unavailable
 
     //Update room to be unavailable
-    update_room_availability(room, "Unavailable");
+    update_room_availability(room, "Busy");
 }
 
 /**
@@ -343,7 +370,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                     kvp("robot_id", update.get_id()),
                     kvp("Room", update.get_task_room().getRoomNumber()),
                     kvp("Error Status", update.get_error_status()),
-                    kvp("Task Status", update.get_task_status()),
+                    kvp("Task Status", "Cancelled"),
                     kvp("Task Percent", update.get_task_percent())
                     )
                 ));
@@ -515,8 +542,9 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
         std::cout << Function_type << std::endl;
         auto Task_Status = robot_info.get_task_status();
         std::cout << Task_Status << std::endl;
+        auto Error_Status = robot_info.get_error_status();
         Room room(0, "", "", "");
-        robots::Robots new_robot = robots::Robots(id, Size, Water_Level, Battery_Level, "", Task_Status, room, Function_type, 0);
+        robots::Robots new_robot = robots::Robots(id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, 0);
         return new_robot;
     }
 }

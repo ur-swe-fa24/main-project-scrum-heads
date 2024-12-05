@@ -22,6 +22,7 @@ class Adapter {
         virtual void update_room_availability(int id, std::string availability) = 0;
         virtual Room read_room(int id) = 0;
         virtual void delete_rooms() = 0;
+        virtual std::vector<Room> read_all_rooms() = 0;
 
         // Task table functions
         virtual void write_task(robots::Robots new_task) = 0;
