@@ -29,6 +29,7 @@ namespace adapters {
             void update_room_availability(int id, std::string availability) override;
             Room read_room(int id) override;
             void delete_rooms() override;
+            std::vector<Room> read_all_rooms() override;
 
             // Task tables
             void write_task(robots::Robots new_task) override;
