@@ -521,7 +521,7 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
     }
 }
  /**
-  * Read all ongoing tasks of all the robots
+  * Read all ongoing tasks of all the robots test
   */
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_ongoing_tasks(){
     std::vector<robots::Robots> ongoing_tasks;
