@@ -61,9 +61,8 @@ public:
     //gets available rooms for task allocation
     std::vector<Room> GetAvailableRooms();
 
-    //needs implementation!
-    //gets available rooms for task allocation
-    // std::vector<rooms::Rooms> GetAvailableRooms();
+    //gets all tasks (present and past)
+    std::vector<robots::Robots> GetTasksTable();
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID

@@ -6,6 +6,11 @@
 
 DataManager::DataManager() 
 {
+    //wipe database clean
+    mongo_database.delete_all_robots();
+    mongo_database.delete_all_tasks();
+    mongo_database.delete_error_log();
+    
     // Initialize the MongoDB client and update the list of IDs
     UpdateIds();
 
@@ -150,6 +155,16 @@ robots::Robots DataManager::GetAllRobotInfo(int robotId)
     return clicked_robot;
 }
 
+//gets all robot info (i.e., all of the info specified in robot class) for a specified ID
+//used to display necessary information to the user in GUI
+std::vector<robots::Robots> DataManager::GetTasksTable()
+{
+    //temporary placeholder that just creates a robot pre-database integration
+    // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
+    std::vector<robots::Robots> tasks = mongo_database.read_all_tasks();
+    return tasks;
+}
+
 void DataManager::DeleteRobot(int robotId)
 {
     //first remove the robot from the database
@@ -212,23 +227,24 @@ std::vector<robots::Robots> DataManager::GetAvailableRobots()
 std::vector<Room> DataManager::GetRooms()
 {
     // //gets all rooms from the database
-    // std::vector<Room> roomVector = mongo_database.read_all_rooms();
+    // std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
 
     // //returns all rooms
-    // return roomVector;
+    // return databaseRoomVector;
+    return roomVector; //temporailty just returning the local room vector
 }
 
 //gets all rooms from database, then filters for available rooms
 std::vector<Room> DataManager::GetAvailableRooms()
 {
     // //holds all robots
-    // std::vector<Room> roomVector = mongo_database.read_all_rooms();
+    // std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
 
     // //holds available robots
     // std::vector<Room> availableRoomVector;
 
     // //iterate through robot vector to find available robots
-    // for (Room room : roomVector) {
+    // for (Room room : databaseRoomVector) {
     //     if (room.getAvailability() == "Available")
     //     {
     //         availableRoomVector.push_back(room);
