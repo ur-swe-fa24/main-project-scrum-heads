@@ -63,13 +63,26 @@ feBaseFrame::feBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	feBaseFrameSizer->Add( addRobotButton, 0, wxALL, 5 );
 
 	robotListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	robotListBox->SetMinSize( wxSize( 500,100 ) );
+
 	feBaseFrameSizer->Add( robotListBox, 0, wxALL, 5 );
 
 	addTaskButton = new wxButton( this, wxID_ANY, _("Add Task"), wxDefaultPosition, wxDefaultSize, 0 );
 	feBaseFrameSizer->Add( addTaskButton, 0, wxALL, 5 );
 
 	taskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	taskListBox->SetMinSize( wxSize( 500,100 ) );
+
 	feBaseFrameSizer->Add( taskListBox, 0, wxALL, 5 );
+
+	roomLabelText = new wxStaticText( this, wxID_ANY, _("Rooms:"), wxDefaultPosition, wxDefaultSize, 0 );
+	roomLabelText->Wrap( -1 );
+	feBaseFrameSizer->Add( roomLabelText, 0, wxALL, 5 );
+
+	roomListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	roomListBox->SetMinSize( wxSize( 500,100 ) );
+
+	feBaseFrameSizer->Add( roomListBox, 0, wxALL, 5 );
 
 
 	this->SetSizer( feBaseFrameSizer );
@@ -103,14 +116,31 @@ bmBaseFrame::bmBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	bmTitleText->Wrap( -1 );
 	bmBaseFrameSizer->Add( bmTitleText, 0, wxALIGN_CENTER|wxALL, 5 );
 
+	robotsLabelText = new wxStaticText( this, wxID_ANY, _("Robots:"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotsLabelText->Wrap( -1 );
+	bmBaseFrameSizer->Add( robotsLabelText, 0, wxALL, 5 );
+
 	robotListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	robotListBox->SetMinSize( wxSize( 500,100 ) );
+
 	bmBaseFrameSizer->Add( robotListBox, 0, wxALL, 5 );
 
 	addTaskButton = new wxButton( this, wxID_ANY, _("Add Task"), wxDefaultPosition, wxDefaultSize, 0 );
 	bmBaseFrameSizer->Add( addTaskButton, 0, wxALL, 5 );
 
 	taskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	taskListBox->SetMinSize( wxSize( 500,100 ) );
+
 	bmBaseFrameSizer->Add( taskListBox, 0, wxALL, 5 );
+
+	roomLabelText = new wxStaticText( this, wxID_ANY, _("Rooms:"), wxDefaultPosition, wxDefaultSize, 0 );
+	roomLabelText->Wrap( -1 );
+	bmBaseFrameSizer->Add( roomLabelText, 0, wxALL, 5 );
+
+	roomListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	roomListBox->SetMinSize( wxSize( 500,100 ) );
+
+	bmBaseFrameSizer->Add( roomListBox, 0, wxALL, 5 );
 
 
 	this->SetSizer( bmBaseFrameSizer );
@@ -143,14 +173,31 @@ bsBaseFrame::bsBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	bsTitleText->Wrap( -1 );
 	bsBaseFrameSizer->Add( bsTitleText, 0, wxALIGN_CENTER|wxALL, 5 );
 
+	robotsLabelText = new wxStaticText( this, wxID_ANY, _("Robots:"), wxDefaultPosition, wxDefaultSize, 0 );
+	robotsLabelText->Wrap( -1 );
+	bsBaseFrameSizer->Add( robotsLabelText, 0, wxALL, 5 );
+
 	robotListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	robotListBox->SetMinSize( wxSize( 500,100 ) );
+
 	bsBaseFrameSizer->Add( robotListBox, 0, wxALL, 5 );
 
 	addTaskButton = new wxButton( this, wxID_ANY, _("Add Task"), wxDefaultPosition, wxDefaultSize, 0 );
 	bsBaseFrameSizer->Add( addTaskButton, 0, wxALL, 5 );
 
 	taskListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	taskListBox->SetMinSize( wxSize( 500,100 ) );
+
 	bsBaseFrameSizer->Add( taskListBox, 0, wxALL, 5 );
+
+	roomLabelText = new wxStaticText( this, wxID_ANY, _("Rooms:"), wxDefaultPosition, wxDefaultSize, 0 );
+	roomLabelText->Wrap( -1 );
+	bsBaseFrameSizer->Add( roomLabelText, 0, wxALL, 5 );
+
+	roomListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	roomListBox->SetMinSize( wxSize( 500,100 ) );
+
+	bsBaseFrameSizer->Add( roomListBox, 0, wxALL, 5 );
 
 
 	this->SetSizer( bsBaseFrameSizer );
@@ -176,8 +223,12 @@ smBaseFrame::smBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	wxBoxSizer* smBaseFrameSizer;
 	smBaseFrameSizer = new wxBoxSizer( wxVERTICAL );
 
-	smButton = new wxButton( this, wxID_ANY, _("Senior Management Info"), wxDefaultPosition, wxDefaultSize, 0 );
-	smBaseFrameSizer->Add( smButton, 0, wxALL, 5 );
+	smRefreshButton = new wxButton( this, wxID_ANY, _("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
+	smBaseFrameSizer->Add( smRefreshButton, 0, wxALL, 5 );
+
+	smTitleText = new wxStaticText( this, wxID_ANY, _("Senior Management"), wxDefaultPosition, wxDefaultSize, 0 );
+	smTitleText->Wrap( -1 );
+	smBaseFrameSizer->Add( smTitleText, 0, wxALIGN_CENTER|wxALL, 5 );
 
 
 	this->SetSizer( smBaseFrameSizer );
@@ -186,7 +237,7 @@ smBaseFrame::smBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	smButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( smBaseFrame::OnSMButtonClick ), NULL, this );
+	smRefreshButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( smBaseFrame::OnSMRefreshButtonClick ), NULL, this );
 }
 
 smBaseFrame::~smBaseFrame()
@@ -311,6 +362,8 @@ addTaskFrame::addTaskFrame( wxWindow* parent, wxWindowID id, const wxString& tit
 	addTaskFrameSizer->Add( selectRoomsTitleText, 0, wxALL, 5 );
 
 	roomSelectionListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	roomSelectionListBox->SetMinSize( wxSize( 500,100 ) );
+
 	addTaskFrameSizer->Add( roomSelectionListBox, 0, wxALL, 5 );
 
 	selectRobotsTitleText = new wxStaticText( this, wxID_ANY, _("Select Robot:"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -318,6 +371,8 @@ addTaskFrame::addTaskFrame( wxWindow* parent, wxWindowID id, const wxString& tit
 	addTaskFrameSizer->Add( selectRobotsTitleText, 0, wxALL, 5 );
 
 	robotSelectionListBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	robotSelectionListBox->SetMinSize( wxSize( 500,100 ) );
+
 	addTaskFrameSizer->Add( robotSelectionListBox, 0, wxALL, 5 );
 
 	createTaskButton = new wxButton( this, wxID_ANY, _("Create Task"), wxDefaultPosition, wxDefaultSize, 0 );

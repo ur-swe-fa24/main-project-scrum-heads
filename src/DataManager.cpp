@@ -1,11 +1,21 @@
 #include "DataManager.h"
 #include <algorithm>  // Include for std::find
 #include <wx/string.h>
+#include <fstream>
+#include <sstream>
 
 DataManager::DataManager() 
 {
+    //wipe database clean
+    mongo_database.delete_all_robots();
+    mongo_database.delete_all_tasks();
+    mongo_database.delete_error_log();
+    
     // Initialize the MongoDB client and update the list of IDs
     UpdateIds();
+
+    // Add rooms from the text file
+    AddRooms();
 }
 
 // Destructor: Handles cleanup, if necessary.
@@ -20,6 +30,57 @@ DataManager::~DataManager() {}
 
 //     // You can then call the database model to save or update robot data here
 // }
+
+void DataManager::AddRooms()
+{
+    // Open the file
+    std::ifstream file("../include/rooms.txt");
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open the file!" << std::endl;
+    }
+
+    // Read file line by line
+    std::string line;
+    while (std::getline(file, line)) {
+
+        //ignore empty lines or lines starting with comments
+        if (line.empty() || line[0] == '#') {
+            continue;
+        }
+
+        //used for parsing string
+        std::stringstream ss(line);
+
+        //room id, size, type, and availability
+        int roomID;
+        std::string roomSize, floorType, roomAvailability;
+
+        // Read the room ID
+        std::string temp;
+        std::getline(ss, temp, ','); // Extract up to the first comma
+        roomID = std::stoi(temp);        // Convert to an integer
+
+        // Read the strings
+        std::getline(ss, roomSize, ',');  // Extract the second field
+        std::getline(ss, floorType, ',');  // Extract the third field
+        std::getline(ss, roomAvailability, '.'); // Extract the fourth field
+
+        // std::cout << roomID << std::endl;
+        // std::cout << roomSize << std::endl;
+        // std::cout << floorType << std::endl;
+        // std::cout << roomAvailability << std::endl;
+
+        //make room with 4 parameters here, append to vector of rooms
+        Room room (roomID, roomSize, floorType, roomAvailability);
+        roomVector.push_back(room);
+    }
+
+    // Close the file
+    file.close();
+
+    //write vector of rooms to database and simulation
+    mongo_database.write_rooms(roomVector);
+}
 
 
 // Getter method for vector of RobotData (just ID, size, and function)
@@ -94,6 +155,16 @@ robots::Robots DataManager::GetAllRobotInfo(int robotId)
     return clicked_robot;
 }
 
+//gets all robot info (i.e., all of the info specified in robot class) for a specified ID
+//used to display necessary information to the user in GUI
+std::vector<robots::Robots> DataManager::GetTasksTable()
+{
+    //temporary placeholder that just creates a robot pre-database integration
+    // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
+    std::vector<robots::Robots> tasks = mongo_database.read_all_tasks();
+    return tasks;
+}
+
 void DataManager::DeleteRobot(int robotId)
 {
     //first remove the robot from the database
@@ -130,7 +201,6 @@ void DataManager::AddTask(TaskData& task) {
 }
 
 //gets all robots from database, then filters for available robots
-//this part should be fully functional, but right now read_all_robots doesn't include task status string
 std::vector<robots::Robots> DataManager::GetAvailableRobots()
 {
     //holds all robots
@@ -151,4 +221,35 @@ std::vector<robots::Robots> DataManager::GetAvailableRobots()
     }
 
     return availableRobotVector;
+}
+
+//gets all rooms from database, then filters for available rooms
+std::vector<Room> DataManager::GetRooms()
+{
+    // //gets all rooms from the database
+    // std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
+
+    // //returns all rooms
+    // return databaseRoomVector;
+    return roomVector; //temporailty just returning the local room vector
+}
+
+//gets all rooms from database, then filters for available rooms
+std::vector<Room> DataManager::GetAvailableRooms()
+{
+    // //holds all robots
+    // std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
+
+    // //holds available robots
+    // std::vector<Room> availableRoomVector;
+
+    // //iterate through robot vector to find available robots
+    // for (Room room : databaseRoomVector) {
+    //     if (room.getAvailability() == "Available")
+    //     {
+    //         availableRoomVector.push_back(room);
+    //     }
+    // }
+
+    // return availableRoomVector;
 }

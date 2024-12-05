@@ -69,6 +69,8 @@ class feBaseFrame : public wxFrame
 		wxListBox* robotListBox;
 		wxButton* addTaskButton;
 		wxListBox* taskListBox;
+		wxStaticText* roomLabelText;
+		wxListBox* roomListBox;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
@@ -80,7 +82,7 @@ class feBaseFrame : public wxFrame
 
 	public:
 
-		feBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		feBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 764,524 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~feBaseFrame();
 
@@ -96,9 +98,12 @@ class bmBaseFrame : public wxFrame
 	protected:
 		wxButton* bmRefreshButton;
 		wxStaticText* bmTitleText;
+		wxStaticText* robotsLabelText;
 		wxListBox* robotListBox;
 		wxButton* addTaskButton;
 		wxListBox* taskListBox;
+		wxStaticText* roomLabelText;
+		wxListBox* roomListBox;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
@@ -109,7 +114,7 @@ class bmBaseFrame : public wxFrame
 
 	public:
 
-		bmBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		bmBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 696,515 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~bmBaseFrame();
 
@@ -125,9 +130,12 @@ class bsBaseFrame : public wxFrame
 	protected:
 		wxButton* bsRefreshButton;
 		wxStaticText* bsTitleText;
+		wxStaticText* robotsLabelText;
 		wxListBox* robotListBox;
 		wxButton* addTaskButton;
 		wxListBox* taskListBox;
+		wxStaticText* roomLabelText;
+		wxListBox* roomListBox;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
@@ -138,7 +146,7 @@ class bsBaseFrame : public wxFrame
 
 	public:
 
-		bsBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		bsBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 711,528 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~bsBaseFrame();
 
@@ -152,10 +160,11 @@ class smBaseFrame : public wxFrame
 	private:
 
 	protected:
-		wxButton* smButton;
+		wxButton* smRefreshButton;
+		wxStaticText* smTitleText;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void OnSMButtonClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSMRefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
@@ -247,7 +256,7 @@ class addTaskFrame : public wxFrame
 
 	public:
 
-		addTaskFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		addTaskFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 687,462 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~addTaskFrame();
 

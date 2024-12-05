@@ -5,7 +5,7 @@
 class MyAddTaskFrame : public addTaskFrame
 {
 public:
-    MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxListBox* taskListBox, DataManager* dataManager, MyBaseFrame* baseFrame);
+    MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxListBox* taskListBox, wxListBox* roomListBox,DataManager* dataManager, MyBaseFrame* baseFrame);
 
 
 protected:
@@ -27,16 +27,22 @@ private:
     // Method that checks the above boolean values are both set to true
     void CheckSelections();
 
+    //pointer to dataManager
     DataManager* dataManager;
 
     //variable to hold target robot to display UI info when giving robot a task
     RobotData targetRobot;
 
+    //vector to hold available robots
     std::vector <robots::Robots> availableRobotVector;
+
+    //vector to hold available rooms
+    std::vector <Room> availableRoomsVector;
 
     //pointers to list boxes
     wxListBox* localRobotListBox;
     wxListBox* localTaskListBox;
+    wxListBox* localRoomListBox;
 
     MyBaseFrame* baseFrame;  // Pointer to the baseFrame
 };
