@@ -6,7 +6,7 @@
 class Room {
 private:
     int room_number_;            // Room number
-    std::string room_size_;      // Room size in a string format (e.g., "25 sqm")
+    std::string room_size_;      // Room size in a string format (e.g., "small")
     std::string floor_type_;     // Floor type (e.g., "Carpet", "Tile", "Wood")
     std::string availability_;   // Availability status (e.g., "Available", "Not Available")
 

@@ -29,28 +29,28 @@ target_link_libraries(test_mongodb
         adapter_lib
 )
 
-# Define test_simulation executable
-add_executable(test_simulation 
-    test_simulation.cpp
-    ../src/robot.cpp
-    ../simulation/robot_manager.cpp # Include RobotManager source file
-)
+# # Define test_simulation executable
+# add_executable(test_simulation 
+#     test_simulation.cpp
+#     ../src/robot.cpp
+#     ../simulation/robot_manager.cpp # Include RobotManager source file
+# )
 
-target_include_directories(test_simulation
-    PRIVATE
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-)
+# target_include_directories(test_simulation
+#     PRIVATE
+#     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+# )
 
-target_compile_features(test_simulation PRIVATE cxx_std_17)
+# target_compile_features(test_simulation PRIVATE cxx_std_17)
 
-target_link_libraries(test_simulation
-  PRIVATE
-    Catch2::Catch2WithMain
-    spdlog::spdlog_header_only
-    robot_do_task
-    room_task
-    adapter_lib         # Include adapter_lib if needed
-)
+# target_link_libraries(test_simulation
+#   PRIVATE
+#     Catch2::Catch2WithMain
+#     spdlog::spdlog_header_only
+#     robot_do_task
+#     room_task
+#     adapter_lib         # Include adapter_lib if needed
+# )
 
 
 add_executable(test_datamanager 
