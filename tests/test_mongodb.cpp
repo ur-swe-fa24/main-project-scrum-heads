@@ -508,7 +508,7 @@ TEST_CASE("Mongo Adapter Write Task test error") {
     mongo_other.write_rooms(rooms);
 
     Room room(3, "Small", "Tile", "Available");
-    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", room, "Scrub", 0);
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "Available", room, "Scrub", 0);
     mongo_other.write_robot(temp_robot1);
     mongo_other.write_task(temp_robot1);
 
@@ -538,12 +538,12 @@ TEST_CASE("Mongo Adapter Write Task test error 2") {
     mongo_other.write_rooms(rooms);
 
     Room room(0, "", "", "");
-    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", room, "Scrub", 0);
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "Available", room, "Scrub", 0);
     mongo_other.write_robot(temp_robot1);
     mongo_other.write_task(1, 3);
 
 
-    robots::Robots temp_robot2(1, "Large", 50, 100, "", "", room, "Scrub", 0);
+    // robots::Robots temp_robot2(1, "Large", 50, 100, "", "Available", room, "Scrub", 0);
     REQUIRE_THROWS( mongo_other.write_task(1, 2) );  
 
     mongo_other.delete_all_robots();  
@@ -568,7 +568,7 @@ TEST_CASE("Mongo Adapter Write Task test error 3") {
     mongo_other.write_rooms(rooms);
 
     Room room(0, "", "", "");
-    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", room, "Scrub", 0);
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "Available", room, "Scrub", 0);
     mongo_other.write_robot(temp_robot1);
     mongo_other.write_task(1, 3);
 
@@ -577,7 +577,7 @@ TEST_CASE("Mongo Adapter Write Task test error 3") {
     REQUIRE(room_2.getAvailability() == "Busy");
 
 
-    robots::Robots temp_robot2(2, "Large", 50, 100, "", "", room, "Scrub", 0);
+    robots::Robots temp_robot2(2, "Large", 50, 100, "", "Available", room, "Scrub", 0);
     mongo_other.write_robot(temp_robot2);
     REQUIRE_THROWS( mongo_other.write_task(2, 3) );  
 
@@ -608,9 +608,9 @@ TEST_CASE("Mongo Adapter Update Status") {
 
 
     Room room(0, "", "", "");
-    robots::Robots temp_robot1(1, "Large", 50, 100, "", "", room, "Scrub", 0);
-    robots::Robots temp_robot2(2, "Small", 75, 90, "", "", room, "Scrub", 0);
-    robots::Robots temp_robot3(3, "Medium", 90, 68, "", "", room, "Scrub", 0);
+    robots::Robots temp_robot1(1, "Large", 50, 100, "", "Available", room, "Scrub", 0);
+    robots::Robots temp_robot2(2, "Small", 75, 90, "", "Available", room, "Scrub", 0);
+    robots::Robots temp_robot3(3, "Medium", 90, 68, "", "Available", room, "Scrub", 0);
     mongo_other.write_robot(temp_robot1);
     mongo_other.write_robot(temp_robot2);
     mongo_other.write_robot(temp_robot3);
@@ -621,7 +621,7 @@ TEST_CASE("Mongo Adapter Update Status") {
 
     std::vector<robots::Robots> updates;
     Room room_3(3, "Small", "Tile", "Available");
-    robots::Robots temp_robot4(1, "Large", 40, 96, "Error", "Ongoing", room_3, "Scrub", 10);
+    robots::Robots temp_robot4(1, "Large", 40, 96, "Error", "Available", room_3, "Scrub", 10);
     updates.push_back(temp_robot4);
 
     Room room_2(2, "Small", "Tile", "Busy");
@@ -641,10 +641,10 @@ TEST_CASE("Mongo Adapter Update Status") {
     REQUIRE( update_1.get_battery_level() == 96 ); 
     REQUIRE( update_1.get_function_type() == "Scrub" ); 
     REQUIRE( update_1.get_error_status() == "Error" ); 
-    REQUIRE( update_1.get_task_status() == "Ongoing" ); 
-    REQUIRE( update_1.get_task_percent() == 10 ); 
-    REQUIRE( update_1.get_task_room().getRoomNumber() == 3 );
-    REQUIRE( update_1.get_task_room().getAvailability() == "Available" );
+    REQUIRE( update_1.get_task_status() == "Available" ); 
+    REQUIRE( update_1.get_task_percent() == 0 ); 
+    REQUIRE( update_1.get_task_room().getRoomNumber() == 0 );
+    REQUIRE( update_1.get_task_room().getAvailability() == "" );
 
 
     robots::Robots update_2 = mongo_other.read_ongoing_task(2);
@@ -875,13 +875,15 @@ TEST_CASE("Mongo Adapter Update Status with available robot") {
     mongo_other.write_task(3, 1);
 
     std::vector<robots::Robots> updates;
-    robots::Robots temp_robot4(1, "Large", 40, 96, "Error", "Available", room3, "Scrub", 10);
+
+    Room room_3(3, "", "", "");
+    robots::Robots temp_robot4(1, "Large", 40, 96, "Error", "Available", room_3, "Scrub", 10);
     updates.push_back(temp_robot4);
 
-    robots::Robots temp_robot5(2, "Small", 65, 70, "", "Ongoing", room, "Scrub", 20);
+    robots::Robots temp_robot5(2, "Small", 65, 70, "", "Ongoing", room2, "Scrub", 20);
     updates.push_back(temp_robot5);
 
-    robots::Robots temp_robot6(3, "Medium", 80, 60, "", "Ongoing", room, "Scrub", 30);
+    robots::Robots temp_robot6(3, "Medium", 80, 60, "", "Ongoing", room1, "Scrub", 30);
     updates.push_back(temp_robot6);
 
     robots::Robots temp_robot8(4, "Large", 20, 10, "", "Available", room, "Scrub", 0);

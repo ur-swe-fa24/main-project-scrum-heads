@@ -76,7 +76,6 @@ robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
         return new_robot;
     } 
     Room room(0, "", "", "");
-    std::cout << "No instance of robot with id " << id << std::endl;
     robots::Robots new_robot = robots::Robots(id, "", 0, 0, "No instance of robot with id", "", room, "", 0);
     return new_robot;
 }
@@ -120,7 +119,6 @@ std::string adapters::Mongo_Adapter::delete_robot(int id){
         return information;
     } 
     else{
-        std::cout << "No instance of robot with id " << id << std::endl;
         return "No instance of robot with id " + std::to_string(id);
     }
 }
@@ -348,7 +346,6 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
         if(result){
             //If the robot now has an error
             if(update.get_error_status() != ""){
-
                 //add the error to the error table for safe keeping to grab things later. if we are inquiring about an error log
                 db_["error"].insert_one(make_document(
                     kvp("robot_id", update.get_id()),
@@ -455,12 +452,10 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 update_room_availability(update.get_task_room().getRoomNumber(), "Available");
             }
             else{
-                std::cout << "in available" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
                 // Make the new task with updated information
-                std::cout << update.get_water_level() << std::endl;
                 auto replace_doc = make_document(kvp("$set", 
                 make_document(
                     kvp("robot_id", update.get_id()),
@@ -535,13 +530,9 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
         auto Size = robot_info.get_size();
 
         auto Water_Level = robot_info.get_water_level();
-        std::cout << Water_Level << std::endl;
         auto Battery_Level = robot_info.get_battery_level();
-        std::cout << Battery_Level << std::endl;
         auto Function_type = robot_info.get_function_type();
-        std::cout << Function_type << std::endl;
         auto Task_Status = robot_info.get_task_status();
-        std::cout << Task_Status << std::endl;
         auto Error_Status = robot_info.get_error_status();
         Room room(0, "", "", "");
         robots::Robots new_robot = robots::Robots(id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, 0);
