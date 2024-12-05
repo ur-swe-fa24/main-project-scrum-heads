@@ -9,6 +9,7 @@ DataManager::DataManager()
     //wipe database clean
     mongo_database.delete_all_robots();
     mongo_database.delete_all_tasks();
+    mongo_database.delete_rooms();
     mongo_database.delete_error_log();
     
     // Initialize the MongoDB client and update the list of IDs
@@ -226,30 +227,30 @@ std::vector<robots::Robots> DataManager::GetAvailableRobots()
 //gets all rooms from database, then filters for available rooms
 std::vector<Room> DataManager::GetRooms()
 {
-    // //gets all rooms from the database
-    // std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
+    //gets all rooms from the database
+    std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
 
-    // //returns all rooms
-    // return databaseRoomVector;
-    return roomVector; //temporailty just returning the local room vector
+    //returns all rooms
+    return databaseRoomVector;
+    // return roomVector; //temporailty just returning the local room vector
 }
 
 //gets all rooms from database, then filters for available rooms
 std::vector<Room> DataManager::GetAvailableRooms()
 {
-    // //holds all robots
-    // std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
+    //holds all robots
+    std::vector<Room> databaseRoomVector = mongo_database.read_all_rooms();
 
-    // //holds available robots
-    // std::vector<Room> availableRoomVector;
+    //holds available robots
+    std::vector<Room> availableRoomVector;
 
-    // //iterate through robot vector to find available robots
-    // for (Room room : databaseRoomVector) {
-    //     if (room.getAvailability() == "Available")
-    //     {
-    //         availableRoomVector.push_back(room);
-    //     }
-    // }
+    //iterate through robot vector to find available robots
+    for (Room room : databaseRoomVector) {
+        if (room.getAvailability() == "Available")
+        {
+            availableRoomVector.push_back(room);
+        }
+    }
 
-    // return availableRoomVector;
+    return availableRoomVector;
 }

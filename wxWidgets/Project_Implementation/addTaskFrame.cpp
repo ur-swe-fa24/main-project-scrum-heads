@@ -10,16 +10,16 @@ MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxList
     // //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
     roomSelectionListBox->Append("ID: 1 (Size: Medium, Floor Type: Carpet)");
 
-    // //get available rooms
-    // availableRoomsVector = dataManager->GetAvailableRooms();
-    // //iterate through available rooms and get + append info for user
-    // for (Room room : availableRoomsVector) {
-    //     std::string roomID = std::to_string(room.getRoomNumber());
-    //     std::string roomSize = room.getRoomSize();
-    //     std::string floorType = room.getFloorType();
-    //     std::string roomInfo = "ID: " + roomID + " (Size: " + roomSize + ", Floor Type: " + floorType + ")";
-    //     robotSelectionListBox->Append(roomInfo);
-    // }
+    //get available rooms
+    availableRoomsVector = dataManager->GetAvailableRooms();
+    //iterate through available rooms and get + append info for user
+    for (Room room : availableRoomsVector) {
+        std::string roomID = std::to_string(room.getRoomNumber());
+        std::string roomSize = room.getRoomSize();
+        std::string floorType = room.getFloorType();
+        std::string roomInfo = "ID: " + roomID + " (Size: " + roomSize + ", Floor Type: " + floorType + ")";
+        roomSelectionListBox->Append(roomInfo);
+    }
     
     //get available robots for task
     availableRobotVector = dataManager->GetAvailableRobots();
