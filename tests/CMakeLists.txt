@@ -29,28 +29,54 @@ ENDIF (${Catch2_FOUND})
 #         adapter_lib
 # )
 
-# # Define test_simulation executable
-# add_executable(test_simulation 
-#     test_simulation.cpp
-#     ../src/robot.cpp
-#     ../simulation/robot_manager.cpp # Include RobotManager source file
-# )
+# Define the robot_manager library
+add_library(robot_manager
+    ../simulation/robot_manager.cpp
+)
 
-# target_include_directories(test_simulation
-#     PRIVATE
-#     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-# )
+target_include_directories(robot_manager
+    PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+)
 
-# target_compile_features(test_simulation PRIVATE cxx_std_17)
+target_compile_features(robot_manager PUBLIC cxx_std_17)
 
-# target_link_libraries(test_simulation
-#   PRIVATE
-#     Catch2::Catch2WithMain
-#     spdlog::spdlog_header_only
-#     robot_do_task
-#     room_task
-#     adapter_lib         # Include adapter_lib if needed
-# )
+# Define the robot_do_task library
+add_library(robot_do_task
+    ../simulation/robot_do_task.cpp
+)
+
+target_include_directories(robot_do_task
+    PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+)
+
+target_link_libraries(robot_do_task
+    PUBLIC
+    robot_manager
+)
+
+target_compile_features(robot_do_task PUBLIC cxx_std_17)
+
+# Define the test_simulation executable
+add_executable(test_simulation 
+    test_simulation.cpp
+)
+
+target_include_directories(test_simulation
+    PRIVATE
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+)
+
+target_compile_features(test_simulation PRIVATE cxx_std_17)
+
+target_link_libraries(test_simulation
+    PRIVATE
+    Catch2::Catch2WithMain
+    spdlog::spdlog_header_only
+    robot_manager
+    robot_do_task
+)
 
 
 add_executable(test_datamanager 
