@@ -1,14 +1,17 @@
 #include "robot_do_task.hpp"
 #include "robot_manager.hpp"
-#include "spdlog/spdlog.h"
 #include <random>
 #include <thread>
 #include <chrono>
 #include <atomic>
-#include <vector> 
+#include <vector>
+#include <map>
+#include <mutex>
+#include <iostream>
 
 namespace robot_tasks {
 
+// Function to calculate task duration based on room size
 int calculate_task_duration(const std::string& room_size) {
     if (room_size == "small") return 2;
     if (room_size == "medium") return 4;
@@ -16,6 +19,7 @@ int calculate_task_duration(const std::string& room_size) {
     return 0;
 }
 
+// Function to calculate resource usage based on room size
 int get_resource_usage(const std::string& room_size) {
     if (room_size == "small") return 1;
     if (room_size == "medium") return 4;
@@ -23,7 +27,7 @@ int get_resource_usage(const std::string& room_size) {
     return 0;
 }
 
-//check if the robot have enough water and battery to finish this task
+// Function to check if a robot has enough water and battery to finish its task
 bool check_robot(robots::Robots& robot) {
     int water = robot.get_water_level();
     int battery = robot.get_battery_level();
@@ -33,6 +37,7 @@ bool check_robot(robots::Robots& robot) {
     return !(usage * left > battery || usage * left > water);
 }
 
+// Function to fix a robot's error status and reset it to be ready for tasks
 void fix(robots::Robots& robot) {
     if (!robot.get_error_status().empty()) {
         robot.update_task_status("Available");
@@ -43,6 +48,7 @@ void fix(robots::Robots& robot) {
     }
 }
 
+// Function to calculate the error status for a robot (randomly assigning errors)
 void calculate_error_status(robots::Robots& robot) {
     std::vector<std::string> failures = {"Overheat", "Motor Failure", "Sensor Failure"};
     std::random_device rd;
@@ -58,7 +64,8 @@ void calculate_error_status(robots::Robots& robot) {
 std::atomic<bool> is_canceled = true;
 std::mutex robot_mutex;
 
-void execute() {
+// Function to execute the robot task loop
+void execute(std::vector<robots::Robots>& robot_list_) {
     const auto loop_interval = std::chrono::milliseconds(100);
     std::map<int, std::thread> active_tasks;
 
@@ -68,11 +75,25 @@ void execute() {
         {
             std::lock_guard<std::mutex> lock(robot_mutex);
             for (robots::Robots& robot : robot_list_) {
-                if (robot.get_task_status() == "Cancelled" && robot.get_error_status() == "") {
+                std::cout << "Robot ID: " << robot.get_id() 
+                << ", Status: " << robot.get_task_status() 
+                << ", Task Percent: " << robot.get_task_percent() 
+                << ", Water Level: " << robot.get_water_level()
+                << ", Battery Level: " << robot.get_battery_level() << std::endl;
+
+
+                if (robot.get_task_status() == "Cancelled" && robot.get_error_status().empty()) {
                     robot.update_task_status("Available");
                     robot.update_task_percent(0);
                     continue;
                 }
+
+                if (robot.get_task_status() == "Complete" && robot.get_error_status().empty()) {
+                    robot.update_task_status("Available");
+                    robot.update_task_percent(0);
+                    continue;
+                }
+
                 if (!check_robot(robot)) {
                     robot.update_task_status("Cancelled");
                     continue;
@@ -132,10 +153,12 @@ void execute() {
 
 std::thread execute_thread;
 
-void start_execute_thread() {
-    execute_thread = std::thread([]() { execute(); });
+// Start the task execution loop in a separate thread
+void start_execute_thread(std::vector<robots::Robots>& robot_list_) {
+    execute_thread = std::thread([&]() { execute(robot_list_); });
 }
 
+// Stop the task execution loop and join the thread
 void stop_execute_thread() {
     is_canceled = false;
     if (execute_thread.joinable()) {
