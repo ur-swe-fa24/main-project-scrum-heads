@@ -150,9 +150,15 @@ std::string DataManager::GetIDString() {
 //used to display necessary information to the user in GUI
 robots::Robots DataManager::GetAllRobotInfo(int robotId)
 {
-    //temporary placeholder that just creates a robot pre-database integration
-    // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
+    //gets the complete info for clicked robot
     robots::Robots clicked_robot = mongo_database.read_robot(robotId);
+    //gets the updated task status for that robot
+    robots::Robots taskUpdatedRobot = mongo_database.read_ongoing_task(robotId);
+    //determines the room from the updated task status
+    Room room = taskUpdatedRobot.get_task_room();
+    //sets the room for the clicked robot
+    clicked_robot.update_task_room(room);
+    //returns updated robot
     return clicked_robot;
 }
 

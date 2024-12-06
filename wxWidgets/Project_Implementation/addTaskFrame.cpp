@@ -7,8 +7,8 @@ MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxList
 {
     createTaskButton->Bind(wxEVT_BUTTON, &MyAddTaskFrame::OnCreateTaskButtonClick, this);
 
-    // //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
-    roomSelectionListBox->Append("ID: 1 (Size: Medium, Floor Type: Carpet)");
+    // // //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
+    // roomSelectionListBox->Append("ID: 1 (Size: Medium, Floor Type: Carpet)");
 
     //get available rooms
     availableRoomsVector = dataManager->GetAvailableRooms();
