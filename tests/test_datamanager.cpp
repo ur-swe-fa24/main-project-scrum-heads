@@ -3,6 +3,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 #include <wx/string.h>
+#include <thread>
+#include <chrono>
 
 // Create a global instance of DataManager to ensure only one instance is used in all tests
 DataManager data_manager;
@@ -61,33 +63,52 @@ TEST_CASE("DataManager Integration Test - Add, Delete, Retrieve Robot, and GetAl
     REQUIRE(data_manager.GetRobots().empty());
 }
 
-TEST_CASE("DataManager RobotManager List Access Test") {
-    // Step 1: Add Multiple Robots to the DataManager
-    RobotData robot1;
-    robot1.robotSize = wxString("Large");
-    robot1.robotFunction = wxString("Vacuum");
-    data_manager.AddRobot(robot1);
+TEST_CASE("DataManager Live Update Test - Add Robot, Update Task Progress, Live Sync with MongoDB") {
+    // Step 1: Add a Robot and Validate ID Assignment
+    RobotData new_robot;
+    new_robot.robotSize = wxString("Medium");
+    new_robot.robotFunction = wxString("Scrub");
 
-    RobotData robot2;
-    robot2.robotSize = wxString("Medium");
-    robot2.robotFunction = wxString("Mop");
-    data_manager.AddRobot(robot2);
+    data_manager.AddRobot(new_robot);
 
-    // Step 2: Access the robot_manager_ list through DataManager getter
-    auto& robot_list = data_manager.GetRobotManager().get_list();
+    // Verify that the robot has been added to the local vector
+    auto& robots = data_manager.GetRobots();
+    REQUIRE(robots.size() == 1);
+    REQUIRE(robots.back().robotID == std::to_string(1));
+    REQUIRE(robots.back().robotSize == "Medium");
+    REQUIRE(robots.back().robotFunction == "Scrub");
 
-    // Verify the size of the robot list
-    REQUIRE(robot_list.size() == 2);
+    // Step 2: Start the Update Thread
+    data_manager.startUpdateThread();
 
-    // Step 3: Validate the data of each robot in RobotManager's list
-    REQUIRE(robot_list[0].get_size() == "Large");
-    REQUIRE(robot_list[0].get_function_type() == "Vacuum");
+    // Step 3: Modify Robot Status - Simulate Task Assignment
+    int robot_id = std::stoi(robots.back().robotID);
+    auto& robot_list = data_manager.robot_manager_.get_list();
 
-    REQUIRE(robot_list[1].get_size() == "Medium");
-    REQUIRE(robot_list[1].get_function_type() == "Mop");
+    // Modify the robot attributes to simulate task progress
+    for (auto& robot : robot_list) {
+        if (robot.get_id() == robot_id) {
+            robot.update_task_status("Ongoing");
+            robot.update_task_percent(50); // Task is 50% complete
+            robot.update_battery_level(70); // Reduce battery level
+            robot.update_water_level(60); // Reduce water level
+            break;
+        }
+    }
 
-    // Clean up after the tests by deleting all robots
-    data_manager.DeleteRobot(robot_list[0].get_id());
-    data_manager.DeleteRobot(robot_list[1].get_id());
+    // Let the update thread run for a few seconds to sync changes to the MongoDB database
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+
+    // Step 4: Verify that the MongoDB database has the updated robot information
+    robots::Robots updated_robot_info = data_manager.GetAllRobotInfo(robot_id);
+
+    REQUIRE(updated_robot_info.get_task_status() == "Ongoing");
+    REQUIRE(updated_robot_info.get_task_percent() == 50);
+    REQUIRE(updated_robot_info.get_battery_level() == 70);
+    REQUIRE(updated_robot_info.get_water_level() == 60);
+
+    // Step 5: Clean up after the test
+    data_manager.stopUpdateThread();
+    data_manager.DeleteRobot(robot_id);
     REQUIRE(data_manager.GetRobots().empty());
 }
