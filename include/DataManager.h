@@ -7,6 +7,10 @@
 #include <wx/string.h>
 #include "adapters/mongo_adapter.hpp"
 #include "robot.hpp"
+#include "robot_manager.hpp"
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 // struct for RobotData
 struct RobotData {
@@ -64,6 +68,12 @@ public:
     //gets all tasks (present and past)
     std::vector<robots::Robots> GetTasksTable();
 
+    void startUpdateThread();
+    void stopUpdateThread();
+
+    robots::RobotManager& GetRobotManager() {
+        return robot_manager_;
+    }
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
 
@@ -77,4 +87,11 @@ private:
     void AddRooms();
     //add vector of rooms here
     std::vector<Room> roomVector;
+
+    robots::RobotManager robot_manager_;
+
+    // Thread components
+    std::thread update_thread_;
+    std::mutex data_mutex_;
+    std::atomic<bool> keep_updating_{true};
 };

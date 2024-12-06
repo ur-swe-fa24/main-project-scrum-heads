@@ -60,3 +60,34 @@ TEST_CASE("DataManager Integration Test - Add, Delete, Retrieve Robot, and GetAl
     data_manager.DeleteRobot(added_robot_id);
     REQUIRE(data_manager.GetRobots().empty());
 }
+
+TEST_CASE("DataManager RobotManager List Access Test") {
+    // Step 1: Add Multiple Robots to the DataManager
+    RobotData robot1;
+    robot1.robotSize = wxString("Large");
+    robot1.robotFunction = wxString("Vacuum");
+    data_manager.AddRobot(robot1);
+
+    RobotData robot2;
+    robot2.robotSize = wxString("Medium");
+    robot2.robotFunction = wxString("Mop");
+    data_manager.AddRobot(robot2);
+
+    // Step 2: Access the robot_manager_ list through DataManager getter
+    auto& robot_list = data_manager.GetRobotManager().get_list();
+
+    // Verify the size of the robot list
+    REQUIRE(robot_list.size() == 2);
+
+    // Step 3: Validate the data of each robot in RobotManager's list
+    REQUIRE(robot_list[0].get_size() == "Large");
+    REQUIRE(robot_list[0].get_function_type() == "Vacuum");
+
+    REQUIRE(robot_list[1].get_size() == "Medium");
+    REQUIRE(robot_list[1].get_function_type() == "Mop");
+
+    // Clean up after the tests by deleting all robots
+    data_manager.DeleteRobot(robot_list[0].get_id());
+    data_manager.DeleteRobot(robot_list[1].get_id());
+    REQUIRE(data_manager.GetRobots().empty());
+}

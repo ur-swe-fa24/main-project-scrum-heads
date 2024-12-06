@@ -3,6 +3,7 @@
 #include <wx/string.h>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 DataManager::DataManager() 
 {
@@ -17,10 +18,41 @@ DataManager::DataManager()
 
     // Add rooms from the text file
     AddRooms();
+
+    startUpdateThread();
 }
 
 // Destructor: Handles cleanup, if necessary.
-DataManager::~DataManager() {}
+DataManager::~DataManager() {
+    stopUpdateThread();
+}
+
+void DataManager::startUpdateThread() {
+    update_thread_ = std::thread([this]() {
+        while (keep_updating_) {
+            {
+                std::lock_guard<std::mutex> lock(data_mutex_);
+
+                // Get the current list of robots from the robot manager
+                auto robot_list = robot_manager_.get_list();
+
+                // Update the MongoDB database with the latest robot statuses
+                mongo_database.update_task_status(robot_list);
+            }
+
+            // Sleep for 0.5 seconds before the next update
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        }
+    });
+}
+
+void DataManager::stopUpdateThread() {
+    keep_updating_ = false;
+    if (update_thread_.joinable()) {
+        update_thread_.join();
+    }
+}
 
 // Method to receive and process robots data
 // void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
@@ -121,6 +153,9 @@ void DataManager::AddRobot(RobotData& robot) {
 
     // Append the new ID to the list of IDs
     ids.push_back(new_id);
+
+    // Add to RobotManager
+    robot_manager_.add_robot(new_robot);
 }
 
 // Method to update the list of robot IDs from the MongoDB database
@@ -187,6 +222,9 @@ void DataManager::DeleteRobot(int robotId)
             break;  // Exit the loop after removal
         }
     }
+
+    // Remove the robot from the RobotManager
+    robot_manager_.remove_robot_by_id(robotId);
 }
 
 // Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input

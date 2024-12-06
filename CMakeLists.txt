@@ -28,11 +28,12 @@ endif()
 # Add include directories
 include_directories(include)
 
-# Create libraries
+# Create robot_lib for robot-related implementations
 add_library(robot_lib
     simulation/robot_manager.cpp
     simulation/robot_do_task.cpp
 )
+
 # Set include directories for robot_lib
 target_include_directories(robot_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include      # Include the 'include' directory
@@ -41,10 +42,14 @@ target_include_directories(robot_lib PUBLIC
 
 # Link dependencies for robot_lib
 target_link_libraries(robot_lib PUBLIC)
+
+# Create adapter_lib for MongoDB adapter
 add_library(adapter_lib src/mongo_adapter.cpp)
 target_link_libraries(adapter_lib mongo::mongocxx_shared)
+
+# Create data_lib and link it with adapter_lib and robot_lib
 add_library(data_lib src/DataManager.cpp)
-target_link_libraries(data_lib adapter_lib wx::net wx::core wx::base)
+target_link_libraries(data_lib PUBLIC adapter_lib robot_lib wx::net wx::core wx::base)
 
 # Add subdirectories for components
 add_subdirectory(app)
