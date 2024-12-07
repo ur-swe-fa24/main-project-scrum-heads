@@ -4,6 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
+#include "spdlog/spdlog.h"
+
 
 DataManager::DataManager() 
 {
@@ -28,24 +30,33 @@ DataManager::~DataManager() {
 }
 
 void DataManager::startUpdateThread() {
+    spdlog::info("Starting the update thread...");
     update_thread_ = std::thread([this]() {
         while (keep_updating_) {
+            spdlog::info("Update thread loop started...");
+
             {
                 std::lock_guard<std::mutex> lock(data_mutex_);
-
-                // Get the current list of robots from the robot manager
                 auto robot_list = robot_manager_.get_list();
 
-                // Update the MongoDB database with the latest robot statuses
-                mongo_database.update_task_status(robot_list);
+                spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
+
+                try {
+                    mongo_database.update_task_status(robot_list);
+                    spdlog::info("Updated task status in MongoDB successfully.");
+                } catch (const std::exception& e) {
+                    spdlog::error("Error updating task status in MongoDB: {}", e.what());
+                }
             }
 
-            // Sleep for 0.5 seconds before the next update
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
+            // Sleep for 0 seconds
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         }
+        spdlog::info("Exiting the update thread...");
     });
 }
+
+
 
 void DataManager::stopUpdateThread() {
     keep_updating_ = false;
@@ -297,4 +308,18 @@ std::vector<Room> DataManager::GetAvailableRooms()
     }
 
     return availableRoomVector;
+}
+
+robots::RobotManager& DataManager::GetRobotManager() {
+    return robot_manager_;
+}
+
+
+// Method to delete all robots from MongoDB and local vector
+void DataManager::DeleteAllRobots() {
+    // Delete all robots from the MongoDB database
+    mongo_database.delete_all_robots();
+
+    // Clear the local list of RobotData
+    robots.clear();
 }
