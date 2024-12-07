@@ -1,0 +1,14 @@
+# Syntax: [room number],[room size],[floor type],[availability].
+# No spaces!!
+
+1,Large,Carpet,Available.
+2,Large,Tile,Available.
+3,Large,Wood,Available.
+
+4,Medium,Carpet,Available.
+5,Medium,Tile,Available.
+6,Medium,Wood,Available.
+
+7,Small,Carpet,Available.
+8,Small,Tile,Available.
+9,Small,Wood,Available.

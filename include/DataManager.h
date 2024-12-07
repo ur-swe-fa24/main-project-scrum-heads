@@ -7,6 +7,10 @@
 #include <wx/string.h>
 #include "adapters/mongo_adapter.hpp"
 #include "robot.hpp"
+#include "robot_manager.hpp"
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 // struct for RobotData
 struct RobotData {
@@ -38,6 +42,9 @@ public:
     //getter function for vector of TaskData
     std::vector<TaskData>& GetTasks();
 
+    //getter function for vector of rooms from database
+    std::vector<Room> GetRooms();
+
     //method for adding robot (receiving robotdata from UI)
     void AddRobot(RobotData& robot);
     void UpdateIds();
@@ -55,9 +62,19 @@ public:
     //gets available robots for task allocation
     std::vector<robots::Robots> GetAvailableRobots();
 
-    //needs implementation!
     //gets available rooms for task allocation
-    // std::vector<rooms::Rooms> GetAvailableRooms();
+    std::vector<Room> GetAvailableRooms();
+
+    //gets all tasks (present and past)
+    std::vector<robots::Robots> GetTasksTable();
+
+    void startUpdateThread();
+    void stopUpdateThread();
+
+    robots::RobotManager& GetRobotManager();
+
+    // Add the following declaration for deleting all robots (useful for testing)
+    void DeleteAllRobots();
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
@@ -68,4 +85,15 @@ private:
     std::vector<TaskData> tasks;  // Stores task data in a local vector
     std::vector<int> ids;  // Stores robot IDs currently in the database
     adapters::Mongo_Adapter mongo_database{};  // MongoDB adapter to interact with the database
+
+    void AddRooms();
+    //add vector of rooms here
+    std::vector<Room> roomVector;
+
+    robots::RobotManager robot_manager_;
+
+    // Thread components
+    std::thread update_thread_;
+    std::mutex data_mutex_;
+    std::atomic<bool> keep_updating_{true};
 };
