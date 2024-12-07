@@ -56,3 +56,11 @@ add_subdirectory(app)
 add_subdirectory(tests)
 add_subdirectory(wxWidgets)
 add_subdirectory(simulation)
+
+
+
+# Find spdlog package
+find_package(spdlog REQUIRED)
+
+# Link spdlog to your target
+target_link_libraries(data_lib PUBLIC spdlog::spdlog)

@@ -71,9 +71,11 @@ public:
     void startUpdateThread();
     void stopUpdateThread();
 
-    robots::RobotManager& GetRobotManager() {
-        return robot_manager_;
-    }
+    robots::RobotManager& GetRobotManager();
+
+    // Add the following declaration for deleting all robots (useful for testing)
+    void DeleteAllRobots();
+
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
 

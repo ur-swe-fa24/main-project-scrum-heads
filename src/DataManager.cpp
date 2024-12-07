@@ -4,6 +4,8 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
+#include "spdlog/spdlog.h"
+
 
 DataManager::DataManager() 
 {
@@ -31,21 +33,21 @@ void DataManager::startUpdateThread() {
     update_thread_ = std::thread([this]() {
         while (keep_updating_) {
             {
-                std::lock_guard<std::mutex> lock(data_mutex_);
-
-                // Get the current list of robots from the robot manager
+                std::lock_guard<std::mutex> lock(data_mutex_); // Ensure thread-safe access
                 auto robot_list = robot_manager_.get_list();
+                spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
-                // Update the MongoDB database with the latest robot statuses
+                // Simulate MongoDB update
                 mongo_database.update_task_status(robot_list);
+                spdlog::info("Updated task status in MongoDB successfully.");
             }
-
-            // Sleep for 0.5 seconds before the next update
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5s
         }
     });
 }
+
+
+
 
 void DataManager::stopUpdateThread() {
     keep_updating_ = false;
@@ -128,6 +130,7 @@ std::vector<TaskData>& DataManager::GetTasks() {
 
 // Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
 void DataManager::AddRobot(RobotData& robot) {
+    std::lock_guard<std::mutex> lock(data_mutex_);
     int new_id = GetNextAvailableRobotId();  // Get a new unique ID, assigned by data manager to avoid user error
 
     // robot.robotID = new_id;
@@ -209,6 +212,7 @@ std::vector<robots::Robots> DataManager::GetTasksTable()
 
 void DataManager::DeleteRobot(int robotId)
 {
+    std::lock_guard<std::mutex> lock(data_mutex_); // Thread-safe access
     //first remove the robot from the database
     mongo_database.delete_robot(robotId);
     
@@ -297,4 +301,21 @@ std::vector<Room> DataManager::GetAvailableRooms()
     }
 
     return availableRoomVector;
+}
+
+robots::RobotManager& DataManager::GetRobotManager() {
+    return robot_manager_;
+}
+
+
+// Method to delete all robots from MongoDB and local vector
+void DataManager::DeleteAllRobots() {
+    stopUpdateThread(); // Stop the update thread before modifying the list
+
+    std::lock_guard<std::mutex> lock(data_mutex_); // Thread-safe access
+    // Delete all robots from the MongoDB database
+    mongo_database.delete_all_robots();
+
+    // Clear the local list of RobotData
+    robots.clear();
 }
