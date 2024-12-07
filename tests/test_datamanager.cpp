@@ -7,121 +7,122 @@
 #include <chrono>
 #include "spdlog/spdlog.h"
 
-
 // Create a global instance of DataManager to ensure only one instance is used in all tests
 DataManager data_manager;
 
-/**
 TEST_CASE("DataManager Integration Test - Add, Delete, Retrieve Robot, and GetAllRobotInfo") {
-    // Clear all robots from the database before starting
-    data_manager.DeleteAllRobots(); 
+    spdlog::info("Starting integration test for DataManager...");
 
-    // Step 1: Add a Robot and Validate that it is added
+    // Clear all robots from the database before starting
+    data_manager.DeleteAllRobots();
+    spdlog::info("Cleared all robots from the database.");
+
+    // Step 1: Add a Robot and Validate ID Assignment
     RobotData new_robot;
     new_robot.robotSize = wxString("Large");
     new_robot.robotFunction = wxString("Vacuum");
 
-    // Add the new robot to the system
     data_manager.AddRobot(new_robot);
+    spdlog::info("Added new robot with size {} and function {}.", "Large", "Vacuum");
 
     // Verify that the robot has been added to the local vector
     auto& robots = data_manager.GetRobots();
     REQUIRE(robots.size() == 1);
+    REQUIRE(robots.back().robotID == std::to_string(1));
     REQUIRE(robots.back().robotSize == "Large");
     REQUIRE(robots.back().robotFunction == "Vacuum");
+    spdlog::info("Robot added successfully with ID: {}", robots.back().robotID);
 
     // Step 2: Test GetAllRobotInfo to Verify Retrieval of the Same Robot
     int robot_id = std::stoi(robots.back().robotID);
     robots::Robots retrieved_robot = data_manager.GetAllRobotInfo(robot_id);
 
-    // Validate that the retrieved robot's data matches what was originally added
+    REQUIRE(retrieved_robot.get_id() == robot_id);
     REQUIRE(retrieved_robot.get_size() == "Large");
     REQUIRE(retrieved_robot.get_function_type() == "Vacuum");
+    spdlog::info("Retrieved robot info matches added robot for ID: {}", robot_id);
 
     // Step 3: Delete the Robot and Verify it is Removed
     data_manager.DeleteRobot(robot_id);
-
-    // Verify that the robot has been removed from the local vector
     REQUIRE(data_manager.GetRobots().empty());
+    spdlog::info("Robot with ID: {} deleted successfully.", robot_id);
 
     // Step 4: Add Another Robot and Validate Retrieval
     RobotData another_robot;
     another_robot.robotSize = wxString("Small");
     another_robot.robotFunction = wxString("Scrub");
 
-    // Add the robot to the system
     data_manager.AddRobot(another_robot);
+    spdlog::info("Added new robot with size {} and function {}.", "Small", "Scrub");
 
-    // Verify the robot was added correctly
     REQUIRE(data_manager.GetRobots().size() == 1);
-    robots::Robots retrieved_another_robot = data_manager.GetAllRobotInfo(std::stoi(data_manager.GetRobots().front().robotID));
+    int added_robot_id = std::stoi(data_manager.GetRobots().front().robotID);
+    robots::Robots retrieved_another_robot = data_manager.GetAllRobotInfo(added_robot_id);
 
-    // Check that the retrieved robot data matches what was added
+    REQUIRE(retrieved_another_robot.get_id() == added_robot_id);
     REQUIRE(retrieved_another_robot.get_size() == "Small");
     REQUIRE(retrieved_another_robot.get_function_type() == "Scrub");
+    spdlog::info("Robot added and retrieved successfully for ID: {}", added_robot_id);
 
     // Clean up after the tests by deleting all robots
     data_manager.DeleteAllRobots();
     REQUIRE(data_manager.GetRobots().empty());
-
-    data_manager.stopUpdateThread();
-
+    spdlog::info("Integration test completed. All robots deleted.");
 }
-
-*/
 
 TEST_CASE("DataManager Live Update Test - Update Task Progress and Live Sync with MongoDB") {
     spdlog::info("Starting live update test...");
 
-    // Clear all robots from the database before starting
+    // Phase 1: Clear all robots
     data_manager.DeleteAllRobots();
     spdlog::info("Cleared all robots from the database.");
 
-    // Step 1: Add a Robot
+    // Phase 2: Add Robot
     RobotData new_robot;
     new_robot.robotSize = wxString("Medium");
     new_robot.robotFunction = wxString("Scrub");
-
     data_manager.AddRobot(new_robot);
-    spdlog::info("Added new robot with size {} and function {}.", "Medium", "Scrub");
+    spdlog::info("Added new robot with size Medium and function Scrub.");
 
-    // Start the Update Thread
+    // Start Update Thread
     data_manager.startUpdateThread();
-    spdlog::info("Started the update thread...");
+    spdlog::info("Started the update thread.");
 
-    // Simulate task progress
+    // Fetch and Verify Initial Robot List
     auto& robot_list = data_manager.GetRobotManager().get_list();
-    REQUIRE(!robot_list.empty());  // Ensure the list is not empty
+    REQUIRE(!robot_list.empty());
     spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
+    // Phase 3: Simulate Task Progress
+    spdlog::info("Simulating task progress...");
     for (auto& robot : robot_list) {
         robot.update_task_status("Ongoing");
         robot.update_task_percent(50);
         robot.update_battery_level(70);
         robot.update_water_level(60);
     }
-    spdlog::info("Simulated task progress for robot list.");
 
-    // Let the update thread run for a short period to sync changes to the MongoDB database
+    // Phase 4: Let the Thread Run
+    spdlog::info("Waiting for thread to process updates...");
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
-    // Verify MongoDB updates (no need for specific robot IDs)
-    spdlog::info("Verifying MongoDB updates...");
-    auto updated_robots = data_manager.GetRobotManager().get_list();
-    REQUIRE(!updated_robots.empty());
-    for (const auto& robot : updated_robots) {
+    // Phase 5: Verify Updated State
+    spdlog::info("Verifying robot states...");
+    for (const auto& robot : robot_list) {
         REQUIRE(robot.get_task_status() == "Ongoing");
+        REQUIRE(robot.get_task_percent() == 50);
+        REQUIRE(robot.get_battery_level() == 70);
+        REQUIRE(robot.get_water_level() == 60);
+        spdlog::info("Robot ID: {}, Status: {}, Percent: {}, Battery: {}, Water: {}",
+                     robot.get_id(), robot.get_task_status(), robot.get_task_percent(),
+                     robot.get_battery_level(), robot.get_water_level());
     }
-    spdlog::info("MongoDB updates verified successfully.");
 
-    // Stop the Update Thread
+    // Phase 6: Stop Update Thread and Clean Up
     data_manager.stopUpdateThread();
     spdlog::info("Stopped the update thread.");
 
-    // Clean up
     data_manager.DeleteAllRobots();
     REQUIRE(data_manager.GetRobots().empty());
     spdlog::info("Cleaned up all robots. Live update test completed.");
 }
-
-

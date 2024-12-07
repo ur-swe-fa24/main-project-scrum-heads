@@ -30,31 +30,22 @@ DataManager::~DataManager() {
 }
 
 void DataManager::startUpdateThread() {
-    spdlog::info("Starting the update thread...");
     update_thread_ = std::thread([this]() {
         while (keep_updating_) {
-            spdlog::info("Update thread loop started...");
-
             {
-                std::lock_guard<std::mutex> lock(data_mutex_);
+                std::lock_guard<std::mutex> lock(data_mutex_); // Ensure thread-safe access
                 auto robot_list = robot_manager_.get_list();
-
                 spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
-                try {
-                    mongo_database.update_task_status(robot_list);
-                    spdlog::info("Updated task status in MongoDB successfully.");
-                } catch (const std::exception& e) {
-                    spdlog::error("Error updating task status in MongoDB: {}", e.what());
-                }
+                // Simulate MongoDB update
+                mongo_database.update_task_status(robot_list);
+                spdlog::info("Updated task status in MongoDB successfully.");
             }
-
-            // Sleep for 0 seconds
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // Sleep for 0.5s
         }
-        spdlog::info("Exiting the update thread...");
     });
 }
+
 
 
 
@@ -139,6 +130,7 @@ std::vector<TaskData>& DataManager::GetTasks() {
 
 // Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
 void DataManager::AddRobot(RobotData& robot) {
+    std::lock_guard<std::mutex> lock(data_mutex_);
     int new_id = GetNextAvailableRobotId();  // Get a new unique ID, assigned by data manager to avoid user error
 
     // robot.robotID = new_id;
@@ -220,6 +212,7 @@ std::vector<robots::Robots> DataManager::GetTasksTable()
 
 void DataManager::DeleteRobot(int robotId)
 {
+    std::lock_guard<std::mutex> lock(data_mutex_); // Thread-safe access
     //first remove the robot from the database
     mongo_database.delete_robot(robotId);
     
@@ -317,6 +310,9 @@ robots::RobotManager& DataManager::GetRobotManager() {
 
 // Method to delete all robots from MongoDB and local vector
 void DataManager::DeleteAllRobots() {
+    stopUpdateThread(); // Stop the update thread before modifying the list
+
+    std::lock_guard<std::mutex> lock(data_mutex_); // Thread-safe access
     // Delete all robots from the MongoDB database
     mongo_database.delete_all_robots();
 
