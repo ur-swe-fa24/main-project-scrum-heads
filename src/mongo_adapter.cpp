@@ -273,7 +273,7 @@ void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
     db_["robot"].update_one(query_filter.view(), update_doc1.view());
 
     //Update room to be unavailable
-    update_room_availability(new_task.get_task_room().getRoomNumber(), "Unavailable");
+    update_room_availability(new_task.get_task_room().getRoomNumber(), "Busy");
 }
 
 /**
@@ -305,7 +305,7 @@ void adapters::Mongo_Adapter::write_task(int id, int room){
     //Also update the room to unavailable
 
     //Update room to be unavailable
-    update_room_availability(room, "Unavailable");
+    update_room_availability(room, "Busy");
 }
 
 /**
