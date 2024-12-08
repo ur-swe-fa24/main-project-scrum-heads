@@ -128,6 +128,30 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                 if (robot.get_task_percent() == 100 && robot.get_task_status() == "Ongoing") {
                     robot.update_task_status("Complete");
                 }
+
+                if (robot.get_task_status() == "Available" && robot.get_error_status().empty() && robot.get_task_percent() == 0) {
+                    int current_water = robot.get_water_level();
+                    int current_battery = robot.get_battery_level();
+                    int max_water, max_battery;
+
+                    if (robot.get_size() == "small") {
+                        max_water = 60;
+                        max_battery = 60;
+                    } else if (robot.get_size() == "medium") {
+                        max_water = 60;
+                        max_battery = 60;
+                    } else {
+                        max_water = 70;
+                        max_battery = 70;
+                    }
+
+                    // Increment water and battery levels, ensuring they don't exceed their respective maximums
+                    robot.update_water_level(std::min(current_water + 10, max_water));
+                    robot.update_battery_level(std::min(current_battery + 10, max_battery));
+
+                    continue;
+                }
+
             }
         }
 
