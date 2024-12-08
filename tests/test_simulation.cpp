@@ -156,6 +156,7 @@ TEST_CASE("RobotManager Comprehensive Test") {
                 error_count++;
             
         }
+        }
 
         // Verify that errors are generated at a reasonable rate (around 1%)
         REQUIRE(error_count > 0);
