@@ -14,8 +14,8 @@ void MyViewTaskFrame::SetTaskData(robots::Robots robot) {
     robotTaskListBox->Clear();
 
     //add task info
-    //if robot is not working, don't include task percent
-    if (robot.get_task_status() != "Available")
+    //if robot is not working or task cancelled, don't include task percent
+    if (robot.get_task_status() != "Available" && robot.get_task_status() != "Cancelled")
     {
         taskStatusPlaceholderText->SetLabel(std::to_string(robot.get_task_percent()) + "% complete, " + robot.get_task_status());
     }
