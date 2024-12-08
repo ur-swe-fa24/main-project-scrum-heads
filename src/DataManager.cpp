@@ -5,7 +5,9 @@
 #include <sstream>
 #include <chrono>
 #include "spdlog/spdlog.h"
+#include "robot_do_task.hpp"
 #include <iostream>
+
 
 
 DataManager::DataManager() 
@@ -32,6 +34,9 @@ DataManager::~DataManager() {
 
 void DataManager::startUpdateThread() {
     update_thread_ = std::thread([this]() {
+        // Start the robot task execution loop
+        robot_tasks::start_execute_thread(robot_manager_.get_list());
+
         while (keep_updating_) {
             {
                 std::lock_guard<std::mutex> lock(data_mutex_); // Ensure thread-safe access
@@ -39,23 +44,27 @@ void DataManager::startUpdateThread() {
                 spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
                 // Simulate MongoDB update
-                // mongo_database.update_task_status(robot_list);
+                mongo_database.update_task_status(robot_list);
                 spdlog::info("Updated task status in MongoDB successfully.");
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5s
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5 seconds
         }
+
+        // Stop the robot task execution loop when the update thread stops
+        robot_tasks::stop_execute_thread();
     });
 }
 
 
 
-
 void DataManager::stopUpdateThread() {
-    keep_updating_ = false;
+    keep_updating_ = false; // Stop the update thread
     if (update_thread_.joinable()) {
         update_thread_.join();
     }
+    robot_tasks::stop_execute_thread(); // Stop the robot task execution loop
 }
+
 
 // Method to receive and process robots data
 // void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
@@ -248,6 +257,8 @@ void DataManager::DeleteRobot(int robotId)
     robot_manager_.remove_robot_by_id(robotId);
 }
 
+
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
 // Add task
 void DataManager::AddTask(TaskData& task) {
     // Convert wxString attributes to std::string
@@ -279,6 +290,7 @@ void DataManager::AddTask(TaskData& task) {
         }
     }
 }
+
 
 //gets all robots from database, then filters for available robots
 std::vector<robots::Robots> DataManager::GetAvailableRobots()
