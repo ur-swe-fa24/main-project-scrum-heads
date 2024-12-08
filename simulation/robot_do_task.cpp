@@ -76,7 +76,8 @@ void execute(std::vector<robots::Robots>& robot_list_) {
             std::lock_guard<std::mutex> lock(robot_mutex);
             for (robots::Robots& robot : robot_list_) {
                 std::cout << "Robot ID: " << robot.get_id() 
-                << ", Status: " << robot.get_task_status() 
+                << ", Task Status: " << robot.get_task_status() 
+                << ", Error Status: " << robot.get_error_status()
                 << ", Task Percent: " << robot.get_task_percent() 
                 << ", Water Level: " << robot.get_water_level()
                 << ", Battery Level: " << robot.get_battery_level() << std::endl;
@@ -98,6 +99,39 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                     robot.update_task_status("Cancelled");
                     continue;
                 }
+                
+                if (robot.get_task_status() == "Available" && robot.get_error_status().empty() && robot.get_task_percent() == 0) {
+                    int current_water = robot.get_water_level();
+                    int current_battery = robot.get_battery_level();
+                    int max_water, max_battery;
+
+                    if (robot.get_size() == "small") {
+                        max_water = 100;
+                        max_battery = 100;
+                    } else if (robot.get_size() == "medium") {
+                        max_water = 120;
+                        max_battery = 120;
+                    } else {
+                        max_water = 140;
+                        max_battery = 140;
+                    }  
+
+                    std::cout << "Refilling Robot ID: " << robot.get_id()
+                        << ", Current Water: " << current_water
+                        << ", Current Battery: " << current_battery
+                        << ", Max Water: " << max_water
+                        << ", Max Battery: " << max_battery << std::endl;
+
+                    robot.update_water_level(std::min(current_water + 10, max_water));
+                    robot.update_battery_level(std::min(current_battery + 10, max_battery));
+
+                    std::cout << "After Refill - Water: " << robot.get_water_level()
+                            << ", Battery: " << robot.get_battery_level() << std::endl;
+
+
+                    continue;
+                }
+
                 if (robot.get_task_percent() < 100 && robot.get_task_status() == "Ongoing" && robot.get_error_status().empty()) {
                     if (active_tasks.find(robot.get_id()) == active_tasks.end()) {
                         int robot_id = robot.get_id();
@@ -117,6 +151,7 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                                         if (r.get_task_percent() >= 100) {
                                             r.update_task_status("Complete");
                                         }
+                                        calculate_error_status(r);
                                         break;
                                     }
                                 }
@@ -128,6 +163,7 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                 if (robot.get_task_percent() == 100 && robot.get_task_status() == "Ongoing") {
                     robot.update_task_status("Complete");
                 }
+
             }
         }
 

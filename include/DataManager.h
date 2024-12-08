@@ -76,6 +76,8 @@ public:
     // Add the following declaration for deleting all robots (useful for testing)
     void DeleteAllRobots();
 
+    //gets error log from database
+    std::string getErrorLog(int robotID);
     robots::Robots update_task_status();
     robots::Robots update_task_room();
 
