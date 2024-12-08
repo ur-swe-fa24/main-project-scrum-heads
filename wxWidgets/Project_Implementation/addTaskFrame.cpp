@@ -93,28 +93,28 @@ void MyAddTaskFrame::OnRoomTaskSelect(wxCommandEvent& event)
 
         //SECOND, SCREEN FOR ADEQUATE ROBOT SIZE, WATER LEVEL, AND BATTERY LEVEL
 
-        //if room is large, 
+        //if room is large, make sure at least 90 water and battery
         if (selectedRoom.getRoomSize() == "Large")
         {
-            if (robot.get_size() != "Large" || robot.get_battery_level() != 100 || robot.get_water_level() != 100)
+            if (robot.get_battery_level() < 90 || robot.get_water_level() < 90)
             {
                 continue;
             }
         }
 
-        //if room is medium, 
+        //if room is medium, make sure at least 40 water and battery 
         else if (selectedRoom.getRoomSize() == "Medium")
         {
-            if (robot.get_size() != "Medium")
+            if (robot.get_battery_level() < 40 || robot.get_water_level() < 40)
             {
                 continue;
             }
         }
 
-        //if room is small, 
+        //if room is small, make sure at least 10 water and battery 
         else
         {
-            if (robot.get_size() != "Small")
+            if (robot.get_battery_level() < 10 || robot.get_water_level() < 10)
             {
                 continue;
             }
