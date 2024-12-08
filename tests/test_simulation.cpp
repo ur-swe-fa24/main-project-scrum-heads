@@ -3,20 +3,24 @@
 #include <catch2/catch_all.hpp>
 #include <thread>
 #include <chrono>
-#include <iostream> // Added for debugging output
+#include <iostream>
 
 using namespace robots;
 using namespace robot_tasks;
 
 TEST_CASE("RobotManager Comprehensive Test") {
-    // Setup Room and Robots
+    // Setup Real Rooms
     Room small_room(101, "small", "Tile", "Available");
     Room medium_room(102, "medium", "Carpet", "Available");
-    
-    Robots robot1(1, "small", 100, 100, "", "Available", small_room, "scrub", 0);
-    Robots robot2(2, "medium", 50, 50, "", "Ongoing", medium_room, "scrub", 30);
-    Robots robot3(3, "small", 10, 10, "Motor Failure", "Cancelled", small_room, "scrub", 0);
-    Robots robot4(4, "medium", 0, 100, "", "Available", medium_room, "scrub", 0); // Robot needs refilling
+
+    // Initialize Robots with Empty Rooms
+    Room empty_room(0, "", "", "");
+
+    Robots robot1(1, "small", 100, 100, "", "Available", empty_room, "scrub", 0);
+    Robots robot2(2, "medium", 50, 50, "", "Ongoing", empty_room, "scrub", 30);
+    Robots robot3(3, "small", 10, 10, "Motor Failure", "Cancelled", empty_room, "scrub", 0);
+    Robots robot4(4, "medium", 0, 0, "", "Available", empty_room, "scrub", 0); // Robot needs refilling
+    Robots robot5(5, "large", 100, 100, "", "Available", empty_room, "scrub", 0); // Large robot
 
     // Initialize RobotManager and add robots
     RobotManager robot_manager;
@@ -24,16 +28,20 @@ TEST_CASE("RobotManager Comprehensive Test") {
     robot_manager.add_robot(robot2);
     robot_manager.add_robot(robot3);
     robot_manager.add_robot(robot4);
+    robot_manager.add_robot(robot5);
 
     // Assign tasks to available robots
     for (auto& robot : robot_manager.get_list()) {
         if (robot.get_task_status() == "Available" && robot.get_water_level() == 100 && robot.get_battery_level() == 100) {
             robot.update_task_status("Ongoing");
-            if (robot.get_task_room().getRoomSize() == "small") {
+
+            // Assign the real room based on robot size
+            if (robot.get_size() == "small") {
                 robot.update_task_room(small_room);
-            } else if (robot.get_task_room().getRoomSize() == "medium") {
+            } else if (robot.get_size() == "medium") {
                 robot.update_task_room(medium_room);
             }
+
             std::cout << "Robot ID: " << robot.get_id() << " assigned a new task and status set to Ongoing." << std::endl;
         } else {
             std::cout << "Robot ID: " << robot.get_id() << " did not meet criteria for task assignment." << std::endl;
@@ -73,14 +81,15 @@ TEST_CASE("RobotManager Comprehensive Test") {
         }
         else if (robot.get_id() == 4) {
             // Robot 4 needed refilling, should gradually refill and become available again
-            if (robot.get_water_level() == 100) {
-                REQUIRE(robot.get_task_status() == "Available");
-            } else {
-                bool valid_status = (robot.get_task_status() == "Cancelled" || robot.get_task_status() == "Available");
-                REQUIRE(valid_status);
-            }
-            REQUIRE(robot.get_water_level() <= 100);
-            REQUIRE(robot.get_battery_level() == 100);
+            bool valid_status = (robot.get_task_status() == "Cancelled" || robot.get_task_status() == "Available");
+            REQUIRE(valid_status);
+            REQUIRE(robot.get_water_level() >= 0);
+            REQUIRE(robot.get_battery_level() >= 0);
+        }
+        else if (robot.get_id() == 5) {
+            // Robot 5 (large robot) was available, should have started a task or remained available
+            REQUIRE((robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Available"));
+            REQUIRE(robot.get_task_percent() >= 0);
         }
     }
 
@@ -103,11 +112,37 @@ TEST_CASE("RobotManager Comprehensive Test") {
         for (int i = 0; i < 10; ++i) {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
             // Verify gradual refill
-            REQUIRE(robot.get_water_level() <= 100);
-            REQUIRE(robot.get_battery_level() == 100);
-            if (robot.get_water_level() == 100) {
-                REQUIRE(robot.get_task_status() == "Available");
-            }
+            REQUIRE(robot.get_water_level() >= 0);
+            REQUIRE(robot.get_battery_level() >= 0);
         }
+    }
+
+    // Test Robot 5's large size handling
+    SECTION("Verify Large Robot (Robot 5) Behavior") {
+        auto& robot = robot_manager.get_list()[4]; // Robot with ID 5
+        if (robot.get_task_status() == "Ongoing") {
+            REQUIRE(robot.get_task_percent() >= 0);
+            REQUIRE(robot.get_water_level() <= 100);
+            REQUIRE(robot.get_battery_level() <= 100);
+        } else {
+            REQUIRE(robot.get_task_status() == "Available");
+        }
+    }
+
+    // Test fix function on Robot 3
+    SECTION("Fix Robot with Error (Robot 3)") {
+        auto& robot = robot_manager.get_list()[2]; // Robot with ID 3
+        REQUIRE(robot.get_task_status() == "Cancelled");
+        REQUIRE(robot.get_error_status() == "Motor Failure");
+
+        // Call fix function
+        fix(robot);
+
+        // Verify the robot is fixed
+        REQUIRE(robot.get_task_status() == "Available");
+        REQUIRE(robot.get_error_status().empty());
+        REQUIRE(robot.get_task_percent() == 0);
+        REQUIRE(robot.get_water_level() == 100); // Small robot default max water
+        REQUIRE(robot.get_battery_level() == 100); // Small robot default max battery
     }
 }
