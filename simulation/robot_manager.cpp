@@ -9,8 +9,8 @@ void RobotManager::add_robot(const Robots& new_robot) {
 }
 
 // Find a robot by its ID
-Robots RobotManager::find_robot_by_id(int robot_id) const {
-    for (const auto& robot : robot_list_) {
+Robots& RobotManager::find_robot_by_id(int robot_id) {
+    for (auto& robot : robot_list_) {
         if (robot.get_id() == robot_id) {
             return robot; // Return a copy of the found robot
         }

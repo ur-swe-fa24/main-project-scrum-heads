@@ -348,6 +348,6 @@ std::string DataManager::getErrorLog(int robotID)
 
 void DataManager::FixRobot(int robotID)
 {
-    robots::Robots robot = robot_manager_.find_robot_by_id(robotID);
+    robots::Robots& robot = robot_manager_.find_robot_by_id(robotID);
     fix(robot);
 }
