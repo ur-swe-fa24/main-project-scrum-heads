@@ -38,7 +38,7 @@ void DataManager::startUpdateThread() {
                 spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
                 // Simulate MongoDB update
-                mongo_database.update_task_status(robot_list);
+                // mongo_database.update_task_status(robot_list);
                 spdlog::info("Updated task status in MongoDB successfully.");
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5s
@@ -318,4 +318,10 @@ void DataManager::DeleteAllRobots() {
 
     // Clear the local list of RobotData
     robots.clear();
+}
+
+std::string DataManager::getErrorLog(int robotID)
+{
+    std::string errorLog = mongo_database.get_error_log(robotID);
+    return errorLog;
 }
