@@ -17,7 +17,7 @@ public:
     void add_robot(const Robots& new_robot);
 
     // Find a robot by its ID (returns std::optional<Robots>)
-    std::optional<Robots> find_robot_by_id(int robot_id) const;
+    Robots& find_robot_by_id(int robot_id);
 
     // Remove a robot by its ID
     bool remove_robot_by_id(int robot_id);

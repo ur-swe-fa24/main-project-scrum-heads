@@ -6,6 +6,9 @@
 #include <chrono>
 #include "spdlog/spdlog.h"
 #include "robot_do_task.hpp"
+
+using namespace robot_tasks;
+
 #include <iostream>
 
 
@@ -363,8 +366,15 @@ void DataManager::DeleteAllRobots() {
     robots.clear();
 }
 
+//gets error log from database
 std::string DataManager::getErrorLog(int robotID)
 {
     std::string errorLog = mongo_database.get_error_log(robotID);
     return errorLog;
+}
+
+void DataManager::FixRobot(int robotID)
+{
+    robots::Robots& robot = robot_manager_.find_robot_by_id(robotID);
+    fix(robot);
 }
