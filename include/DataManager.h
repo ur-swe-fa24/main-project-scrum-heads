@@ -78,6 +78,8 @@ public:
 
     //gets error log from database
     std::string getErrorLog(int robotID);
+    robots::Robots update_task_status();
+    robots::Robots update_task_room();
 
     //function to fix robot on FE fix button input
     void FixRobot(int robotID);

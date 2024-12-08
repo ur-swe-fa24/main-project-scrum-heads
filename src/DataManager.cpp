@@ -9,6 +9,9 @@
 
 using namespace robot_tasks;
 
+#include <iostream>
+
+
 
 DataManager::DataManager() 
 {
@@ -34,6 +37,9 @@ DataManager::~DataManager() {
 
 void DataManager::startUpdateThread() {
     update_thread_ = std::thread([this]() {
+        // Start the robot task execution loop
+        robot_tasks::start_execute_thread(robot_manager_.get_list());
+
         while (keep_updating_) {
             {
                 std::lock_guard<std::mutex> lock(data_mutex_); // Ensure thread-safe access
@@ -44,20 +50,24 @@ void DataManager::startUpdateThread() {
                 mongo_database.update_task_status(robot_list);
                 spdlog::info("Updated task status in MongoDB successfully.");
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5s
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5 seconds
         }
+
+        // Stop the robot task execution loop when the update thread stops
+        robot_tasks::stop_execute_thread();
     });
 }
 
 
 
-
 void DataManager::stopUpdateThread() {
-    keep_updating_ = false;
+    keep_updating_ = false; // Stop the update thread
     if (update_thread_.joinable()) {
         update_thread_.join();
     }
+    robot_tasks::stop_execute_thread(); // Stop the robot task execution loop
 }
+
 
 // Method to receive and process robots data
 // void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
@@ -116,7 +126,7 @@ void DataManager::AddRooms()
     // Close the file
     file.close();
 
-    //write vector of rooms to database and simulation
+    //write vector of rooms to database 
     mongo_database.write_rooms(roomVector);
 }
 
@@ -250,23 +260,40 @@ void DataManager::DeleteRobot(int robotId)
     robot_manager_.remove_robot_by_id(robotId);
 }
 
+
 // Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
+// Add task
 void DataManager::AddTask(TaskData& task) {
-    // Convert wxString to std::string for task room selection and task robot selection
+    // Convert wxString attributes to std::string
     std::string room_str = std::string(task.taskRoom.mb_str());
     std::string robot_str = task.taskRobot.robotID;
+    tasks.push_back(task);         // Add to the task vector
 
-    tasks.push_back(task); //adds task to vector of TaskData
-
-    //getallrobotinfo for input robot ID (retrived from struct)
-    //then manually update stuff
-
+    // Convert the strings to integers
     int robot_id = std::stoi(robot_str);
     int room_num = std::stoi(room_str);
-    
-    // Write task to the database
+    std::cout << "room number: " << room_num << std::endl;
+
+    // Write the task to the database (MongoDB)
     mongo_database.write_task(robot_id, room_num);
+
+    // Find the robot by ID
+    auto robot_opt = robot_manager_.find_robot_by_id(robot_id);
+    auto& robot = robot_opt.value(); // Get the robot reference
+    // Update the task status to "Ongoing"
+    robot.update_task_status("Ongoing");
+    std::cout << "robot number: " << robot.get_id() << std::endl;
+    std::cout << "robot status: " << robot.get_task_status() << std::endl;
+    for (auto& room : roomVector) { // Use non-const reference to avoid const issues
+        if (room.getRoomNumber() == room_num) {
+            // Assign the room to the robot
+            robot.update_task_room(room);
+            std::cout << "Assigned room number: " << room.getRoomNumber() << std::endl;
+            return; // Exit the loop after assigning the room
+        }
+    }
 }
+
 
 //gets all robots from database, then filters for available robots
 std::vector<robots::Robots> DataManager::GetAvailableRobots()

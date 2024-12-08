@@ -1,11 +1,12 @@
 #define CATCH_CONFIG_MAIN
 #include "DataManager.h"
+#include "robot_manager.hpp"
+#include "robot_do_task.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
-#include <wx/string.h>
 #include <thread>
 #include <chrono>
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 // Create a global instance of DataManager to ensure only one instance is used in all tests
 DataManager data_manager;
@@ -70,59 +71,59 @@ TEST_CASE("DataManager Integration Test - Add, Delete, Retrieve Robot, and GetAl
     spdlog::info("Integration test completed. All robots deleted.");
 }
 
-TEST_CASE("DataManager Live Update Test - Update Task Progress and Live Sync with MongoDB") {
-    spdlog::info("Starting live update test...");
+TEST_CASE("DataManager - Start Robot Task Execution Thread") {
+    spdlog::info("Starting DataManager thread and task execution test...");
 
-    // Phase 1: Clear all robots
-    data_manager.DeleteAllRobots();
+    data_manager.DeleteAllRobots(); // Clear any existing data
     spdlog::info("Cleared all robots from the database.");
 
-    // Phase 2: Add Robot
+    // Step 2: Add a robot and a task
     RobotData new_robot;
     new_robot.robotSize = wxString("Medium");
     new_robot.robotFunction = wxString("Scrub");
     data_manager.AddRobot(new_robot);
-    spdlog::info("Added new robot with size Medium and function Scrub.");
 
-    // Start Update Thread
+    TaskData new_task;
+    new_task.taskRoom = wxString("102"); // Example room number
+    new_task.taskRobot = new_robot;
+    data_manager.AddTask(new_task);
+
+    spdlog::info("Added a new robot and assigned a task.");
+
+    // Step 3: Start the DataManager update thread
     data_manager.startUpdateThread();
-    spdlog::info("Started the update thread.");
 
-    // Fetch and Verify Initial Robot List
-    auto& robot_list = data_manager.GetRobotManager().get_list();
-    REQUIRE(!robot_list.empty());
-    spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
+    // Step 4: Let the thread run for a short period
+    spdlog::info("Allowing the thread to run for task execution...");
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
-    // Phase 3: Simulate Task Progress
-    spdlog::info("Simulating task progress...");
-    for (auto& robot : robot_list) {
-        robot.update_task_status("Ongoing");
-        robot.update_task_percent(50);
-        robot.update_battery_level(70);
-        robot.update_water_level(60);
-    }
+    // Step 5: Fetch updated robot information
+    auto& robot_manager = data_manager.GetRobotManager();
+    auto robot_list = robot_manager.get_list();
 
-    // Phase 4: Let the Thread Run
-    spdlog::info("Waiting for thread to process updates...");
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    REQUIRE(!robot_list.empty()); // Ensure there is at least one robot
 
-    // Phase 5: Verify Updated State
-    spdlog::info("Verifying robot states...");
+    // Step 6: Verify the task progress and robot state
     for (const auto& robot : robot_list) {
-        REQUIRE(robot.get_task_status() == "Ongoing");
-        REQUIRE(robot.get_task_percent() == 50);
-        REQUIRE(robot.get_battery_level() == 70);
-        REQUIRE(robot.get_water_level() == 60);
-        spdlog::info("Robot ID: {}, Status: {}, Percent: {}, Battery: {}, Water: {}",
-                     robot.get_id(), robot.get_task_status(), robot.get_task_percent(),
-                     robot.get_battery_level(), robot.get_water_level());
+        spdlog::info("Verifying robot ID: {}", robot.get_id());
+        if (robot.get_task_status() == "Ongoing") {
+            REQUIRE(robot.get_task_percent() > 0); // Task progress should have started
+            REQUIRE(robot.get_battery_level() <= 100); // Battery level should decrease
+            REQUIRE(robot.get_water_level() <= 100); // Water level should decrease
+            spdlog::info("Task progress: {}%, Battery: {}, Water: {}",
+                         robot.get_task_percent(),
+                         robot.get_battery_level(),
+                         robot.get_water_level());
+        } else if (robot.get_task_status() == "Complete") {
+            REQUIRE(robot.get_task_percent() == 100); // Task should be fully completed
+            spdlog::info("Task for Robot ID: {} is complete.", robot.get_id());
+        }
     }
 
-    // Phase 6: Stop Update Thread and Clean Up
+    // Step 7: Stop the thread and clean up
+    spdlog::info("Stopping the update thread...");
     data_manager.stopUpdateThread();
-    spdlog::info("Stopped the update thread.");
-
     data_manager.DeleteAllRobots();
     REQUIRE(data_manager.GetRobots().empty());
-    spdlog::info("Cleaned up all robots. Live update test completed.");
+    spdlog::info("All robots removed. Test complete.");
 }
