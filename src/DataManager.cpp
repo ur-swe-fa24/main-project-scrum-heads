@@ -253,18 +253,20 @@ void DataManager::AddTask(TaskData& task) {
     robot.update_task_status("Ongoing");
     spdlog::info("Task status updated to 'Ongoing' for Robot ID: {}", robot_id);
 
-    // Find the room by room number
-    auto room_it = std::find_if(roomVector.begin(), roomVector.end(),
-                                [room_num](const Room& room) { return room.getRoomNumber() == room_num; });
+    bool room_found = false;
 
-    if (room_it != roomVector.end()) {
-        // Assign the room to the robot
-        robot.update_task_room(*room_it);
-        spdlog::info("Room ID {} assigned to Robot ID: {}", room_num, robot_id);
-    } else {
-        spdlog::warn("Room ID {} not found for task assignment.", room_num);
-        return;
+    for (auto& room : roomVector) { // Use non-const reference to avoid const issues
+        if (room.getRoomNumber() == room_num) {
+            // Assign the room to the robot
+            robot.update_task_room(room); // Pass the non-const Room object
+            spdlog::info("Room ID {} assigned to Robot ID: {}", room_num, robot_id);
+            return; // Exit the loop after assigning the room
+        }
     }
+
+    // If no room was found, log a warning
+    spdlog::warn("Room ID {} not found for task assignment.", room_num);
+
 
     // Write the task to the database (MongoDB)
     mongo_database.write_task(robot_id, room_num);
