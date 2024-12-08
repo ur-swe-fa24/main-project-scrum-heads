@@ -15,7 +15,7 @@ TEST_CASE("Mongo Adapter Write and Read Robot") {
 
     //Create a new Robot
     Room room(0, "", "", "");
-    robots::Robots temp_robot(1000, "Large", 100, 50, "", "Vacuum", room, "scrub", 0);
+    robots::Robots temp_robot(1000, "Large", 100, 50, "", "Vacuum", room, "Scrub", 0);
 
     //Write said robot
     mongo_other.write_robot(temp_robot);

@@ -13,17 +13,17 @@ namespace robot_tasks {
 
 // Function to calculate task duration based on room size
 int calculate_task_duration(const std::string& room_size) {
-    if (room_size == "small") return 2;
-    if (room_size == "medium") return 4;
-    if (room_size == "large") return 6;
+    if (room_size == "Small") return 2;
+    if (room_size == "Medium") return 4;
+    if (room_size == "Large") return 6;
     return 0;
 }
 
 // Function to calculate resource usage based on room size
 int get_resource_usage(const std::string& room_size) {
-    if (room_size == "small") return 1;
-    if (room_size == "medium") return 4;
-    if (room_size == "large") return 9;
+    if (room_size == "Small") return 1;
+    if (room_size == "Medium") return 4;
+    if (room_size == "Large") return 9;
     return 0;
 }
 
@@ -105,10 +105,10 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                     int current_battery = robot.get_battery_level();
                     int max_water, max_battery;
 
-                    if (robot.get_size() == "small") {
+                    if (robot.get_size() == "Small") {
                         max_water = 100;
                         max_battery = 100;
-                    } else if (robot.get_size() == "medium") {
+                    } else if (robot.get_size() == "Medium") {
                         max_water = 120;
                         max_battery = 120;
                     } else {

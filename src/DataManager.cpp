@@ -44,11 +44,11 @@ void DataManager::startUpdateThread() {
             {
                 std::lock_guard<std::mutex> lock(data_mutex_); // Ensure thread-safe access
                 auto robot_list = robot_manager_.get_list();
-                spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
+                // spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
                 // Simulate MongoDB update
-                mongo_database.update_task_status(robot_list);
-                spdlog::info("Updated task status in MongoDB successfully.");
+                // mongo_database.update_task_status(robot_list);
+                // spdlog::info("Updated task status in MongoDB successfully.");
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5 seconds
         }
@@ -278,8 +278,7 @@ void DataManager::AddTask(TaskData& task) {
     mongo_database.write_task(robot_id, room_num);
 
     // Find the robot by ID
-    auto robot_opt = robot_manager_.find_robot_by_id(robot_id);
-    auto& robot = robot_opt.value(); // Get the robot reference
+    robots::Robots& robot = robot_manager_.find_robot_by_id(robot_id);
     // Update the task status to "Ongoing"
     robot.update_task_status("Ongoing");
     std::cout << "robot number: " << robot.get_id() << std::endl;

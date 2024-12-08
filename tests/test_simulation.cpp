@@ -10,17 +10,17 @@ using namespace robot_tasks;
 
 TEST_CASE("RobotManager Comprehensive Test") {
     // Setup Real Rooms
-    Room small_room(101, "small", "Tile", "Available");
-    Room medium_room(102, "medium", "Carpet", "Available");
+    Room small_room(101, "Small", "Tile", "Available");
+    Room medium_room(102, "Medium", "Carpet", "Available");
 
     // Initialize Robots with Empty Rooms
     Room empty_room(0, "", "", "");
 
-    Robots robot1(1, "small", 100, 100, "", "Available", empty_room, "scrub", 0);
-    Robots robot2(2, "medium", 50, 50, "", "Ongoing", empty_room, "scrub", 30);
-    Robots robot3(3, "small", 10, 10, "Motor Failure", "Cancelled", empty_room, "scrub", 0);
-    Robots robot4(4, "medium", 0, 0, "", "Available", empty_room, "scrub", 0); // Robot needs refilling
-    Robots robot5(5, "large", 100, 100, "", "Available", empty_room, "scrub", 0); // Large robot
+    Robots robot1(1, "Small", 100, 100, "", "Available", empty_room, "Scrub", 0);
+    Robots robot2(2, "Medium", 50, 50, "", "Ongoing", empty_room, "Scrub", 30);
+    Robots robot3(3, "Small", 10, 10, "Motor Failure", "Cancelled", empty_room, "Scrub", 0);
+    Robots robot4(4, "Medium", 0, 0, "", "Available", empty_room, "Scrub", 0); // Robot needs refilling
+    Robots robot5(5, "Large", 100, 100, "", "Available", empty_room, "Scrub", 0); // Large robot
 
     // Initialize RobotManager and add robots
     RobotManager robot_manager;
@@ -36,9 +36,9 @@ TEST_CASE("RobotManager Comprehensive Test") {
             robot.update_task_status("Ongoing");
 
             // Assign the real room based on robot size
-            if (robot.get_size() == "small") {
+            if (robot.get_size() == "Small") {
                 robot.update_task_room(small_room);
-            } else if (robot.get_size() == "medium") {
+            } else if (robot.get_size() == "Medium") {
                 robot.update_task_room(medium_room);
             }
 
@@ -150,7 +150,7 @@ TEST_CASE("RobotManager Comprehensive Test") {
     SECTION("Random Error Generation Test") {
         int error_count = 0;
         for (int i = 0; i < 100; ++i) {
-            Robots test_robot(999, "small", 100, 100, "", "Ongoing", empty_room, "scrub", 50);
+            Robots test_robot(999, "Small", 100, 100, "", "Ongoing", empty_room, "Scrub", 50);
             calculate_error_status(test_robot);
             if (!test_robot.get_error_status().empty()) {
                 error_count++;
