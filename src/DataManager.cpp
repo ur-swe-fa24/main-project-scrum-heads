@@ -5,6 +5,7 @@
 #include <sstream>
 #include <chrono>
 #include "spdlog/spdlog.h"
+#include <iostream>
 
 
 DataManager::DataManager() 
@@ -236,45 +237,31 @@ void DataManager::AddTask(TaskData& task) {
     // Convert wxString attributes to std::string
     std::string room_str = std::string(task.taskRoom.mb_str());
     std::string robot_str = task.taskRobot.robotID;
+    tasks.push_back(task);         // Add to the task vector
 
     // Convert the strings to integers
     int robot_id = std::stoi(robot_str);
     int room_num = std::stoi(room_str);
-
-    // Find the robot by ID
-    auto robot_opt = robot_manager_.find_robot_by_id(robot_id); // Assume this function exists in RobotManager
-    if (!robot_opt.has_value()) {
-        spdlog::warn("Robot ID {} not found for task assignment.", robot_id);
-        return;
-    }
-    auto& robot = robot_opt.value(); // Get the robot reference
-
-    // Update the task status to "Ongoing"
-    robot.update_task_status("Ongoing");
-    spdlog::info("Task status updated to 'Ongoing' for Robot ID: {}", robot_id);
-
-    bool room_found = false;
-
-    for (auto& room : roomVector) { // Use non-const reference to avoid const issues
-        if (room.getRoomNumber() == room_num) {
-            // Assign the room to the robot
-            robot.update_task_room(room); // Pass the non-const Room object
-            spdlog::info("Room ID {} assigned to Robot ID: {}", room_num, robot_id);
-            return; // Exit the loop after assigning the room
-        }
-    }
-
-    // If no room was found, log a warning
-    spdlog::warn("Room ID {} not found for task assignment.", room_num);
-
+    std::cout << "room number: " << room_num << std::endl;
 
     // Write the task to the database (MongoDB)
     mongo_database.write_task(robot_id, room_num);
-    spdlog::info("Task written to MongoDB for Robot ID: {} and Room ID: {}", robot_id, room_num);
 
-    // Add the task to the local tasks vector
-    tasks.push_back(task);
-    spdlog::info("Task added to local task vector for Robot ID: {} and Room ID: {}", robot_id, room_num);
+    // Find the robot by ID
+    auto robot_opt = robot_manager_.find_robot_by_id(robot_id);
+    auto& robot = robot_opt.value(); // Get the robot reference
+    // Update the task status to "Ongoing"
+    robot.update_task_status("Ongoing");
+    std::cout << "robot number: " << robot.get_id() << std::endl;
+    std::cout << "robot status: " << robot.get_task_status() << std::endl;
+    for (auto& room : roomVector) { // Use non-const reference to avoid const issues
+        if (room.getRoomNumber() == room_num) {
+            // Assign the room to the robot
+            robot.update_task_room(room);
+            std::cout << "Assigned room number: " << room.getRoomNumber() << std::endl;
+            return; // Exit the loop after assigning the room
+        }
+    }
 }
 
 //gets all robots from database, then filters for available robots
