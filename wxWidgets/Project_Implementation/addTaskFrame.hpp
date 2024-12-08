@@ -5,7 +5,7 @@
 class MyAddTaskFrame : public addTaskFrame
 {
 public:
-    MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxListBox* taskListBox, wxListBox* roomListBox,DataManager* dataManager, MyBaseFrame* baseFrame);
+    MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxListBox* taskListBox, wxListBox* roomListBox,DataManager* dataManager, MyBaseFrame* baseFrame, std::string userRole);
 
 
 protected:
@@ -45,4 +45,6 @@ private:
     wxListBox* localRoomListBox;
 
     MyBaseFrame* baseFrame;  // Pointer to the baseFrame
+
+    std::string userRole;
 };

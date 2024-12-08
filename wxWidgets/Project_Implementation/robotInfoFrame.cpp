@@ -13,6 +13,10 @@ MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robo
         //remove the remove and fix robot buttons for non-FE so they don't see it
         removeRobotButton->Show(false);
         fixRobotButton->Show(false);
+
+        //remove error info for non-FE
+        errorLogLabelText->Show(false);
+        robotErrorLogText->Show(false);
     }
 }
 
@@ -52,16 +56,17 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
     }
 
     std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + "%, Water Level: " + std::to_string(robot.get_water_level()) + "%";
+    std::string errorInfo = dataManager->getErrorLog(robot.get_id());
 
     if (userRole == "FE")
     {
         robotStatusText->SetLabel(robotInfo + ", Error Status: " + errorStatus);
+        robotErrorLogText->SetLabel(errorInfo);
     }
     else
     {
         robotStatusText->SetLabel(robotInfo);
     }
-    robotErrorLogText->SetLabel("Errors");
     Layout();
 }
 

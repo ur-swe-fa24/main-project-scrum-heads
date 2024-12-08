@@ -43,7 +43,7 @@ void MyBSBaseFrame::OnAddTaskButtonClick(wxCommandEvent& event)
     // First this: makes the current feFrame the parent window of the created addTaskFrame
     // Second this: passes instance of feFrame as a pointer to itself, allowing created addTaskFrame to communicate directly with it
     // necessary for taking the robot info added in the addTaskFrame and transporting it to feBaseFrame where field engineer can view
-    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, robotListBox, taskListBox, roomListBox, dataManager, baseFrame);
+    MyAddTaskFrame* addTaskFrame = new MyAddTaskFrame(this, robotListBox, taskListBox, roomListBox, dataManager, baseFrame, "BS");
     addTaskFrame->Show();
 }
 

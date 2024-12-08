@@ -38,7 +38,7 @@ void DataManager::startUpdateThread() {
                 spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
                 // Simulate MongoDB update
-                mongo_database.update_task_status(robot_list);
+                // mongo_database.update_task_status(robot_list);
                 spdlog::info("Updated task status in MongoDB successfully.");
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5s
@@ -143,8 +143,24 @@ void DataManager::AddRobot(RobotData& robot) {
     //temporary room placeholder
     Room room(0, "", "", "");
 
-    // Create a new robot instance with the new ID and the provided robot data
-    robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", room, function_str, 0);
+    //default robot as small, then change to large or medium if necessary
+    robots::Robots new_robot(new_id, size_str, 100, 100, "", "Available", room, function_str, 0);
+
+    //create robot instance with varying water and battery levels dependent on its size
+    if (size_str == "Large")
+    {
+        new_robot = robots::Robots(new_id, size_str, 140, 140, "", "Available", room, function_str, 0);
+    }
+    else if (size_str == "Medium")
+    {
+        new_robot = robots::Robots(new_id, size_str, 120, 120, "", "Available", room, function_str, 0);
+    }
+    // else
+    // {
+    //     new_robot = robots::Robots(new_id, size_str, 100, 100, "None", "Available", room, function_str, 0);
+    // }
+    // // Create a new robot instance with the new ID and the provided robot data
+    // robots::Robots new_robot(new_id, size_str, 100, 100, "None", "Available", room, function_str, 0);
     
     // Write the new robot to the MongoDB database
     mongo_database.write_robot(new_robot);
@@ -318,4 +334,10 @@ void DataManager::DeleteAllRobots() {
 
     // Clear the local list of RobotData
     robots.clear();
+}
+
+std::string DataManager::getErrorLog(int robotID)
+{
+    std::string errorLog = mongo_database.get_error_log(robotID);
+    return errorLog;
 }
