@@ -78,6 +78,8 @@ public:
 
     //gets error log from database
     std::string getErrorLog(int robotID);
+    robots::Robots update_task_status();
+    robots::Robots update_task_room();
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
