@@ -113,7 +113,7 @@ void DataManager::AddRooms()
     // Close the file
     file.close();
 
-    //write vector of rooms to database and simulation
+    //write vector of rooms to database 
     mongo_database.write_rooms(roomVector);
 }
 
@@ -231,22 +231,48 @@ void DataManager::DeleteRobot(int robotId)
     robot_manager_.remove_robot_by_id(robotId);
 }
 
-// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
+// Add task
 void DataManager::AddTask(TaskData& task) {
-    // Convert wxString to std::string for task room selection and task robot selection
+    // Convert wxString attributes to std::string
     std::string room_str = std::string(task.taskRoom.mb_str());
     std::string robot_str = task.taskRobot.robotID;
 
-    tasks.push_back(task); //adds task to vector of TaskData
-
-    //getallrobotinfo for input robot ID (retrived from struct)
-    //then manually update stuff
-
+    // Convert the strings to integers
     int robot_id = std::stoi(robot_str);
     int room_num = std::stoi(room_str);
-    
-    // Write task to the database
+
+    // Find the robot by ID
+    auto robot_opt = robot_manager_.find_robot_by_id(robot_id); // Assume this function exists in RobotManager
+    if (!robot_opt.has_value()) {
+        spdlog::warn("Robot ID {} not found for task assignment.", robot_id);
+        return;
+    }
+    auto& robot = robot_opt.value(); // Get the robot reference
+
+    // Update the task status to "Ongoing"
+    robot.update_task_status("Ongoing");
+    spdlog::info("Task status updated to 'Ongoing' for Robot ID: {}", robot_id);
+
+    // Find the room by room number
+    auto room_it = std::find_if(roomVector.begin(), roomVector.end(),
+                                [room_num](const Room& room) { return room.getRoomNumber() == room_num; });
+
+    if (room_it != roomVector.end()) {
+        // Assign the room to the robot
+        robot.update_task_room(*room_it);
+        spdlog::info("Room ID {} assigned to Robot ID: {}", room_num, robot_id);
+    } else {
+        spdlog::warn("Room ID {} not found for task assignment.", room_num);
+        return;
+    }
+
+    // Write the task to the database (MongoDB)
     mongo_database.write_task(robot_id, room_num);
+    spdlog::info("Task written to MongoDB for Robot ID: {} and Room ID: {}", robot_id, room_num);
+
+    // Add the task to the local tasks vector
+    tasks.push_back(task);
+    spdlog::info("Task added to local task vector for Robot ID: {} and Room ID: {}", robot_id, room_num);
 }
 
 //gets all robots from database, then filters for available robots

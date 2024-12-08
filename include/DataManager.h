@@ -76,6 +76,9 @@ public:
     // Add the following declaration for deleting all robots (useful for testing)
     void DeleteAllRobots();
 
+    robots::Robots update_task_status();
+    robots::Robots update_task_room();
+
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
 
