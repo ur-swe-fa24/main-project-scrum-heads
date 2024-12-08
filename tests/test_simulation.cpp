@@ -145,4 +145,20 @@ TEST_CASE("RobotManager Comprehensive Test") {
         REQUIRE(robot.get_water_level() == 100); // Small robot default max water
         REQUIRE(robot.get_battery_level() == 100); // Small robot default max battery
     }
+
+    // Test random error generation
+    SECTION("Random Error Generation Test") {
+        int error_count = 0;
+        for (int i = 0; i < 100; ++i) {
+            Robots test_robot(999, "small", 100, 100, "", "Ongoing", empty_room, "scrub", 50);
+            calculate_error_status(test_robot);
+            if (!test_robot.get_error_status().empty()) {
+                error_count++;
+            
+        }
+
+        // Verify that errors are generated at a reasonable rate (around 1%)
+        REQUIRE(error_count > 0);
+        REQUIRE(error_count < 10); // Expecting around 1% error rate over 100 tests
+    }
 }
