@@ -47,7 +47,7 @@ void DataManager::startUpdateThread() {
                 // spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
                 // Simulate MongoDB update
-                // mongo_database.update_task_status(robot_list);
+                mongo_database.update_task_status(robot_list);
                 // spdlog::info("Updated task status in MongoDB successfully.");
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5 seconds
@@ -225,6 +225,9 @@ robots::Robots DataManager::GetAllRobotInfo(int robotId)
     Room room = taskUpdatedRobot.get_task_room();
     //sets the room for the clicked robot
     clicked_robot.update_task_room(room);
+
+    int taskPercent = taskUpdatedRobot.get_task_percent();
+    clicked_robot.update_task_percent(taskPercent);
     //returns updated robot
     return clicked_robot;
 }
