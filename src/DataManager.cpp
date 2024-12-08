@@ -5,6 +5,9 @@
 #include <sstream>
 #include <chrono>
 #include "spdlog/spdlog.h"
+#include "robot_do_task.hpp"
+
+using namespace robot_tasks;
 
 
 DataManager::DataManager() 
@@ -38,7 +41,7 @@ void DataManager::startUpdateThread() {
                 spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
                 // Simulate MongoDB update
-                // mongo_database.update_task_status(robot_list);
+                mongo_database.update_task_status(robot_list);
                 spdlog::info("Updated task status in MongoDB successfully.");
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5s
@@ -336,8 +339,15 @@ void DataManager::DeleteAllRobots() {
     robots.clear();
 }
 
+//gets error log from database
 std::string DataManager::getErrorLog(int robotID)
 {
     std::string errorLog = mongo_database.get_error_log(robotID);
     return errorLog;
+}
+
+void DataManager::FixRobot(int robotID)
+{
+    robots::Robots robot = robot_manager_.find_robot_by_id(robotID);
+    fix(robot);
 }

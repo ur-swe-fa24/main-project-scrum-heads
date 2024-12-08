@@ -79,6 +79,9 @@ public:
     //gets error log from database
     std::string getErrorLog(int robotID);
 
+    //function to fix robot on FE fix button input
+    void FixRobot(int robotID);
+
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
 

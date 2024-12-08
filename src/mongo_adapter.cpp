@@ -346,6 +346,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
         if(result){
             //If the robot now has an error
             if(update.get_error_status() != ""){
+                std::cout << "1" << std::endl;
                 //add the error to the error table for safe keeping to grab things later. if we are inquiring about an error log
                 db_["error"].insert_one(make_document(
                     kvp("robot_id", update.get_id()),
@@ -389,6 +390,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 update_room_availability(update.get_task_room().getRoomNumber(), "Available");
             }
             else if(update.get_task_status() == "Complete" ){
+                std::cout << "2" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
@@ -421,6 +423,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
 
             }
             else if(update.get_task_status() == "Cancelled" && update.get_error_status() == ""){
+                std::cout << "3" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
@@ -452,6 +455,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 update_room_availability(update.get_task_room().getRoomNumber(), "Available");
             }
             else{
+                std::cout << "4" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
@@ -482,6 +486,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 //Room should still be unavailiable because the only things that are in the else statement are ongoing tasks
             }
         }else{
+            std::cout << "5" << std::endl;
             // If the robot task is available and not ongoing then just update the robot class as only the water and battery level are changing
             auto robot_query_filter = make_document(kvp("_id", update.get_id()));
             auto update_doc = make_document(kvp("$set", make_document(
