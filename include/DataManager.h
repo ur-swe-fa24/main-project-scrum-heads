@@ -84,6 +84,8 @@ public:
     //function to fix robot on FE fix button input
     void FixRobot(int robotID);
 
+    void ChangeRoomAvailability(int roomID, bool isAvailable);
+
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID
 

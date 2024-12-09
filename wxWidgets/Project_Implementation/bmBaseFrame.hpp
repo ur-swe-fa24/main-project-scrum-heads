@@ -27,11 +27,19 @@ protected:
 
     void OnAddTaskButtonClick(wxCommandEvent& event) override;
 
+    void OnChangeRoomAButtonClick(wxCommandEvent& event) override;
+
+    void OnRoomTaskSelect(wxCommandEvent& event) override;
+
 
 private:
 
     DataManager* dataManager;  // Pointer to the data manager
 
     MyBaseFrame* baseFrame;  // Pointer to the baseFrame
+
+    bool isAvailable;
+
+    int roomID;
 
 };

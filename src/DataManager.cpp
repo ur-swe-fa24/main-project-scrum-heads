@@ -376,8 +376,26 @@ std::vector<std::string> DataManager::getErrorLog(int robotID)
     return errorLog;
 }
 
+//fixes robot (FE)
 void DataManager::FixRobot(int robotID)
 {
     robots::Robots& robot = robot_manager_.find_robot_by_id(robotID);
     fix(robot);
+}
+
+//changes room availability (BM)
+void DataManager::ChangeRoomAvailability(int roomID, bool isAvailable)
+{
+    std::string availabilityString;
+    //change to opposite
+    if (isAvailable)
+    {
+        availabilityString = "Unavailable";
+    }
+    else
+    {
+        availabilityString = "Available";
+    }
+    //update in database
+    mongo_database.update_room_availability(roomID, availabilityString);
 }

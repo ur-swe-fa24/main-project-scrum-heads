@@ -90,8 +90,11 @@ void MyRobotInfoFrame::OnFixRobotButtonClick(wxCommandEvent& event)
 {
     dataManager->FixRobot(localRobot.get_id());
     Close();
-    wxMessageBox("Now refresh your window to show the fixed robot." , "Success!", wxOK | wxICON_INFORMATION);
-    //fix robot here
-    //need to figure out how you're going to receive bugged robot signal in order to enable button
-    //also need to figure out how to update this so the user can actually view bugged status (maybe change the color of the text of the robots in the display window?)
+    wxMessageBox("The robot was fixed." , "Success!", wxOK | wxICON_INFORMATION);
+
+    //GetParent() retrieves the parent frame, which is the FEBaseFrame that was passed in as parameter
+    //necessary to call refresh button click method to automatically refresh page so robot is visually deleted
+    //dynamic cast to ensure correct type
+    MyFEBaseFrame* parentFrame = dynamic_cast<MyFEBaseFrame*>(GetParent());
+    parentFrame->OnFERefreshButtonClick(event); // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
 }
