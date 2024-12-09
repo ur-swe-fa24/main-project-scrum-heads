@@ -758,7 +758,7 @@ TEST_CASE("Mongo Adapter Write Task test delete task") {
     mongo_other.write_robot(temp_robot1);
     mongo_other.write_task(1, 3);
 
-    robots::Robots new_task(1, "Large", 40, 60, "", "Complete", room3, "Scrub", 0);
+    robots::Robots new_task(1, "Large", 40, 60, "", "Complete", room3, "Scrub", 100);
 
     // robots::Robots canceled_task = mongo_other.read_ongoing_task(1);
 

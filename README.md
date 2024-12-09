@@ -34,3 +34,11 @@ There are explicit instructions on how to build and run the application in the a
 + Updated robot do task loop(different sizes of robots and rooms result in different water and battery usage) and passed the unit test.
 + Created charge robot loop, robots can charge while not working. Passed unit tests on this stage, more unit tests for the future.
 + Updated the structure for simulation, all .cpp files for simulation is in simulation folder.
+
+
+
++ Added more tests to the mongo adapter suite in order to cover all edge cases.
++ Changed the get_error_log function to return a vector of string which can be more easily read by the UI
++ Updated update_task_status() to instead of use the room that was supplied in the update to the room that was already in the database from the past ongoing instance in order to not lose the room information
++ Database is now fully connected with all three other components and is updating timely with no issues or anomalies
++ 
