@@ -54,7 +54,7 @@ void calculate_error_status(robots::Robots& robot) {
     // Define potential failure types and their probabilities (out of 100)
     struct Failure {
         std::string name;
-        int probability; // Probability out of 100
+        int probability = 1; // Probability out of 100
     };
 
     std::vector<Failure> failures = {
@@ -69,7 +69,7 @@ void calculate_error_status(robots::Robots& robot) {
     // Initialize random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> error_chance(1, 100);
+    std::uniform_int_distribution<> error_chance(1, 1000);
 
     // Check each failure type
     for (const auto& failure : failures) {
@@ -114,12 +114,16 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                 if (robot.get_task_status() == "Cancelled" && robot.get_error_status().empty()) {
                     robot.update_task_status("Available");
                     robot.update_task_percent(0);
+                    robot.get_task_room().setAvailability("Available");
                     continue;
                 }
 
                 if (robot.get_task_status() == "Complete" && robot.get_error_status().empty()) {
                     robot.update_task_status("Available");
                     robot.update_task_percent(0);
+                    robot.get_task_room().setAvailability("Available");
+                    std::cout << "room Availability: " << robot.get_task_room().getAvailability()
+                    << "room Number: " << robot.get_task_room().getRoomNumber() << std::endl;
                     continue;
                 }
 

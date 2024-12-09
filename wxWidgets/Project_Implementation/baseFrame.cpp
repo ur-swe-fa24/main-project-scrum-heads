@@ -154,7 +154,7 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
         {
             statusBubble = "🟡";
         }
-        else if (robotStatus == "Error")
+        else if (robotStatus == "Cancelled")
         {
             statusBubble = "🔴";
         }
