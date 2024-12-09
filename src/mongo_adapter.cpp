@@ -651,10 +651,10 @@ void adapters::Mongo_Adapter::delete_all_tasks(){
 /**
  * Return the error log for a specific robot
  */
-std::string adapters::Mongo_Adapter::get_error_log(int id){
+std::vector<std::string> adapters::Mongo_Adapter::get_error_log(int id){
+    std::vector<std::string> error_log;
     auto cursor = db_["error"].find(make_document(kvp("robot_id", id)));
     //Loop through all the tasks of the robot
-    std::string error_log;
     for( auto&& doc : cursor) {
         auto error_information = bsoncxx::to_json(doc);
         json error_Doc = json::parse(error_information);
@@ -671,8 +671,8 @@ std::string adapters::Mongo_Adapter::get_error_log(int id){
         auto Battery_Level = error_Doc["Battery Level"];
 
         Room room = read_room(Room_Number);
-        std::string new_error = "Robot Id: " + to_string(Id) + ", Error Status: " + Error_Status + ", Task Percent: " + to_string(Task_Percent) + ", Function Type: " + Function_type + ", Room Number: " + to_string(Room_Number) + ", Room Size: " + room.getRoomSize() + ", Room Floor Type: "+ room.getFloorType() + "\n";
-        error_log = error_log + new_error;
+        std::string new_error = "Robot Id: " + to_string(Id) + ", Error Status: " + Error_Status + ", Task Percent: " + to_string(Task_Percent) + ", Function Type: " + Function_type + ", Room Number: " + to_string(Room_Number) + ", Room Size: " + room.getRoomSize() + ", Room Floor Type: "+ room.getFloorType();
+        error_log.push_back(new_error);
     }
 
     return error_log;

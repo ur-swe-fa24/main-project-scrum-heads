@@ -16,7 +16,7 @@ MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robo
 
         //remove error info for non-FE
         errorLogLabelText->Show(false);
-        robotErrorLogText->Show(false);
+        robotErrorLogTextBox->Show(false);
     }
 
     //if robot has error, enable robot fix button
@@ -68,12 +68,16 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
     }
 
     std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + ", Water Level: " + std::to_string(robot.get_water_level());
-    std::string errorInfo = dataManager->getErrorLog(robot.get_id());
+    std::vector<std::string> errorInfo = dataManager->getErrorLog(robot.get_id());
 
     if (userRole == "FE")
     {
         robotStatusText->SetLabel(robotInfo + ", Error Status: " + errorStatus);
-        robotErrorLogText->SetLabel(errorInfo);
+        // robotErrorLogText->SetLabel(errorInfo);
+        for (std::string errorString : errorInfo)
+        {
+            robotErrorLogTextBox->Append(errorString);
+        }
     }
     else
     {
@@ -85,6 +89,8 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
 void MyRobotInfoFrame::OnFixRobotButtonClick(wxCommandEvent& event)
 {
     dataManager->FixRobot(localRobot.get_id());
+    Close();
+    wxMessageBox("Now refresh your window to show the fixed robot." , "Success!", wxOK | wxICON_INFORMATION);
     //fix robot here
     //need to figure out how you're going to receive bugged robot signal in order to enable button
     //also need to figure out how to update this so the user can actually view bugged status (maybe change the color of the text of the robots in the display window?)

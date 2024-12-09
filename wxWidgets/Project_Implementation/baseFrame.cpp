@@ -146,6 +146,7 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
         //could transfer to wxListCtrl if you want to use colored text
         robots::Robots localRobot = dataManager->GetAllRobotInfo(std::stoi(robot.robotID));
         std::string robotStatus = localRobot.get_task_status();
+        std::string errorStatus = localRobot.get_error_status();
         if (robotStatus == "Available")
         {
             statusBubble = "🟢";
@@ -154,7 +155,7 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
         {
             statusBubble = "🟡";
         }
-        else if (robotStatus == "Cancelled")
+        else if (errorStatus != "")
         {
             statusBubble = "🔴";
         }

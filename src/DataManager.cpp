@@ -225,6 +225,9 @@ robots::Robots DataManager::GetAllRobotInfo(int robotId)
     Room room = taskUpdatedRobot.get_task_room();
     //sets the room for the clicked robot
     clicked_robot.update_task_room(room);
+
+    int taskPercent = taskUpdatedRobot.get_task_percent();
+    clicked_robot.update_task_percent(taskPercent);
     //returns updated robot
     return taskUpdatedRobot;
 }
@@ -235,7 +238,8 @@ std::vector<robots::Robots> DataManager::GetTasksTable()
 {
     //temporary placeholder that just creates a robot pre-database integration
     // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
-    std::vector<robots::Robots> tasks = mongo_database.read_all_tasks();
+    //use read_all_tasks instead if you want non-ongoing (complete and cancelled) tasks
+    std::vector<robots::Robots> tasks = mongo_database.read_all_ongoing_tasks();
     return tasks;
 }
 
@@ -366,9 +370,9 @@ void DataManager::DeleteAllRobots() {
 }
 
 //gets error log from database
-std::string DataManager::getErrorLog(int robotID)
+std::vector<std::string> DataManager::getErrorLog(int robotID)
 {
-    std::string errorLog = mongo_database.get_error_log(robotID);
+    std::vector<std::string> errorLog = mongo_database.get_error_log(robotID);
     return errorLog;
 }
 
