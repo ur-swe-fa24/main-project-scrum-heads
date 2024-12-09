@@ -94,7 +94,7 @@ std::mutex robot_mutex;
 
 // Function to execute the robot task loop
 void execute(std::vector<robots::Robots>& robot_list_) {
-    const auto loop_interval = std::chrono::milliseconds(1000);
+    const auto loop_interval = std::chrono::milliseconds(3000);
     std::map<int, std::thread> active_tasks;
 
     while (is_canceled) {
