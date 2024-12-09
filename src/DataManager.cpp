@@ -370,9 +370,9 @@ void DataManager::DeleteAllRobots() {
 }
 
 //gets error log from database
-std::string DataManager::getErrorLog(int robotID)
+std::vector<std::string> DataManager::getErrorLog(int robotID)
 {
-    std::string errorLog = mongo_database.get_error_log(robotID);
+    std::vector<std::string> errorLog = mongo_database.get_error_log(robotID);
     return errorLog;
 }
 

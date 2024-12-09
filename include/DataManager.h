@@ -77,7 +77,7 @@ public:
     void DeleteAllRobots();
 
     //gets error log from database
-    std::string getErrorLog(int robotID);
+    std::vector<std::string> getErrorLog(int robotID);
     robots::Robots update_task_status();
     robots::Robots update_task_room();
 

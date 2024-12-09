@@ -68,13 +68,16 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
     }
 
     std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + ", Water Level: " + std::to_string(robot.get_water_level());
-    std::string errorInfo = dataManager->getErrorLog(robot.get_id());
+    std::vector<std::string> errorInfo = dataManager->getErrorLog(robot.get_id());
 
     if (userRole == "FE")
     {
         robotStatusText->SetLabel(robotInfo + ", Error Status: " + errorStatus);
         // robotErrorLogText->SetLabel(errorInfo);
-        robotErrorLogTextBox->Append(errorInfo);
+        for (std::string errorString : errorInfo)
+        {
+            robotErrorLogTextBox->Append(errorString);
+        }
     }
     else
     {
