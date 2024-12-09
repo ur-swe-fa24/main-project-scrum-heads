@@ -16,7 +16,7 @@ There are explicit instructions on how to build and run the application in the a
 + `wxWidgets/Project_Implementation` - this [folder](wxWidgets/Project_Implementation) consists of the files making up the GUI that users interface with. For general wxWidgets information, [see here](wxWidgets/README.md). For further project GUI information, [see here](wxWidgets/Project_Implementation/README.md).
 + `tests` - this [folder](tests) consists of a testing suite used to ensure the efficacy of our libraries and application.
 
-## Changes Since Last Submission
+## Changes From Sprint 3 to Sprint 4
 
 + Full implementation of add robot and remove robot functionality for field engineer, such that when a user makes the respective input, the robots are added or removed from the database itself, with the data manager handling some of the communication. 
 + Partial implementation of view robot status functionality, such that when a user double-clicks on a target robot, they can view robot properties that are saved in the database and retrieved using methods from the robot class in the simulation. 
@@ -36,8 +36,13 @@ There are explicit instructions on how to build and run the application in the a
 + Updated the structure for simulation, all .cpp files for simulation is in simulation folder.
 
 
-
-
+## Changes From Sprint 4 to Sprint 5
++ Simulation Engine now can:
+    - work in a task execution loop in a separate thread to simulate real-time task execution for robots.
+    - simulate robot do tasks with only System Manager add and delete robot, and assign task to specific robots
+    - robots with errors remain task cancelled until fixed
+    - start and stop this loop during testing
++ Simulation tests tests all possible consequences, including the edge cases.
 + Finished implementation of view robot status, including integration throughout.
 + Shifted refresh button functionality to parent base class so all children can use it.
 + Added automatic refresh button calls in many places, including fixing a robot.
