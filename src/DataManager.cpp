@@ -229,7 +229,7 @@ robots::Robots DataManager::GetAllRobotInfo(int robotId)
     int taskPercent = taskUpdatedRobot.get_task_percent();
     clicked_robot.update_task_percent(taskPercent);
     //returns updated robot
-    return clicked_robot;
+    return taskUpdatedRobot;
 }
 
 //gets all robot info (i.e., all of the info specified in robot class) for a specified ID
@@ -276,7 +276,7 @@ void DataManager::AddTask(TaskData& task) {
     // Convert the strings to integers
     int robot_id = std::stoi(robot_str);
     int room_num = std::stoi(room_str);
-    std::cout << "room number: " << room_num << std::endl;
+    // std::cout << "room number: " << room_num << std::endl;
 
     // Write the task to the database (MongoDB)
     mongo_database.write_task(robot_id, room_num);
@@ -285,13 +285,13 @@ void DataManager::AddTask(TaskData& task) {
     robots::Robots& robot = robot_manager_.find_robot_by_id(robot_id);
     // Update the task status to "Ongoing"
     robot.update_task_status("Ongoing");
-    std::cout << "robot number: " << robot.get_id() << std::endl;
-    std::cout << "robot status: " << robot.get_task_status() << std::endl;
+    // std::cout << "robot number: " << robot.get_id() << std::endl;
+    // std::cout << "robot status: " << robot.get_task_status() << std::endl;
     for (auto& room : roomVector) { // Use non-const reference to avoid const issues
         if (room.getRoomNumber() == room_num) {
             // Assign the room to the robot
             robot.update_task_room(room);
-            std::cout << "Assigned room number: " << room.getRoomNumber() << std::endl;
+            // std::cout << "Assigned room number: " << room.getRoomNumber() << std::endl;
             return; // Exit the loop after assigning the room
         }
     }
