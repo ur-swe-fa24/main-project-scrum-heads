@@ -759,7 +759,7 @@ TEST_CASE("Mongo Adapter Write Task test delete task") {
     mongo_other.write_task(1, 3);
 
     // std::string check = mongo_other.cancel_task(1);
-    robots::Robots new_task(1, "Large", 40, 60, "", "Complete", room, "Scrub", 0);
+    robots::Robots new_task(1, "Large", 40, 60, "", "Complete", room3, "Scrub", 0);
     // robots::Robots canceled_task = mongo_other.read_ongoing_task(1);
 
     std::vector<robots::Robots> tasks;
@@ -780,6 +780,10 @@ TEST_CASE("Mongo Adapter Write Task test delete task") {
     REQUIRE( canceled_task.get_task_percent() == 0 ); 
     REQUIRE( canceled_task.get_task_room().getRoomNumber() == 0 );
     REQUIRE( canceled_task.get_task_room().getAvailability() == "" );
+
+    Room room_complete = mongo_other.read_room(3);
+
+    REQUIRE(room_complete.getAvailability() == "Available");
 
     mongo_other.delete_all_robots();  
     mongo_other.delete_all_tasks();
