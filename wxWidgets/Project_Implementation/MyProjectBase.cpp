@@ -142,6 +142,11 @@ bmBaseFrame::bmBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 
 	bmBaseFrameSizer->Add( roomListBox, 0, wxALL, 5 );
 
+	changeAvailabilityButton = new wxButton( this, wxID_ANY, _("Change Room Availability"), wxDefaultPosition, wxDefaultSize, 0 );
+	changeAvailabilityButton->Enable( false );
+
+	bmBaseFrameSizer->Add( changeAvailabilityButton, 0, wxALL, 5 );
+
 
 	this->SetSizer( bmBaseFrameSizer );
 	this->Layout();
@@ -153,6 +158,8 @@ bmBaseFrame::bmBaseFrame( wxWindow* parent, wxWindowID id, const wxString& title
 	robotListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( bmBaseFrame::OnRobotListBoxDClick ), NULL, this );
 	addTaskButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bmBaseFrame::OnAddTaskButtonClick ), NULL, this );
 	taskListBox->Connect( wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler( bmBaseFrame::OnTaskListBoxDClick ), NULL, this );
+	roomListBox->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( bmBaseFrame::OnRoomTaskSelect ), NULL, this );
+	changeAvailabilityButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( bmBaseFrame::OnChangeRoomAButtonClick ), NULL, this );
 }
 
 bmBaseFrame::~bmBaseFrame()
