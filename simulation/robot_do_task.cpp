@@ -58,9 +58,9 @@ void calculate_error_status(robots::Robots& robot) {
     };
 
     std::vector<Failure> failures = {
-        {"Overheat", 50},       // 1% chance
-        {"Motor Failure", 50},  // 1% chance
-        {"Sensor Failure", 50}  // 1% chance
+        {"Overheat", 1},       // 1% chance
+        {"Motor Failure", 1},  // 1% chance
+        {"Sensor Failure", 1}  // 1% chance
     };
 
     // Ensure the failures vector is not empty
