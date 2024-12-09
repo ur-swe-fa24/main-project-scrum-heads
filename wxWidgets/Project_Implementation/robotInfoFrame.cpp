@@ -16,7 +16,19 @@ MyRobotInfoFrame::MyRobotInfoFrame(wxWindow* parent, const wxString& title, robo
 
         //remove error info for non-FE
         errorLogLabelText->Show(false);
-        robotErrorLogText->Show(false);
+        robotErrorLogTextBox->Show(false);
+    }
+
+    //if robot has error, enable robot fix button
+    if (localRobot.get_error_status() != "")
+    {
+        fixRobotButton->Enable();
+    }
+
+    //only allow robot to be removed if it is healthy and not working on a task
+    if (localRobot.get_task_status() != "Available")
+    {
+        removeRobotButton->Disable();
     }
 }
 
@@ -55,13 +67,17 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
         errorStatus = "None";
     }
 
-    std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + "%, Water Level: " + std::to_string(robot.get_water_level()) + "%";
-    std::string errorInfo = dataManager->getErrorLog(robot.get_id());
+    std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + ", Water Level: " + std::to_string(robot.get_water_level());
+    std::vector<std::string> errorInfo = dataManager->getErrorLog(robot.get_id());
 
     if (userRole == "FE")
     {
         robotStatusText->SetLabel(robotInfo + ", Error Status: " + errorStatus);
-        robotErrorLogText->SetLabel(errorInfo);
+        // robotErrorLogText->SetLabel(errorInfo);
+        for (std::string errorString : errorInfo)
+        {
+            robotErrorLogTextBox->Append(errorString);
+        }
     }
     else
     {
@@ -72,8 +88,10 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
 
 void MyRobotInfoFrame::OnFixRobotButtonClick(wxCommandEvent& event)
 {
+    dataManager->FixRobot(localRobot.get_id());
+    Close();
+    wxMessageBox("Now refresh your window to show the fixed robot." , "Success!", wxOK | wxICON_INFORMATION);
     //fix robot here
     //need to figure out how you're going to receive bugged robot signal in order to enable button
     //also need to figure out how to update this so the user can actually view bugged status (maybe change the color of the text of the robots in the display window?)
-    //also need to figure out how to hide this button (along with the remove robot button) in other user views (to avoid making different frames for everyone)
 }

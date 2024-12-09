@@ -323,9 +323,10 @@ robotInfoFrame::robotInfoFrame( wxWindow* parent, wxWindowID id, const wxString&
 	errorLogLabelText->Wrap( -1 );
 	robotInfoFrameSizer->Add( errorLogLabelText, 0, wxALL, 5 );
 
-	robotErrorLogText = new wxStaticText( this, wxID_ANY, _("Errors Placeholder"), wxDefaultPosition, wxDefaultSize, 0 );
-	robotErrorLogText->Wrap( -1 );
-	robotInfoFrameSizer->Add( robotErrorLogText, 0, wxALL, 5 );
+	robotErrorLogTextBox = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+	robotErrorLogTextBox->SetMinSize( wxSize( 720,100 ) );
+
+	robotInfoFrameSizer->Add( robotErrorLogTextBox, 0, wxALL, 5 );
 
 	removeRobotButton = new wxButton( this, wxID_ANY, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
 	robotInfoFrameSizer->Add( removeRobotButton, 0, wxALL, 5 );

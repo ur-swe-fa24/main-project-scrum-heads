@@ -44,7 +44,7 @@ namespace adapters {
             void delete_all_tasks() override;
 
             //Error Log
-            std::string get_error_log(int id) override;
+            std::vector<std::string> get_error_log(int id) override;
             void delete_error_log() override;
 
             

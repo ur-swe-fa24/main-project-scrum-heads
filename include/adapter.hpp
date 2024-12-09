@@ -36,7 +36,7 @@ class Adapter {
         virtual void delete_all_tasks() = 0;
 
         // Error Log stuff
-        virtual std::string get_error_log(int id) = 0;
+        virtual std::vector<std::string>  get_error_log(int id) = 0;
         virtual void delete_error_log() = 0;
 
 };

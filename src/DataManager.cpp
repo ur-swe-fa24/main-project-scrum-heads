@@ -5,6 +5,12 @@
 #include <sstream>
 #include <chrono>
 #include "spdlog/spdlog.h"
+#include "robot_do_task.hpp"
+
+using namespace robot_tasks;
+
+#include <iostream>
+
 
 
 DataManager::DataManager() 
@@ -31,30 +37,37 @@ DataManager::~DataManager() {
 
 void DataManager::startUpdateThread() {
     update_thread_ = std::thread([this]() {
+        // Start the robot task execution loop
+        robot_tasks::start_execute_thread(robot_manager_.get_list());
+
         while (keep_updating_) {
             {
                 std::lock_guard<std::mutex> lock(data_mutex_); // Ensure thread-safe access
                 auto robot_list = robot_manager_.get_list();
-                spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
+                // spdlog::info("Fetched robot list from RobotManager. Robot count: {}", robot_list.size());
 
                 // Simulate MongoDB update
-                // mongo_database.update_task_status(robot_list);
-                spdlog::info("Updated task status in MongoDB successfully.");
+                mongo_database.update_task_status(robot_list);
+                // spdlog::info("Updated task status in MongoDB successfully.");
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5s
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5 seconds
         }
+
+        // Stop the robot task execution loop when the update thread stops
+        robot_tasks::stop_execute_thread();
     });
 }
 
 
 
-
 void DataManager::stopUpdateThread() {
-    keep_updating_ = false;
+    keep_updating_ = false; // Stop the update thread
     if (update_thread_.joinable()) {
         update_thread_.join();
     }
+    robot_tasks::stop_execute_thread(); // Stop the robot task execution loop
 }
+
 
 // Method to receive and process robots data
 // void DataManager::SendRobotsData(const std::vector<RobotData>& robots) {
@@ -212,6 +225,9 @@ robots::Robots DataManager::GetAllRobotInfo(int robotId)
     Room room = taskUpdatedRobot.get_task_room();
     //sets the room for the clicked robot
     clicked_robot.update_task_room(room);
+
+    int taskPercent = taskUpdatedRobot.get_task_percent();
+    clicked_robot.update_task_percent(taskPercent);
     //returns updated robot
     return clicked_robot;
 }
@@ -222,7 +238,8 @@ std::vector<robots::Robots> DataManager::GetTasksTable()
 {
     //temporary placeholder that just creates a robot pre-database integration
     // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
-    std::vector<robots::Robots> tasks = mongo_database.read_all_tasks();
+    //use read_all_tasks instead if you want non-ongoing (complete and cancelled) tasks
+    std::vector<robots::Robots> tasks = mongo_database.read_all_ongoing_tasks();
     return tasks;
 }
 
@@ -247,51 +264,39 @@ void DataManager::DeleteRobot(int robotId)
     robot_manager_.remove_robot_by_id(robotId);
 }
 
+
+// Method to add a new robot to the system, taking the abbreviated RobotData of a robot as input
 // Add task
 void DataManager::AddTask(TaskData& task) {
     // Convert wxString attributes to std::string
     std::string room_str = std::string(task.taskRoom.mb_str());
     std::string robot_str = task.taskRobot.robotID;
+    tasks.push_back(task);         // Add to the task vector
 
     // Convert the strings to integers
     int robot_id = std::stoi(robot_str);
     int room_num = std::stoi(room_str);
-
-    // Find the robot by ID
-    auto robot_opt = robot_manager_.find_robot_by_id(robot_id); // Assume this function exists in RobotManager
-    if (!robot_opt.has_value()) {
-        spdlog::warn("Robot ID {} not found for task assignment.", robot_id);
-        return;
-    }
-    auto& robot = robot_opt.value(); // Get the robot reference
-
-    // Update the task status to "Ongoing"
-    robot.update_task_status("Ongoing");
-    spdlog::info("Task status updated to 'Ongoing' for Robot ID: {}", robot_id);
-
-    bool room_found = false;
-
-    for (auto& room : roomVector) { // Use non-const reference to avoid const issues
-        if (room.getRoomNumber() == room_num) {
-            // Assign the room to the robot
-            robot.update_task_room(room); // Pass the non-const Room object
-            spdlog::info("Room ID {} assigned to Robot ID: {}", room_num, robot_id);
-            return; // Exit the loop after assigning the room
-        }
-    }
-
-    // If no room was found, log a warning
-    spdlog::warn("Room ID {} not found for task assignment.", room_num);
-
+    std::cout << "room number: " << room_num << std::endl;
 
     // Write the task to the database (MongoDB)
     mongo_database.write_task(robot_id, room_num);
-    spdlog::info("Task written to MongoDB for Robot ID: {} and Room ID: {}", robot_id, room_num);
 
-    // Add the task to the local tasks vector
-    tasks.push_back(task);
-    spdlog::info("Task added to local task vector for Robot ID: {} and Room ID: {}", robot_id, room_num);
+    // Find the robot by ID
+    robots::Robots& robot = robot_manager_.find_robot_by_id(robot_id);
+    // Update the task status to "Ongoing"
+    robot.update_task_status("Ongoing");
+    std::cout << "robot number: " << robot.get_id() << std::endl;
+    std::cout << "robot status: " << robot.get_task_status() << std::endl;
+    for (auto& room : roomVector) { // Use non-const reference to avoid const issues
+        if (room.getRoomNumber() == room_num) {
+            // Assign the room to the robot
+            robot.update_task_room(room);
+            std::cout << "Assigned room number: " << room.getRoomNumber() << std::endl;
+            return; // Exit the loop after assigning the room
+        }
+    }
 }
+
 
 //gets all robots from database, then filters for available robots
 std::vector<robots::Robots> DataManager::GetAvailableRobots()
@@ -364,8 +369,15 @@ void DataManager::DeleteAllRobots() {
     robots.clear();
 }
 
-std::string DataManager::getErrorLog(int robotID)
+//gets error log from database
+std::vector<std::string> DataManager::getErrorLog(int robotID)
 {
-    std::string errorLog = mongo_database.get_error_log(robotID);
+    std::vector<std::string> errorLog = mongo_database.get_error_log(robotID);
     return errorLog;
+}
+
+void DataManager::FixRobot(int robotID)
+{
+    robots::Robots& robot = robot_manager_.find_robot_by_id(robotID);
+    fix(robot);
 }

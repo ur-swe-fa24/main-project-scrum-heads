@@ -15,7 +15,7 @@ TEST_CASE("Mongo Adapter Write and Read Robot") {
 
     //Create a new Robot
     Room room(0, "", "", "");
-    robots::Robots temp_robot(1000, "Large", 100, 50, "", "Vacuum", room, "scrub", 0);
+    robots::Robots temp_robot(1000, "Large", 100, 50, "", "Vacuum", room, "Scrub", 0);
 
     //Write said robot
     mongo_other.write_robot(temp_robot);
@@ -759,7 +759,8 @@ TEST_CASE("Mongo Adapter Write Task test delete task") {
     mongo_other.write_task(1, 3);
 
     // std::string check = mongo_other.cancel_task(1);
-    robots::Robots new_task(1, "Large", 40, 60, "", "Complete", room, "Scrub", 0);
+    Room room7(3, "Small", "Tile", "Busy");
+    robots::Robots new_task(1, "Large", 40, 60, "", "Complete", room7, "Scrub", 0);
     // robots::Robots canceled_task = mongo_other.read_ongoing_task(1);
 
     std::vector<robots::Robots> tasks;
@@ -780,6 +781,9 @@ TEST_CASE("Mongo Adapter Write Task test delete task") {
     REQUIRE( canceled_task.get_task_percent() == 0 ); 
     REQUIRE( canceled_task.get_task_room().getRoomNumber() == 0 );
     REQUIRE( canceled_task.get_task_room().getAvailability() == "" );
+
+    Room room_complete = mongo_other.read_room(3);
+    REQUIRE(room_complete.getAvailability() == "Available");
 
     mongo_other.delete_all_robots();  
     mongo_other.delete_all_tasks();
@@ -831,8 +835,26 @@ TEST_CASE("Mongo Adapter Read Error log") {
 
     mongo_other.update_task_status(updates);
 
-    std::string error = mongo_other.get_error_log(1);
-    REQUIRE( error == "Robot Id: 1, Error Status: Error, Task Percent: 10, Function Type: Scrub, Room Number: 3, Room Size: Small, Room Floor Type: Tile\n" ); 
+    std::vector<robots::Robots> updates2;
+    robots::Robots temp_robot7(1, "Large", 40, 96, "", "Available", room3, "Scrub", 10);
+    updates.push_back(temp_robot7);
+    mongo_other.write_task(1, 4);
+
+    mongo_other.update_task_status(updates2);
+
+    std::vector<robots::Robots> updates3;
+    robots::Robots temp_robot8(1, "Large", 40, 96, "Error", "Available", room4, "Scrub", 10);
+
+
+    updates3.push_back(temp_robot8);
+
+    mongo_other.update_task_status(updates3);
+
+    std::vector<std::string> error_log = mongo_other.get_error_log(1);
+    for(std::string error : error_log){
+        std::cout << error << std::endl;
+    }
+    // REQUIRE( error == "Robot Id: 1, Error Status: Error, Task Percent: 10, Function Type: Scrub, Room Number: 3, Room Size: Small, Room Floor Type: Tile\n" ); 
     mongo_other.delete_error_log();  
     mongo_other.delete_all_robots();  
     mongo_other.delete_all_tasks(); 

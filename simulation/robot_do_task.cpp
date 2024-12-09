@@ -8,22 +8,23 @@
 #include <map>
 #include <mutex>
 #include <iostream>
+#include <cassert>
 
 namespace robot_tasks {
 
 // Function to calculate task duration based on room size
 int calculate_task_duration(const std::string& room_size) {
-    if (room_size == "small") return 2;
-    if (room_size == "medium") return 4;
-    if (room_size == "large") return 6;
+    if (room_size == "Small") return 2;
+    if (room_size == "Medium") return 4;
+    if (room_size == "Large") return 6;
     return 0;
 }
 
 // Function to calculate resource usage based on room size
 int get_resource_usage(const std::string& room_size) {
-    if (room_size == "small") return 1;
-    if (room_size == "medium") return 4;
-    if (room_size == "large") return 9;
+    if (room_size == "Small") return 1;
+    if (room_size == "Medium") return 4;
+    if (room_size == "Large") return 9;
     return 0;
 }
 
@@ -50,15 +51,42 @@ void fix(robots::Robots& robot) {
 
 // Function to calculate the error status for a robot (randomly assigning errors)
 void calculate_error_status(robots::Robots& robot) {
-    std::vector<std::string> failures = {"Overheat", "Motor Failure", "Sensor Failure"};
+    // Define potential failure types and their probabilities (out of 100)
+    struct Failure {
+        std::string name;
+        int probability; // Probability out of 100
+    };
+
+    std::vector<Failure> failures = {
+        {"Overheat", 1},       // 1% chance
+        {"Motor Failure", 1},  // 1% chance
+        {"Sensor Failure", 1}  // 1% chance
+    };
+
+    // Ensure the failures vector is not empty
+    assert(!failures.empty() && "Failures vector should not be empty.");
+
+    // Initialize random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> error_chance(1, 100);
-    if (error_chance(gen) == 1) {
-        std::uniform_int_distribution<> dist(0, failures.size() - 1);
-        robot.update_error_status(failures[dist(gen)]);
-        robot.update_task_status("Cancelled");
+
+    // Check each failure type
+    for (const auto& failure : failures) {
+        if (error_chance(gen) <= failure.probability) {
+            // Update the robot's status
+            robot.update_error_status(failure.name);
+            robot.update_task_status("Cancelled");
+
+            // Log the selected failure for debugging
+            std::cout << "Error triggered: " << failure.name << "\n";
+            std::cout << "Task status updated to: Cancelled\n";
+            return; // Only one error can occur at a time
+        }
     }
+
+    // If no errors occurred, log for debugging
+    std::cout << "No errors occurred.\n";
 }
 
 std::atomic<bool> is_canceled = true;
@@ -95,7 +123,7 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                     continue;
                 }
 
-                if (!check_robot(robot)) {
+                if (!check_robot(robot) && robot.get_task_status() == "Ongoing") {
                     robot.update_task_status("Cancelled");
                     continue;
                 }
@@ -105,10 +133,10 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                     int current_battery = robot.get_battery_level();
                     int max_water, max_battery;
 
-                    if (robot.get_size() == "small") {
+                    if (robot.get_size() == "Small") {
                         max_water = 100;
                         max_battery = 100;
-                    } else if (robot.get_size() == "medium") {
+                    } else if (robot.get_size() == "Medium") {
                         max_water = 120;
                         max_battery = 120;
                     } else {

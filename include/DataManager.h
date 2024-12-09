@@ -77,9 +77,12 @@ public:
     void DeleteAllRobots();
 
     //gets error log from database
-    std::string getErrorLog(int robotID);
+    std::vector<std::string> getErrorLog(int robotID);
     robots::Robots update_task_status();
     robots::Robots update_task_room();
+
+    //function to fix robot on FE fix button input
+    void FixRobot(int robotID);
 
 private:
     int GetNextAvailableRobotId();  // New method to find the next available robot ID

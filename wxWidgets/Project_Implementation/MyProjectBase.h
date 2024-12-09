@@ -217,7 +217,7 @@ class robotInfoFrame : public wxFrame
 		wxStaticText* statusLabelText;
 		wxStaticText* robotStatusText;
 		wxStaticText* errorLogLabelText;
-		wxStaticText* robotErrorLogText;
+		wxListBox* robotErrorLogTextBox;
 		wxButton* removeRobotButton;
 		wxButton* fixRobotButton;
 
@@ -228,7 +228,7 @@ class robotInfoFrame : public wxFrame
 
 	public:
 
-		robotInfoFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		robotInfoFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 733,492 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~robotInfoFrame();
 
