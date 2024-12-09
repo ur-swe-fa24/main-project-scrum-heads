@@ -54,6 +54,7 @@ void MyBMBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData
 
 void MyBMBaseFrame::OnRoomTaskSelect(wxCommandEvent& event)
 {
+    changeAvailabilityButton->Disable();
     wxString taskRoomAssignment = roomListBox->GetStringSelection();
     std::string roomInfoString = std::string(taskRoomAssignment.mb_str());
 
