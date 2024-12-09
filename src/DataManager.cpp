@@ -238,6 +238,7 @@ std::vector<robots::Robots> DataManager::GetTasksTable()
 {
     //temporary placeholder that just creates a robot pre-database integration
     // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
+    //use read_all_tasks instead if you want non-ongoing (complete and cancelled) tasks
     std::vector<robots::Robots> tasks = mongo_database.read_all_ongoing_tasks();
     return tasks;
 }
