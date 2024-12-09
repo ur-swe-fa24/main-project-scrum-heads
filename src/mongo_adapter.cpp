@@ -392,7 +392,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 //Update room to now be available
                 update_room_availability(Room_Number, "Available");
             }
-            else if(update.get_task_status() == "Complete" ){
+            else if(update.get_task_percent() == 100 ){
                 std::cout << "2" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
