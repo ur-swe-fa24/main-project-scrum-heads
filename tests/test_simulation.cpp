@@ -58,68 +58,48 @@ TEST_CASE("RobotManager Comprehensive Test") {
     stop_execute_thread();
 
     // Verify the outcomes for each robot
-    for (int i = 0; i < robot_manager.get_robot_count(); ++i) {
-        auto robot_opt = robot_manager.find_robot_by_id(i + 1);
-        REQUIRE(robot_opt.has_value());
-        auto& robot = robot_manager.get_list()[i]; // Modify to get a non-const reference for further updates
+    for (int robot_id = 1; robot_id <= robot_manager.get_robot_count(); ++robot_id) {
+        robots::Robots& robot = robot_manager.find_robot_by_id(robot_id);
 
         if (robot.get_id() == 1) {
-            // Robot 1 was available, should have started and be progressing or complete
             REQUIRE((robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Complete"));
             REQUIRE(robot.get_task_percent() >= 0);
-        }
-        else if (robot.get_id() == 2) {
-            // Robot 2 was already ongoing, task should have progressed or been cancelled due to insufficient resources
-            bool valid_status = (robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Complete" || robot.get_task_status() == "Cancelled");
-            REQUIRE(valid_status);
+        } else if (robot.get_id() == 2) {
+            REQUIRE((robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Complete" || robot.get_task_status() == "Cancelled"));
             REQUIRE(robot.get_task_percent() >= 30);
-        }
-        else if (robot.get_id() == 3) {
-            // Robot 3 had an error, status should remain cancelled
+        } else if (robot.get_id() == 3) {
             REQUIRE(robot.get_task_status() == "Cancelled");
             REQUIRE(robot.get_error_status() == "Motor Failure");
-        }
-        else if (robot.get_id() == 4) {
-            // Robot 4 needed refilling, should gradually refill and become available again
-            bool valid_status = (robot.get_task_status() == "Cancelled" || robot.get_task_status() == "Available");
-            REQUIRE(valid_status);
+        } else if (robot.get_id() == 4) {
+            REQUIRE((robot.get_task_status() == "Cancelled" || robot.get_task_status() == "Available"));
             REQUIRE(robot.get_water_level() >= 0);
             REQUIRE(robot.get_battery_level() >= 0);
-        }
-        else if (robot.get_id() == 5) {
-            // Robot 5 (large robot) was available, should have started a task or remained available
+        } else if (robot.get_id() == 5) {
             REQUIRE((robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Available"));
             REQUIRE(robot.get_task_percent() >= 0);
         }
     }
 
-    // Test the task cancellation for Robot 2
     SECTION("Cancel Ongoing Task for Robot 2") {
-        auto robot_opt = robot_manager.find_robot_by_id(2);
-        REQUIRE(robot_opt.has_value());
-        auto& robot = robot_manager.get_list()[1]; // Robot with ID 2
+        robots::Robots& robot = robot_manager.find_robot_by_id(2);
         robot.update_task_status("Cancelled");
         robot.update_task_percent(0);
 
-        // Verify the cancellation
         REQUIRE(robot.get_task_status() == "Cancelled");
         REQUIRE(robot.get_task_percent() == 0);
     }
 
-    // Test recharging Robot 4 gradually
     SECTION("Gradual Refill of Robot 4") {
-        auto& robot = robot_manager.get_list()[3]; // Robot with ID 4
+        robots::Robots& robot = robot_manager.find_robot_by_id(4);
         for (int i = 0; i < 10; ++i) {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            // Verify gradual refill
             REQUIRE(robot.get_water_level() >= 0);
             REQUIRE(robot.get_battery_level() >= 0);
         }
     }
 
-    // Test Robot 5's large size handling
     SECTION("Verify Large Robot (Robot 5) Behavior") {
-        auto& robot = robot_manager.get_list()[4]; // Robot with ID 5
+        robots::Robots& robot = robot_manager.find_robot_by_id(5);
         if (robot.get_task_status() == "Ongoing") {
             REQUIRE(robot.get_task_percent() >= 0);
             REQUIRE(robot.get_water_level() <= 100);
@@ -129,24 +109,20 @@ TEST_CASE("RobotManager Comprehensive Test") {
         }
     }
 
-    // Test fix function on Robot 3
     SECTION("Fix Robot with Error (Robot 3)") {
-        auto& robot = robot_manager.get_list()[2]; // Robot with ID 3
+        robots::Robots& robot = robot_manager.find_robot_by_id(3);
         REQUIRE(robot.get_task_status() == "Cancelled");
         REQUIRE(robot.get_error_status() == "Motor Failure");
 
-        // Call fix function
         fix(robot);
 
-        // Verify the robot is fixed
         REQUIRE(robot.get_task_status() == "Available");
         REQUIRE(robot.get_error_status().empty());
         REQUIRE(robot.get_task_percent() == 0);
-        REQUIRE(robot.get_water_level() == 100); // Small robot default max water
-        REQUIRE(robot.get_battery_level() == 100); // Small robot default max battery
+        REQUIRE(robot.get_water_level() == 100);
+        REQUIRE(robot.get_battery_level() == 100);
     }
 
-    // Test random error generation
     SECTION("Random Error Generation Test") {
         int error_count = 0;
         for (int i = 0; i < 100; ++i) {
@@ -154,12 +130,9 @@ TEST_CASE("RobotManager Comprehensive Test") {
             calculate_error_status(test_robot);
             if (!test_robot.get_error_status().empty()) {
                 error_count++;
-            
+            }
         }
-        }
-
-        // Verify that errors are generated at a reasonable rate (around 1%)
         REQUIRE(error_count > 0);
-        REQUIRE(error_count < 10); // Expecting around 1% error rate over 100 tests
+        REQUIRE(error_count < 10);
     }
 }

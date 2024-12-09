@@ -16,7 +16,7 @@ There are explicit instructions on how to build and run the application in the a
 + `wxWidgets/Project_Implementation` - this [folder](wxWidgets/Project_Implementation) consists of the files making up the GUI that users interface with. For general wxWidgets information, [see here](wxWidgets/README.md). For further project GUI information, [see here](wxWidgets/Project_Implementation/README.md).
 + `tests` - this [folder](tests) consists of a testing suite used to ensure the efficacy of our libraries and application.
 
-## Changes Since Last Submission
+## Changes From Sprint 3 to Sprint 4
 
 + Full implementation of add robot and remove robot functionality for field engineer, such that when a user makes the respective input, the robots are added or removed from the database itself, with the data manager handling some of the communication. 
 + Partial implementation of view robot status functionality, such that when a user double-clicks on a target robot, they can view robot properties that are saved in the database and retrieved using methods from the robot class in the simulation. 
@@ -36,9 +36,32 @@ There are explicit instructions on how to build and run the application in the a
 + Updated the structure for simulation, all .cpp files for simulation is in simulation folder.
 
 
-
+## Changes From Sprint 4 to Sprint 5
++ Simulation Engine now can:
+    - work in a task execution loop in a separate thread to simulate real-time task execution for robots.
+    - simulate robot do tasks with only System Manager add and delete robot, and assign task to specific robots
+    - robots with errors remain task cancelled until fixed
+    - start and stop this loop during testing
++ Simulation tests tests all possible consequences, including the edge cases.
++ Finished implementation of view robot status, including integration throughout.
++ Shifted refresh button functionality to parent base class so all children can use it.
++ Added automatic refresh button calls in many places, including fixing a robot.
++ Added fixing robot functionality.
++ Added all task allocation funcionality, including ensuring the user can only assign valid tasks.
++ Added BM and FE-specific functionality of assigning cleaning task without specifying robot.
++ Added comprehensive error log functionality.
++ Added logic for differentiating both views and functionality across different user roles.
++ Added a number of functions to the Data Manager to facilitate integration between database and UI.
++ Created room text file and added functionality to read it into a vector of our Room class, and pass those rooms to database.
++ Added functionality for BM to make rooms available or unavailable.
++ Integrated task execution: Added real-time task execution and progress simulation through thread integration with the robot task system.
++ Enhanced robot-room assignment: Linked robots to rooms dynamically during task assignments.
++ Improved database synchronization: Enabled periodic updates of robot task status to MongoDB.
++ Thread safety: Ensured safe concurrent access to shared data using mutex locks.
++ Dynamic room data management: Included room data handling for task simulation and assignment.
++ Simulation integration: Connected task execution with simulation features for resource usage.
 + Added more tests to the mongo adapter suite in order to cover all edge cases.
 + Changed the get_error_log function to return a vector of string which can be more easily read by the UI
 + Updated update_task_status() to instead of use the room that was supplied in the update to the room that was already in the database from the past ongoing instance in order to not lose the room information
 + Database is now fully connected with all three other components and is updating timely with no issues or anomalies
-+ 
+
