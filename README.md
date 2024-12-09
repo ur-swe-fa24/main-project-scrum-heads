@@ -35,6 +35,7 @@ There are explicit instructions on how to build and run the application in the a
 + Created charge robot loop, robots can charge while not working. Passed unit tests on this stage, more unit tests for the future.
 + Updated the structure for simulation, all .cpp files for simulation is in simulation folder.
 
+
 ## Changes From Sprint 4 to Sprint 5
 + Simulation Engine now can:
     - work in a task execution loop in a separate thread to simulate real-time task execution for robots.
@@ -42,3 +43,14 @@ There are explicit instructions on how to build and run the application in the a
     - robots with errors remain task cancelled until fixed
     - start and stop this loop during testing
 + Simulation tests tests all possible consequences, including the edge cases.
++ Finished implementation of view robot status, including integration throughout.
++ Shifted refresh button functionality to parent base class so all children can use it.
++ Added automatic refresh button calls in many places, including fixing a robot.
++ Added fixing robot functionality.
++ Added all task allocation funcionality, including ensuring the user can only assign valid tasks.
++ Added BM and FE-specific functionality of assigning cleaning task without specifying robot.
++ Added comprehensive error log functionality.
++ Added logic for differentiating both views and functionality across different user roles.
++ Added a number of functions to the Data Manager to facilitate integration between database and UI.
++ Created room text file and added functionality to read it into a vector of our Room class, and pass those rooms to database.
++ Added functionality for BM to make rooms available or unavailable.

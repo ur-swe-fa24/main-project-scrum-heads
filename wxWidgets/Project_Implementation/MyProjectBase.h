@@ -104,17 +104,20 @@ class bmBaseFrame : public wxFrame
 		wxListBox* taskListBox;
 		wxStaticText* roomLabelText;
 		wxListBox* roomListBox;
+		wxButton* changeAvailabilityButton;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void OnFERefreshButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRobotListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAddTaskButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTaskListBoxDClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnRoomTaskSelect( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnChangeRoomAButtonClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:
 
-		bmBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 696,515 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		bmBaseFrame( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 725,538 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 
 		~bmBaseFrame();
 

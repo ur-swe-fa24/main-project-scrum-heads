@@ -234,7 +234,7 @@ std::vector<Room> adapters::Mongo_Adapter::read_all_rooms(){
         auto Size = room_Doc["Room Size"];
         auto Availability = room_Doc["Availability"];
         auto Floor_type = room_Doc["Floor Type"];
-
+        // std::cout << Availability << std::endl;
         Room room(Id, Size, Floor_type, Availability);
 
         rooms.push_back(room);
@@ -344,6 +344,9 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
         auto result = db_["task"].find_one(make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing")));   
         // else we should just update the robot class if we do not find an ongiong task for this robot update
         if(result){
+            auto task_information = bsoncxx::to_json(*result);
+            json task_Doc = json::parse(task_information);
+            auto Room_Number = task_Doc["Room"];
             //If the robot now has an error
             if(update.get_error_status() != ""){
                 std::cout << "1" << std::endl;
@@ -387,9 +390,9 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
 
                 //Update room to now be available
-                update_room_availability(update.get_task_room().getRoomNumber(), "Available");
+                update_room_availability(Room_Number, "Available");
             }
-            else if(update.get_task_status() == "Complete" ){
+            else if(update.get_task_percent() == 100 ){
                 std::cout << "2" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
@@ -419,7 +422,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
 
                 //Update the Room availability
-                update_room_availability(update.get_task_room().getRoomNumber(), "Available");
+                update_room_availability(Room_Number, "Available");
 
             }
             else if(update.get_task_status() == "Cancelled" && update.get_error_status() == ""){
@@ -452,7 +455,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
 
                 //Update the Room Availability
-                update_room_availability(update.get_task_room().getRoomNumber(), "Available");
+                update_room_availability(Room_Number, "Available");
             }
             else{
                 std::cout << "4" << std::endl;
@@ -484,6 +487,7 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                 db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
 
                 //Room should still be unavailiable because the only things that are in the else statement are ongoing tasks
+                update_room_availability(Room_Number, "Busy");
             }
         }else{
             std::cout << "5" << std::endl;
