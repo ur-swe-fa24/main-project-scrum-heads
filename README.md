@@ -60,3 +60,8 @@ There are explicit instructions on how to build and run the application in the a
 + Thread safety: Ensured safe concurrent access to shared data using mutex locks.
 + Dynamic room data management: Included room data handling for task simulation and assignment.
 + Simulation integration: Connected task execution with simulation features for resource usage.
++ Added more tests to the mongo adapter suite in order to cover all edge cases.
++ Changed the get_error_log function to return a vector of string which can be more easily read by the UI
++ Updated update_task_status() to instead of use the room that was supplied in the update to the room that was already in the database from the past ongoing instance in order to not lose the room information
++ Database is now fully connected with all three other components and is updating timely with no issues or anomalies
+
