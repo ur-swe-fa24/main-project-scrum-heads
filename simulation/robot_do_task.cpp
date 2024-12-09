@@ -79,14 +79,14 @@ void calculate_error_status(robots::Robots& robot) {
             robot.update_task_status("Cancelled");
 
             // Log the selected failure for debugging
-            std::cout << "Error triggered: " << failure.name << "\n";
-            std::cout << "Task status updated to: Cancelled\n";
+            // std::cout << "Error triggered: " << failure.name << "\n";
+            // std::cout << "Task status updated to: Cancelled\n";
             return; // Only one error can occur at a time
         }
     }
 
     // If no errors occurred, log for debugging
-    std::cout << "No errors occurred.\n";
+    // std::cout << "No errors occurred.\n";
 }
 
 std::atomic<bool> is_canceled = true;
@@ -103,12 +103,12 @@ void execute(std::vector<robots::Robots>& robot_list_) {
         {
             std::lock_guard<std::mutex> lock(robot_mutex);
             for (robots::Robots& robot : robot_list_) {
-                std::cout << "Robot ID: " << robot.get_id() 
-                << ", Task Status: " << robot.get_task_status() 
-                << ", Error Status: " << robot.get_error_status()
-                << ", Task Percent: " << robot.get_task_percent() 
-                << ", Water Level: " << robot.get_water_level()
-                << ", Battery Level: " << robot.get_battery_level() << std::endl;
+                // std::cout << "Robot ID: " << robot.get_id() 
+                // << ", Task Status: " << robot.get_task_status() 
+                // << ", Error Status: " << robot.get_error_status()
+                // << ", Task Percent: " << robot.get_task_percent() 
+                // << ", Water Level: " << robot.get_water_level()
+                // << ", Battery Level: " << robot.get_battery_level() << std::endl;
 
 
                 if (robot.get_task_status() == "Cancelled" && robot.get_error_status().empty()) {
@@ -122,8 +122,8 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                     robot.update_task_status("Available");
                     robot.update_task_percent(0);
                     robot.get_task_room().setAvailability("Available");
-                    std::cout << "room Availability: " << robot.get_task_room().getAvailability()
-                    << "room Number: " << robot.get_task_room().getRoomNumber() << std::endl;
+                    // std::cout << "room Availability: " << robot.get_task_room().getAvailability()
+                    // << "room Number: " << robot.get_task_room().getRoomNumber() << std::endl;
                     continue;
                 }
 
@@ -148,17 +148,17 @@ void execute(std::vector<robots::Robots>& robot_list_) {
                         max_battery = 140;
                     }  
 
-                    std::cout << "Refilling Robot ID: " << robot.get_id()
-                        << ", Current Water: " << current_water
-                        << ", Current Battery: " << current_battery
-                        << ", Max Water: " << max_water
-                        << ", Max Battery: " << max_battery << std::endl;
+                    // std::cout << "Refilling Robot ID: " << robot.get_id()
+                    //     << ", Current Water: " << current_water
+                    //     << ", Current Battery: " << current_battery
+                    //     << ", Max Water: " << max_water
+                    //     << ", Max Battery: " << max_battery << std::endl;
 
                     robot.update_water_level(std::min(current_water + 10, max_water));
                     robot.update_battery_level(std::min(current_battery + 10, max_battery));
 
-                    std::cout << "After Refill - Water: " << robot.get_water_level()
-                            << ", Battery: " << robot.get_battery_level() << std::endl;
+                    // std::cout << "After Refill - Water: " << robot.get_water_level()
+                    //         << ", Battery: " << robot.get_battery_level() << std::endl;
 
 
                     continue;

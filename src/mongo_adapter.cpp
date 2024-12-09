@@ -234,7 +234,7 @@ std::vector<Room> adapters::Mongo_Adapter::read_all_rooms(){
         auto Size = room_Doc["Room Size"];
         auto Availability = room_Doc["Availability"];
         auto Floor_type = room_Doc["Floor Type"];
-        std::cout << Availability << std::endl;
+        // std::cout << Availability << std::endl;
         Room room(Id, Size, Floor_type, Availability);
 
         rooms.push_back(room);
