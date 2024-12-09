@@ -54,3 +54,9 @@ There are explicit instructions on how to build and run the application in the a
 + Added a number of functions to the Data Manager to facilitate integration between database and UI.
 + Created room text file and added functionality to read it into a vector of our Room class, and pass those rooms to database.
 + Added functionality for BM to make rooms available or unavailable.
++ Integrated task execution: Added real-time task execution and progress simulation through thread integration with the robot task system.
++ Enhanced robot-room assignment: Linked robots to rooms dynamically during task assignments.
++ Improved database synchronization: Enabled periodic updates of robot task status to MongoDB.
++ Thread safety: Ensured safe concurrent access to shared data using mutex locks.
++ Dynamic room data management: Included room data handling for task simulation and assignment.
++ Simulation integration: Connected task execution with simulation features for resource usage.
