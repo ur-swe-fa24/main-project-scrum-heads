@@ -108,5 +108,36 @@ The `Robot_Manager` manages a collection of robots. It stores a list of `Robot` 
 ![Mongo Adapter Class Diagram](MongoAdapterDiagram.png)
 The `Mongo Adapter` is the class that allows MongoDB to be called and utilized in the project easily.
 
-The `Mongo Adapter` implements `Adapter`. These functions allow another class to simply write and read robots. When calling write robots the `Mongo Adapter` will then call the getter functions of the robot passed and add these values into the database. The `Robot` is not changed, but utilized to easily call the needed information.
+The `Mongo Adapter` implements `Adapter`. These functions allow another class to simply access the data and update, read, or write information. 
+#### Attributes
+The attributes for the MongoAdapter create an instance of the mongodb database that we can then connect to and use.
+- `mongo_instance_ : instance` 
+- `uri_ : uri`
+- `client_ : client` 
+- `db_ : database` 
+
+#### Methods
++ `Mongo_Adapter()` - MongoAdapter Constructor
++ `write_robot( robot : const Robots& ) : void ` - Writes a robot to the database
++ `read_robot( id : int ) : Robots` - Reads a robot frm the database and returns it as a robot object
++ `read_all_robots() : vector<Robots>` - Reads all thr robots from the database and returns it as a vector of robots
++ `delete_robot(id : int) : string` - Deletes thr specified robot from the table
++ `delete_all_robots() : void` - Deleted the entire collection of robots
++ `get_all_ids() : vector<int>` - Reads all ids that have been given to robots and returns them as a vector of integers
++ `update_robot(int id, int water_level, int battery_level)` - Updates the Water and Battery level of a specified robot in the database
++ `write_rooms(rooms : vector<Room>) : void` - Creates a rooms table and writes all the robots in the vector into the tables
++ `update_room_availability(id : int, availability : string) : void` - Change a rooms availability to the parameter specified
++ `read_room(int id): Room` - Returns a room object of a specific room from in the database
++ `delete_rooms() : void` - Delete all rooms from the Database
++ `read_all_rooms() : vector<Room>` - Read all rooms from the database and return as a vector of rooms
++ `write_task(new_task : Robots) : void` - Write task to data base using robot object for the information
++ `write_task(id : int, room : int) : void` - Write task to database with a robot id and a room number
++ `read_ongoing_task(id : int) : Robots;` - Read an obgoing task from a specific robot
++ `read_all_ongoing_tasks() : vector<Robots>` - Read all ongoing tasks of all the robots
++ `read_robot_tasks(int id) : vector<Robots>` - Read all the tasks a robot has done and are ongoing
++ `read_all_tasks() : vector<Robots>` - Read all tasks from the task table
++ `update_task_status(updates : vector<Robots>) : void` - Update the tasks and robots from the robots we got from the simulation and data manager
++ `delete_all_tasks() : void` - Delete all tasks from the task table
++ `get_error_log(id : int) : vector<string>` - Return the error log for a specific robot
++ `delete_error_log() : void ` - Delete the error log
 

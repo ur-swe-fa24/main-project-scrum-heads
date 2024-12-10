@@ -40,15 +40,21 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
     // Mongo db will read exampledoc as a rvalue so the doc should be created all in one line 
     // Remove error status, task status and room, and location
     // Write new robot to the "robot" collection
-    db_["robot"].insert_one(make_document(
-        kvp("_id", robot.get_id()),
-        kvp("size", robot.get_size()),
-        kvp("water_level", robot.get_water_level()),
-        kvp("battery level", robot.get_battery_level()),
-        kvp("Function Type", robot.get_function_type()),
-        kvp("Error Status", robot.get_error_status()),
-        kvp("Task Status", robot.get_task_status())
-    ));
+    try{
+        db_["robot"].insert_one(make_document(
+            kvp("_id", robot.get_id()),
+            kvp("size", robot.get_size()),
+            kvp("water_level", robot.get_water_level()),
+            kvp("battery level", robot.get_battery_level()),
+            kvp("Function Type", robot.get_function_type()),
+            kvp("Error Status", robot.get_error_status()),
+            kvp("Task Status", robot.get_task_status())
+        ));
+    }
+    catch(const std::exception& e){
+        std::cout << "Exception in write_robot " << e.what() << std::endl;
+    }
+
 }
 
 /**
@@ -162,43 +168,58 @@ std::vector<int> adapters::Mongo_Adapter::get_all_ids(){
     return ids;
 }
 
-//Room Stuff
+//Room Functions
 
-    // int getRoomNumber() const { return room_number_; }
-    // std::string getRoomSize() const { return room_size_; }
-    // std::string getFloorType() const { return floor_type_; }
-    // std::string getAvailability() const { return availability_; }
-
-
+/**
+ * Write all rooms to the database from a vector of rooms
+ */
 void adapters::Mongo_Adapter::write_rooms(std::vector<Room> rooms){
     //Write all the rooms to the collection of rooms
     for(Room room : rooms){
         //Write room with id, size, floor type, and Availability
-        db_["room"].insert_one(make_document(
-            kvp("Room Id", room.getRoomNumber()),
-            kvp("Room Size", room.getRoomSize()),
-            kvp("Floor Type", room.getFloorType()),
-            kvp("Availability", room.getAvailability())
-        ));
+        try{
+            db_["room"].insert_one(make_document(
+                kvp("Room Id", room.getRoomNumber()),
+                kvp("Room Size", room.getRoomSize()),
+                kvp("Floor Type", room.getFloorType()),
+                kvp("Availability", room.getAvailability())
+            ));
+        }
+        catch(const std::exception& e){
+            std::cout << "Exception in write_rooms" << e.what() << std::endl;
+        }
+
     }
 }
 
-
+/**
+ * Change a rooms availability to the parameter specified
+ */
 void adapters::Mongo_Adapter::update_room_availability(int id, std::string availability){
     auto result = db_["room"].find_one(make_document(kvp("Room Id", id)));
     if(result){
-        // Update the robot in the robot class to say that it now has a new task and is busy
-        auto query_filter = make_document(kvp("Room Id", id));
-        // Create documents with the new task status
-        auto update_doc1 = make_document(kvp("$set", make_document(kvp("Availability", availability))));
-        // Update robot
-        db_["room"].update_one(query_filter.view(), update_doc1.view());
+        // Find the room to update
+        try{
+            auto query_filter = make_document(kvp("Room Id", id));
+            // Create documents with the new room availability
+            auto update_doc1 = make_document(kvp("$set", make_document(kvp("Availability", availability))));
+            // Update room
+            db_["room"].update_one(query_filter.view(), update_doc1.view());
+        }
+        catch(const std::exception& e){
+            std::cout << "Exception in update_room_availability" << e.what() << std::endl;
+        }
     }
 }
 
+/**
+ * Returns a room object of a specific room from in the database
+ */
 Room adapters::Mongo_Adapter::read_room(int id){
+    //Find the room in the database
     auto result = db_["room"].find_one(make_document(kvp("Room Id", id)));
     if(result){
+        // If this room exists create a room with the information in the database
         auto information = bsoncxx::to_json(*result);
         json room_Doc = json::parse(information);
 
@@ -209,22 +230,32 @@ Room adapters::Mongo_Adapter::read_room(int id){
         auto Floor_type = room_Doc["Floor Type"];
 
         Room room(Id, Size, Floor_type, Availability);
-
+        //return the room
         return room;        
     }
     else{
+        //If room does not exists return an empty room
         Room room(id, "", "", "No Room with id");
         return room;
     }
 }
 
+/**
+ * Delete all rooms from the Database
+ */
 void adapters::Mongo_Adapter::delete_rooms(){
     db_["room"].drop( {} );
 }
 
+/**
+ * Read all rooms from the database and return as a vector of rooms
+ */
 std::vector<Room> adapters::Mongo_Adapter::read_all_rooms(){
+    //Read all the rooms from the database
     std::vector<Room> rooms = {};
     auto cursor = db_["room"].find({});
+
+    //Loop through all the rooms in the database
     for( auto&& doc : cursor) {
         auto information = bsoncxx::to_json(doc);
         json room_Doc = json::parse(information);
@@ -234,35 +265,19 @@ std::vector<Room> adapters::Mongo_Adapter::read_all_rooms(){
         auto Size = room_Doc["Room Size"];
         auto Availability = room_Doc["Availability"];
         auto Floor_type = room_Doc["Floor Type"];
-        // std::cout << Availability << std::endl;
+
+        // Create a room object for the room in the database
         Room room(Id, Size, Floor_type, Availability);
 
+        // Add room to the vector
         rooms.push_back(room);
     }
+    //Return Rooms
     return rooms;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Task Stuff
+//Task Functions
 
 /**
  * Write task to data base using robot object for the information
@@ -278,20 +293,27 @@ void adapters::Mongo_Adapter::write_task(robots::Robots new_task){
         throw std::invalid_argument{ "Robot In Progress of In Room" };
     }
     // If the robot is not doing task then we should write this new task to a table
-    db_["task"].insert_one(make_document(
+
+    try{
+        db_["task"].insert_one(make_document(
                 kvp("robot_id", new_task.get_id()),
                 kvp("Room", new_task.get_task_room().getRoomNumber()),
                 kvp("Error Status", new_task.get_error_status()),
                 kvp("Task Status", "Ongoing"),
                 kvp("Task Percent", new_task.get_task_percent())
-    ));
-    
-    // Update the robot in the robot class to say that it now has a new task and is busy
-    auto query_filter = make_document(kvp("_id", new_task.get_id()));
-    // Create documents with the new task status
-    auto update_doc1 = make_document(kvp("$set", make_document(kvp("Task Status", "Ongoing"))));
-    // Update robot
-    db_["robot"].update_one(query_filter.view(), update_doc1.view());
+        ));
+        
+        // Update the robot in the robot class to say that it now has a new task and is busy
+        auto query_filter = make_document(kvp("_id", new_task.get_id()));
+        // Create documents with the new task status
+        auto update_doc1 = make_document(kvp("$set", make_document(kvp("Task Status", "Ongoing"))));
+        // Update robot
+        db_["robot"].update_one(query_filter.view(), update_doc1.view());
+    }
+    catch(const std::exception& e){
+        std::cout << "Exception in write_task" << e.what() << std::endl;
+    }
+
 
     //Update room to be unavailable
     update_room_availability(new_task.get_task_room().getRoomNumber(), "Busy");
@@ -313,25 +335,33 @@ void adapters::Mongo_Adapter::write_task(int id, int room){
 
     robots::Robots robot_info = read_robot(id);
     // If the robot is not doing task then we should write this new task to a table
-    db_["task"].insert_one(make_document(
+    try{
+        db_["task"].insert_one(make_document(
                 kvp("robot_id", id),
                 kvp("Room", room),
                 kvp("Error Status", robot_info.get_error_status()),
                 kvp("Task Status", "Ongoing"),
                 kvp("Task Percent", 0)
-    ));
+        ));
+        
+        // Update the robot in the robot class to say that it now has a new task and is busy
+        auto query_filter = make_document(kvp("_id", id));
+        // Create documents with the new task status
+        auto update_doc1 = make_document(kvp("$set", make_document(kvp("Task Status", "Ongoing"))));
+        // Update robot
+        db_["robot"].update_one(query_filter.view(), update_doc1.view());
+    }
+    catch(const std::exception& e){
+        std::cout << "Exception in write_task2" << e.what() << std::endl;
+    }
     
-    // Update the robot in the robot class to say that it now has a new task and is busy
-    auto query_filter = make_document(kvp("_id", id));
-    // Create documents with the new task status
-    auto update_doc1 = make_document(kvp("$set", make_document(kvp("Task Status", "Ongoing"))));
-    // Update robot
-    db_["robot"].update_one(query_filter.view(), update_doc1.view());
     //Also update the room to unavailable
 
     //Update room to be unavailable
     update_room_availability(room, "Busy");
 }
+
+
 
 /**
  * Update the tasks and robots from the robots we got from the simulation and data manager
@@ -349,9 +379,9 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
             auto Room_Number = task_Doc["Room"];
             //If the robot now has an error
             if(update.get_error_status() != ""){
-                // std::cout << "1" << std::endl;
                 //add the error to the error table for safe keeping to grab things later. if we are inquiring about an error log
-                db_["error"].insert_one(make_document(
+                try {
+                    db_["error"].insert_one(make_document(
                     kvp("robot_id", update.get_id()),
                     kvp("Size", update.get_size()),
                     kvp("Water Level", update.get_water_level()),
@@ -361,145 +391,183 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
                     kvp("Room", update.get_task_room().getRoomNumber()),
                     kvp("Task Percent", update.get_task_percent())
                     //add task status
-                ));
+                    ));
 
-                auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
+                    auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
-                // Update the task with updated information
-                auto replace_doc = make_document(kvp("$set", 
-                make_document(
-                    kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room().getRoomNumber()),
-                    kvp("Error Status", update.get_error_status()),
-                    kvp("Task Status", "Cancelled"),
-                    kvp("Task Percent", update.get_task_percent())
-                    )
-                ));
+                    // Update the task with updated information
+                    auto replace_doc = make_document(kvp("$set", 
+                    make_document(
+                        kvp("robot_id", update.get_id()),
+                        kvp("Room", update.get_task_room().getRoomNumber()),
+                        kvp("Error Status", update.get_error_status()),
+                        kvp("Task Status", "Cancelled"),
+                        kvp("Task Percent", update.get_task_percent())
+                        )
+                    ));
 
-                // Update the task
-                db_["task"].update_one(task_query_filter.view(), replace_doc.view());
+                    // Update the task
+                    db_["task"].update_one(task_query_filter.view(), replace_doc.view());
 
-                //Update the robot table
-                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
-                auto update_doc = make_document(kvp("$set", make_document(
-                    kvp("battery level", update.get_battery_level()), 
-                    kvp("water_level", update.get_water_level()),
-                    kvp("Task Status", "Available"),
-                    kvp("Error Status", update.get_error_status())
-                )));
-                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                    //Update the robot table
+                    auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                    auto update_doc = make_document(kvp("$set", make_document(
+                        kvp("battery level", update.get_battery_level()), 
+                        kvp("water_level", update.get_water_level()),
+                        kvp("Task Status", "Available"),
+                        kvp("Error Status", update.get_error_status())
+                    )));
+                    db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                }
+                // catch block to catch the thrown exception
+                catch (const std::exception& e) {
+                    // print the exception
+                    std::cout << "Exception in update task status error" << e.what() << std::endl;
+                }
+                
 
                 //Update room to now be available
                 update_room_availability(Room_Number, "Available");
             }
             else if(update.get_task_percent() == 100 ){
-                // std::cout << "2" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
                 // Make the new task with updated information
-                auto replace_doc = make_document(kvp("$set", 
-                make_document(
-                    kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room().getRoomNumber()),
-                    kvp("Error Status", update.get_error_status()),
-                    kvp("Task Status", update.get_task_status()),
-                    kvp("Task Percent", update.get_task_percent())
-                    )
-                ));
 
-                // Update the task
-                db_["task"].update_one(task_query_filter.view(), replace_doc.view());
+                try {
+                    auto replace_doc = make_document(kvp("$set", 
+                    make_document(
+                        kvp("robot_id", update.get_id()),
+                        kvp("Room", update.get_task_room().getRoomNumber()),
+                        kvp("Error Status", update.get_error_status()),
+                        kvp("Task Status", update.get_task_status()),
+                        kvp("Task Percent", update.get_task_percent())
+                        )
+                    ));
 
-                //Update robot with updated information
-                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
-                auto update_doc = make_document(kvp("$set", make_document(
-                    kvp("battery level", update.get_battery_level()), 
-                    kvp("water_level", update.get_water_level()),
-                    kvp("Task Status", "Available"),
-                    kvp("Error Status", update.get_error_status())
-                )));
-                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                    // Update the task
+                    db_["task"].update_one(task_query_filter.view(), replace_doc.view());
+
+                    //Update robot with updated information
+                    auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                    auto update_doc = make_document(kvp("$set", make_document(
+                        kvp("battery level", update.get_battery_level()), 
+                        kvp("water_level", update.get_water_level()),
+                        kvp("Task Status", "Available"),
+                        kvp("Error Status", update.get_error_status())
+                    )));
+                    db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                }
+                // catch block to catch the thrown exception
+                catch (const std::exception& e) {
+                    // print the exception
+                    std::cout << "Exception  in complete update task" << e.what() << std::endl;
+                }
 
                 //Update the Room availability
                 update_room_availability(Room_Number, "Available");
 
             }
             else if(update.get_task_status() == "Cancelled" && update.get_error_status() == ""){
-                // std::cout << "3" << std::endl;
                 // Find the specific task to update
                 auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
                 // Make the new task with updated information
-                auto replace_doc = make_document(kvp("$set", 
-                make_document(
-                    kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room().getRoomNumber()),
-                    kvp("Error Status", update.get_error_status()),
-                    kvp("Task Status", update.get_task_status()),
-                    kvp("Task Percent", update.get_task_percent())
-                    )
-                ));
 
-                // Update the task
-                db_["task"].update_one(task_query_filter.view(), replace_doc.view());
+                try {
 
-                // Update robot information
-                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
-                auto update_doc = make_document(kvp("$set", make_document(
-                    kvp("battery level", update.get_battery_level()), 
-                    kvp("water_level", update.get_water_level()),
-                    kvp("Task Status", "Available"),
-                    kvp("Error Status", update.get_error_status())
-                )));
-                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                    auto replace_doc = make_document(kvp("$set", 
+                    make_document(
+                        kvp("robot_id", update.get_id()),
+                        kvp("Room", update.get_task_room().getRoomNumber()),
+                        kvp("Error Status", update.get_error_status()),
+                        kvp("Task Status", update.get_task_status()),
+                        kvp("Task Percent", update.get_task_percent())
+                        )
+                    ));
+
+                    // Update the task
+                    db_["task"].update_one(task_query_filter.view(), replace_doc.view());
+
+                    // Update robot information
+                    auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                    auto update_doc = make_document(kvp("$set", make_document(
+                        kvp("battery level", update.get_battery_level()), 
+                        kvp("water_level", update.get_water_level()),
+                        kvp("Task Status", "Available"),
+                        kvp("Error Status", update.get_error_status())
+                    )));
+                    db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                }
+                // catch block to catch the thrown exception
+                catch (const std::exception& e) {
+                    // print the exception
+                    std::cout << "Exception in cancelled update task " << e.what() << std::endl;
+                }
 
                 //Update the Room Availability
                 update_room_availability(Room_Number, "Available");
             }
             else{
-                // std::cout << "4" << std::endl;
-                // Find the specific task to update
-                auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
-                // Make the new task with updated information
-                auto replace_doc = make_document(kvp("$set", 
-                make_document(
-                    kvp("robot_id", update.get_id()),
-                    kvp("Room", update.get_task_room().getRoomNumber()),
-                    kvp("Error Status", update.get_error_status()),
-                    kvp("Task Status", update.get_task_status()),
-                    kvp("Task Percent", update.get_task_percent())
-                    )
-                ));
+                try {
+                    // Find the specific task to update
+                    auto task_query_filter = make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing"));
 
-                // Update the task
-                db_["task"].update_one(task_query_filter.view(), replace_doc.view());
+                    // Make the new task with updated information
+                    auto replace_doc = make_document(kvp("$set", 
+                    make_document(
+                        kvp("robot_id", update.get_id()),
+                        kvp("Room", update.get_task_room().getRoomNumber()),
+                        kvp("Error Status", update.get_error_status()),
+                        kvp("Task Status", update.get_task_status()),
+                        kvp("Task Percent", update.get_task_percent())
+                        )
+                    ));
+
+                    // Update the task
+                    db_["task"].update_one(task_query_filter.view(), replace_doc.view());
+                    
+                    // Update robot information
+                    auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                    auto update_doc = make_document(kvp("$set", make_document(
+                        kvp("battery level", update.get_battery_level()), 
+                        kvp("water_level", update.get_water_level()),
+                        kvp("Task Status", update.get_task_status()),
+                        kvp("Error Status", update.get_error_status())
+                    )));
+                    db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                }
+                // catch block to catch the thrown exception
+                catch (const std::exception& e) {
+                    // print the exception
+                    std::cout << "Exception in else 1 update task " << e.what() << std::endl;
+                }
                 
-                // Update robot information
-                auto robot_query_filter = make_document(kvp("_id", update.get_id()));
-                auto update_doc = make_document(kvp("$set", make_document(
-                    kvp("battery level", update.get_battery_level()), 
-                    kvp("water_level", update.get_water_level()),
-                    kvp("Task Status", update.get_task_status()),
-                    kvp("Error Status", update.get_error_status())
-                )));
-                db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
 
                 //Room should still be unavailiable because the only things that are in the else statement are ongoing tasks
                 update_room_availability(Room_Number, "Busy");
             }
         }else{
-            // std::cout << "5" << std::endl;
+
+                try {
+                    auto robot_query_filter = make_document(kvp("_id", update.get_id()));
+                    auto update_doc = make_document(kvp("$set", make_document(
+                        kvp("battery level", update.get_battery_level()), 
+                        kvp("water_level", update.get_water_level()),
+                        kvp("Task Status", update.get_task_status()),
+                        kvp("Error Status", update.get_error_status())
+                    )));
+                    db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+                }
+                // catch block to catch the thrown exception
+                catch (const std::exception& e) {
+                    // print the exception
+                    std::cout << "Exception in else 2 update task status " << e.what() << std::endl;
+                }
             // If the robot task is available and not ongoing then just update the robot class as only the water and battery level are changing
-            auto robot_query_filter = make_document(kvp("_id", update.get_id()));
-            auto update_doc = make_document(kvp("$set", make_document(
-                kvp("battery level", update.get_battery_level()), 
-                kvp("water_level", update.get_water_level()),
-                kvp("Task Status", update.get_task_status()),
-                kvp("Error Status", update.get_error_status())
-            )));
-            db_["robot"].update_one(robot_query_filter.view(), update_doc.view());
+            
             //No need to update room because these robots are charging and not a part of an ongoing tasks attached to a room
         }
     }
@@ -509,8 +577,10 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
  * Read ongoing task of a specific robot
  */
 robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
+    //Find the ongoing task for the specific robot
     auto task_result = db_["task"].find_one(make_document(kvp("robot_id", id), kvp("Task Status", "Ongoing"))); 
     if (task_result) {
+        //If there is an ongoing task then create a robot with all the data specific to the task and robot
         auto task_information = bsoncxx::to_json(*task_result);
         json task_Doc = json::parse(task_information);
 
