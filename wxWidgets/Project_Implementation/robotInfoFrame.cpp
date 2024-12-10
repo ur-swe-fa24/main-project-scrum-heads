@@ -81,7 +81,7 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
     }
     else
     {
-        robotStatusText->SetLabel(robotInfo);
+        robotStatusText->SetLabel(robotInfo + ", Error Status: " + errorStatus);
     }
     Layout();
 }
