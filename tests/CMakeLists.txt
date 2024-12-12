@@ -29,25 +29,38 @@ target_link_libraries(test_mongodb
         adapter_lib
 )
 
-# Define robot_do_task as a library
-add_library(robot_do_task ../simulation/robot_do_task.cpp)
+# Define the robot_manager library
+add_library(robot_manager
+    ../simulation/robot_manager.cpp
+)
+
+target_include_directories(robot_manager
+    PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+)
+
+target_compile_features(robot_manager PUBLIC cxx_std_17)
+
+# Define the robot_do_task library
+add_library(robot_do_task
+    ../simulation/robot_do_task.cpp
+)
+
 target_include_directories(robot_do_task
-    PRIVATE
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-)
-target_link_libraries(robot_do_task PRIVATE spdlog::spdlog_header_only)
-
-# Define room_task as a library
-add_library(room_task ../simulation/room_task.cpp)
-target_include_directories(room_task
-    PRIVATE
+    PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
 
-# Define test_simulation executable
+target_link_libraries(robot_do_task
+    PUBLIC
+    robot_manager
+)
+
+target_compile_features(robot_do_task PUBLIC cxx_std_17)
+
+# Define the test_simulation executable
 add_executable(test_simulation 
     test_simulation.cpp
-    ../src/robot.cpp
 )
 
 target_include_directories(test_simulation
@@ -58,12 +71,13 @@ target_include_directories(test_simulation
 target_compile_features(test_simulation PRIVATE cxx_std_17)
 
 target_link_libraries(test_simulation
-  PRIVATE
+    PRIVATE
     Catch2::Catch2WithMain
     spdlog::spdlog_header_only
+    robot_manager
     robot_do_task
-    room_task
 )
+
 
 add_executable(test_datamanager 
     test_datamanager.cpp

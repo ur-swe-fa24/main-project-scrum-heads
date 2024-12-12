@@ -14,7 +14,23 @@ class Mongo_Adapter{
     + read_all_robots() : vector<Robots>
     + delete_robot(id : int) : string
     + delete_all_robots() : void
-    + update_robot(int id, int water_level, int battery_level)  
+    + get_all_ids() : vector<int> 
+    + update_robot(int id, int water_level, int battery_level)
+    + write_rooms(rooms : vector<Room>) : void
+    + update_room_availability(id : int, availability : string) : void
+    + read_room(int id): Room
+    + delete_rooms() : void
+    + read_all_rooms() : vector<Room>
+    + write_task(new_task : Robots) : void
+    + write_task(id : int, room : int) : void
+    + read_ongoing_task(id : int) : Robots;
+    + read_all_ongoing_tasks() : vector<Robots> 
+    + read_robot_tasks(int id) : vector<Robots> 
+    + read_all_tasks() : vector<Robots> 
+    + update_task_status(updates : vector<Robots>) : void 
+    + delete_all_tasks() : void
+    + get_error_log(id : int) : vector<string>  
+    + delete_error_log() : void 
 }
 
 abstract Adapter{
@@ -24,7 +40,23 @@ abstract Adapter{
     + read_all_robots() : vector<Robots>
     + delete_robot(id : int) : string
     + delete_all_robots() : void
+    + get_all_ids() : vector<int> 
     + update_robot(int id, int water_level, int battery_level)
+    + write_rooms(rooms : vector<Room>) : void
+    + update_room_availability(id : int, availability : string) : void
+    + read_room(int id): Room
+    + delete_rooms() : void
+    + read_all_rooms() : vector<Room>
+    + write_task(new_task : Robots) : void
+    + write_task(id : int, room : int) : void
+    + read_ongoing_task(id : int) : Robots;
+    + read_all_ongoing_tasks() : vector<Robots> 
+    + read_robot_tasks(int id) : vector<Robots> 
+    + read_all_tasks() : vector<Robots> 
+    + update_task_status(updates : vector<Robots>) : void 
+    + delete_all_tasks() : void
+    + get_error_log(id : int) : vector<string>  
+    + delete_error_log() : void
 } 
 
 class Robot {

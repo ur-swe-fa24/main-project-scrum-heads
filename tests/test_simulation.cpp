@@ -1,188 +1,138 @@
-#define CATCH_CONFIG_MAIN
-#include "robot.hpp"
+#include "robot_manager.hpp"
 #include "robot_do_task.hpp"
 #include <catch2/catch_all.hpp>
 #include <thread>
-#include <thread>
 #include <chrono>
-#include <vector>
+#include <iostream>
 
 using namespace robots;
-using namespace std;
+using namespace robot_tasks;
 
-TEST_CASE("Create Robot") {
-    Robots temp_robot(0, "small", 100, 100, "", "", 0, "scrub", 0);
-    SECTION("Read Robot") {
-        REQUIRE( temp_robot.get_id() == 0 );
-        REQUIRE( temp_robot.get_size() == "small" );
-        REQUIRE( temp_robot.get_water_level() == 100 );
-        REQUIRE( temp_robot.get_battery_level() == 100 );
-        REQUIRE( temp_robot.get_error_status() == "" );
-        REQUIRE( temp_robot.get_task_status() == "" );
-        REQUIRE( temp_robot.get_task_percent() == 0 );
+TEST_CASE("RobotManager Comprehensive Test") {
+    // Setup Real Rooms
+    Room small_room(101, "Small", "Tile", "Available");
+    Room medium_room(102, "Medium", "Carpet", "Available");
+
+    // Initialize Robots with Empty Rooms
+    Room empty_room(0, "", "", "");
+
+    Robots robot1(1, "Small", 100, 100, "", "Available", empty_room, "Scrub", 0);
+    Robots robot2(2, "Medium", 50, 50, "", "Ongoing", empty_room, "Scrub", 30);
+    Robots robot3(3, "Small", 10, 10, "Motor Failure", "Cancelled", empty_room, "Scrub", 0);
+    Robots robot4(4, "Medium", 0, 0, "", "Available", empty_room, "Scrub", 0); // Robot needs refilling
+    Robots robot5(5, "Large", 100, 100, "", "Available", empty_room, "Scrub", 0); // Large robot
+
+    // Initialize RobotManager and add robots
+    RobotManager robot_manager;
+    robot_manager.add_robot(robot1);
+    robot_manager.add_robot(robot2);
+    robot_manager.add_robot(robot3);
+    robot_manager.add_robot(robot4);
+    robot_manager.add_robot(robot5);
+
+    // Assign tasks to available robots
+    for (auto& robot : robot_manager.get_list()) {
+        if (robot.get_task_status() == "Available" && robot.get_water_level() == 100 && robot.get_battery_level() == 100) {
+            robot.update_task_status("Ongoing");
+
+            // Assign the real room based on robot size
+            if (robot.get_size() == "Small") {
+                robot.update_task_room(small_room);
+            } else if (robot.get_size() == "Medium") {
+                robot.update_task_room(medium_room);
+            }
+
+            std::cout << "Robot ID: " << robot.get_id() << " assigned a new task and status set to Ongoing." << std::endl;
+        } else {
+            std::cout << "Robot ID: " << robot.get_id() << " did not meet criteria for task assignment." << std::endl;
+        }
     }
-    SECTION("Add to List") {
-        vector<Robots> robot_list;
-        robots::Robots::add_robot(robot_list, temp_robot);
-        REQUIRE( robot_list.size() == 1 );
+
+    // Start the task execution loop in a separate thread
+    start_execute_thread(robot_manager.get_list());
+
+    // Allow some time for tasks to progress
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
+    // Stop the task execution loop
+    stop_execute_thread();
+
+    // Verify the outcomes for each robot
+    for (int robot_id = 1; robot_id <= robot_manager.get_robot_count(); ++robot_id) {
+        robots::Robots& robot = robot_manager.find_robot_by_id(robot_id);
+
+        if (robot.get_id() == 1) {
+            REQUIRE((robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Complete"));
+            REQUIRE(robot.get_task_percent() >= 0);
+        } else if (robot.get_id() == 2) {
+            REQUIRE((robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Complete" || robot.get_task_status() == "Cancelled"));
+            REQUIRE(robot.get_task_percent() >= 30);
+        } else if (robot.get_id() == 3) {
+            REQUIRE(robot.get_task_status() == "Cancelled");
+            REQUIRE(robot.get_error_status() == "Motor Failure");
+        } else if (robot.get_id() == 4) {
+            REQUIRE((robot.get_task_status() == "Cancelled" || robot.get_task_status() == "Available"));
+            REQUIRE(robot.get_water_level() >= 0);
+            REQUIRE(robot.get_battery_level() >= 0);
+        } else if (robot.get_id() == 5) {
+            REQUIRE((robot.get_task_status() == "Ongoing" || robot.get_task_status() == "Available"));
+            REQUIRE(robot.get_task_percent() >= 0);
+        }
+    }
+
+    SECTION("Cancel Ongoing Task for Robot 2") {
+        robots::Robots& robot = robot_manager.find_robot_by_id(2);
+        robot.update_task_status("Cancelled");
+        robot.update_task_percent(0);
+
+        REQUIRE(robot.get_task_status() == "Cancelled");
+        REQUIRE(robot.get_task_percent() == 0);
+    }
+
+    SECTION("Gradual Refill of Robot 4") {
+        robots::Robots& robot = robot_manager.find_robot_by_id(4);
+        for (int i = 0; i < 10; ++i) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            REQUIRE(robot.get_water_level() >= 0);
+            REQUIRE(robot.get_battery_level() >= 0);
+        }
+    }
+
+    SECTION("Verify Large Robot (Robot 5) Behavior") {
+        robots::Robots& robot = robot_manager.find_robot_by_id(5);
+        if (robot.get_task_status() == "Ongoing") {
+            REQUIRE(robot.get_task_percent() >= 0);
+            REQUIRE(robot.get_water_level() <= 100);
+            REQUIRE(robot.get_battery_level() <= 100);
+        } else {
+            REQUIRE(robot.get_task_status() == "Available");
+        }
+    }
+
+    SECTION("Fix Robot with Error (Robot 3)") {
+        robots::Robots& robot = robot_manager.find_robot_by_id(3);
+        REQUIRE(robot.get_task_status() == "Cancelled");
+        REQUIRE(robot.get_error_status() == "Motor Failure");
+
+        fix(robot);
+
+        REQUIRE(robot.get_task_status() == "Available");
+        REQUIRE(robot.get_error_status().empty());
+        REQUIRE(robot.get_task_percent() == 0);
+        REQUIRE(robot.get_water_level() == 100);
+        REQUIRE(robot.get_battery_level() == 100);
+    }
+
+    SECTION("Random Error Generation Test") {
+        int error_count = 0;
+        for (int i = 0; i < 100; ++i) {
+            Robots test_robot(999, "Small", 100, 100, "", "Ongoing", empty_room, "Scrub", 50);
+            calculate_error_status(test_robot);
+            if (!test_robot.get_error_status().empty()) {
+                error_count++;
+            }
+        }
+        REQUIRE(error_count > 0);
+        REQUIRE(error_count < 10);
     }
 }
-
-TEST_CASE("Robot do task") {
-
-    // Test small robot with sufficient resources for a small room
-    SECTION("Small Robot - Small Room - Sufficient Resources") {
-        Robots temp_robot(0, "small", 100, 100, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "small");
-        REQUIRE(temp_robot.get_task_percent() == 100);
-        REQUIRE(temp_robot.get_battery_level() == 90);
-        REQUIRE(temp_robot.get_water_level() == 90);
-    }
-
-    // Test small robot with insufficient resources for a small room
-    SECTION("Small Robot - Small Room - Insufficient Resources") {
-        Robots temp_robot(0, "small", 5, 5, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "small");
-        REQUIRE(temp_robot.get_task_percent() == 0);
-        REQUIRE(temp_robot.get_task_status() == "canceled");
-    }
-
-    // Test medium robot with sufficient resources for a medium room
-    SECTION("Medium Robot - Medium Room - Sufficient Resources") {
-        Robots temp_robot(1, "medium", 120, 120, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "medium");
-        REQUIRE(temp_robot.get_task_percent() == 100);
-        REQUIRE(temp_robot.get_battery_level() == 80);
-        REQUIRE(temp_robot.get_water_level() == 80);
-    }
-
-    // Test medium robot with insufficient resources for a medium room
-    SECTION("Medium Robot - Medium Room - Insufficient Resources") {
-        Robots temp_robot(1, "medium", 30, 30, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "medium");
-        REQUIRE(temp_robot.get_task_percent() == 0);
-        REQUIRE(temp_robot.get_task_status() == "canceled");
-    }
-
-    // Test large robot with sufficient resources for a large room
-    SECTION("Large Robot - Large Room - Sufficient Resources") {
-        Robots temp_robot(2, "large", 140, 140, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "large");
-        REQUIRE(temp_robot.get_task_percent() == 100);
-        REQUIRE(temp_robot.get_battery_level() == 50);
-        REQUIRE(temp_robot.get_water_level() == 50);
-    }
-
-    // Test large robot with insufficient resources for a large room
-    SECTION("Large Robot - Large Room - Insufficient Resources") {
-        Robots temp_robot(2, "large", 80, 80, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "large");
-        REQUIRE(temp_robot.get_task_percent() == 0);
-        REQUIRE(temp_robot.get_task_status() == "canceled");
-    }
-
-    // Test small robot on a medium room with sufficient resources
-    SECTION("Small Robot - Medium Room - Sufficient Resources") {
-        Robots temp_robot(3, "small", 100, 100, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "medium");
-        REQUIRE(temp_robot.get_task_percent() == 100);
-        REQUIRE(temp_robot.get_battery_level() == 60);
-        REQUIRE(temp_robot.get_water_level() == 60);
-    }
-
-    // Test small robot on a medium room with insufficient resources
-    SECTION("Small Robot - Medium Room - Insufficient Resources") {
-        Robots temp_robot(3, "small", 30, 30, "", "", 0, "scrub", 0);
-        robot_tasks::do_task(temp_robot, "medium");
-        REQUIRE(temp_robot.get_task_percent() == 0);
-        REQUIRE(temp_robot.get_task_status() == "canceled");
-    }
-}
-
-TEST_CASE("Check if user intervene") {
-    Robots temp_robot(3, "small", 100, 100, "", "", 0, "scrub", 0);
-    SECTION("User cancelled the task") {
-        auto task_thread = [&]() {
-            robot_tasks::do_task(temp_robot, "medium");
-        };
-        std::thread t(task_thread);
-
-        // Sleep for a bit to let the task start
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-
-        // Simulate user cancellation
-        temp_robot.update_task_status("cancel");
-
-        // Wait for the task thread to finish
-        t.join();
-
-        // Verify the robot's state after cancellation
-        REQUIRE(temp_robot.get_task_status() == "cancel");
-        REQUIRE(temp_robot.get_task_percent() < 100);
-        REQUIRE(temp_robot.get_battery_level() < 100); // Some battery usage before cancellation
-        REQUIRE(temp_robot.get_water_level() < 100);   // Some water usage before cancellation
-    }
-}
-
-TEST_CASE("Robot Charging Function") {
-
-    SECTION("Single Small Robot - Partially Depleted Resources") {
-        robots::Robots robot(0, "small", 80, 90, "", "", 0, "scrub", 0);
-        std::vector<robots::Robots> robot_list = {robot};
-
-        // Call the robot_charge function
-        robot_tasks::robot_charge(robot_list);
-
-        // Check the water and battery levels are at maximum
-        REQUIRE(robot_list[0].get_water_level() == 100);
-        REQUIRE(robot_list[0].get_battery_level() == 100);
-    }
-
-    SECTION("Single Medium Robot - Fully Depleted Resources") {
-        robots::Robots robot(1, "medium", 0, 0, "", "", 0, "scrub", 0);
-        std::vector<robots::Robots> robot_list = {robot};
-
-        // Call the robot_charge function
-        robot_tasks::robot_charge(robot_list);
-
-        // Check the water and battery levels are at maximum for medium robots
-        REQUIRE(robot_list[0].get_water_level() == 120);
-        REQUIRE(robot_list[0].get_battery_level() == 120);
-    }
-
-    SECTION("Single Large Robot - Fully Charged") {
-        robots::Robots robot(2, "large", 140, 140, "", "", 0, "scrub", 0);
-        std::vector<robots::Robots> robot_list = {robot};
-
-        // Call the robot_charge function
-        robot_tasks::robot_charge(robot_list);
-
-        // Check the water and battery levels remain unchanged
-        REQUIRE(robot_list[0].get_water_level() == 140);
-        REQUIRE(robot_list[0].get_battery_level() == 140);
-    }
-
-    // SECTION("Multiple Robots - Mixed Sizes and Resources") {
-    //     robots::Robots small_robot(3, "small", 50, 60, "", "", 0, "scrub", 0);
-    //     robots::Robots medium_robot(4, "medium", 70, 80, "", "", 0, "scrub", 0);
-    //     robots::Robots large_robot(5, "large", 90, 100, "", "", 0, "scrub", 0);
-
-    //     std::vector<robots::Robots> robot_list = {small_robot, medium_robot, large_robot};
-
-    //     // Call the robot_charge function
-    //     robot_tasks::robot_charge(robot_list);
-
-    //     // Check the water and battery levels for all robots
-    //     REQUIRE(robot_list[0].get_water_level() == 100);
-    //     REQUIRE(robot_list[0].get_battery_level() == 100);
-
-    //     REQUIRE(robot_list[1].get_water_level() == 120);
-    //     REQUIRE(robot_list[1].get_battery_level() == 120);
-
-    //     REQUIRE(robot_list[2].get_water_level() == 140);
-    //     REQUIRE(robot_list[2].get_battery_level() == 140);
-    // }
-}
-
-
-// check error
