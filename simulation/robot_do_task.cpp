@@ -71,7 +71,7 @@ void calculate_error_status(robots::Robots& robot) {
     std::uniform_int_distribution<> error_chance(1, 100);
 
     // 5% chance for an error to occur
-    if (error_chance(gen) <= 5) {
+    if (error_chance(gen) <= 3) {
         // Randomly select one of the failure types
         std::uniform_int_distribution<> failure_selector(0, failures.size() - 1);
         const auto& selected_failure = failures[failure_selector(gen)];
