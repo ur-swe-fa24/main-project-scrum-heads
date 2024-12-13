@@ -1,65 +1,110 @@
 @startuml DataManagerClassDiagram
 
-' Define the Mongo_Adapter class
-class Mongo_Adapter {
-    +Mongo_Adapter()
-    +void write_robot(const Robots& robot)
-    +Robots read_robot(int id)
-    +vector<Robots> read_all_robots()
-    +string delete_robot(int id)
-    +void delete_all_robots()
-    +void update_robot(int id, int water_level, int battery_level)
-    +vector<int> get_all_ids()
-}
-
-' Define the Robots class
-class Robots {
-    +Robots(int robot_id, string robotSize, int waterLevel, int batteryLevel, string errorStatus, string taskStatus, int taskRoom, string functionType, int location_x, int location_y)
-    +int get_id() const
-    +string get_size() const
-    +int get_water_level() const
-    +int get_battery_level() const
-    +string get_error_status() const
-    +string get_task_status() const
-    +int get_task_room() const
-    +int get_location_x() const
-    +int get_location_y() const
-    +string get_function_type() const
-    +void update_battery_level(int new_level)
-    +void update_water_level(int new_level)
-    +void update_error_status(string status)
-    +void update_task_status(string status)
-}
-
-' Define the RobotData struct
-class RobotData {
-    +string robotID
-    +wxString robotSize
-    +wxString robotFunction
-}
-
-' Define the DataManager class
 class DataManager {
-    +DataManager()
-    +~DataManager()
-    +void SendRobotsData(const vector<RobotData>& robots)
-    +vector<RobotData>& GetRobots()
-    +void AddRobot(RobotData& robot)
-    +void UpdateIds()
-    +string GetIDString()
-    +Robots GetAllRobotInfo(int robotId)
-    +void DeleteRobot(int robotId)
-    -int GetNextAvailableRobotId()
-    -int id
-    -vector<RobotData> robots
-    -vector<int> ids
-    -Mongo_Adapter mongo_database
+    - mongo_database: MongoDatabase
+    - robot_manager_: RobotManager
+    - roomVector: std::vector<Room>
+    - robots: std::vector<RobotData>
+    - tasks: std::vector<TaskData>
+    - ids: std::vector<int>
+    - data_mutex_: std::mutex
+    - update_thread_: std::thread
+    - keep_updating_: bool
+    - id: int
+
+    + DataManager()
+    + ~DataManager()
+    + void startUpdateThread()
+    + void stopUpdateThread()
+    + void AddRooms()
+    + std::vector<RobotData>& GetRobots()
+    + std::vector<TaskData>& GetTasks()
+    + void AddRobot(RobotData& robot)
+    + void UpdateIds()
+    + int GetNextAvailableRobotId()
+    + std::string GetIDString()
+    + robots::Robots GetAllRobotInfo(int robotId)
+    + std::vector<robots::Robots> GetTasksTable()
+    + void DeleteRobot(int robotId)
+    + void AddTask(TaskData& task)
+    + std::vector<robots::Robots> GetAvailableRobots()
+    + std::vector<Room> GetRooms()
+    + std::vector<Room> GetAvailableRooms()
+    + robots::RobotManager& GetRobotManager()
+    + void DeleteAllRobots()
+    + std::vector<std::string> getErrorLog(int robotID)
+    + void FixRobot(int robotID)
+    + void ChangeRoomAvailability(int roomID, bool isAvailable)
 }
 
-' Relationships between classes
-DataManager --> Mongo_Adapter : uses
-DataManager --> RobotData : manages
-DataManager --> Robots : interacts
-Mongo_Adapter --> Robots : reads/writes
+class MongoDatabase {
+    + delete_all_robots()
+    + delete_all_tasks()
+    + delete_rooms()
+    + delete_error_log()
+    + write_robot(robot: Robots)
+    + write_task(robot_id: int, room_num: int)
+    + update_task_status(robot_list: std::vector<Robots>)
+    + get_all_ids(): std::vector<int>
+    + read_robot(robotId: int): Robots
+    + read_ongoing_task(robotId: int): Robots
+    + read_all_robots(): std::vector<Robots>
+    + read_all_rooms(): std::vector<Room>
+    + get_error_log(robotID: int): std::vector<std::string>
+    + update_room_availability(roomID: int, availability: std::string)
+}
 
+class RobotManager {
+    + add_robot(robot: Robots)
+    + remove_robot_by_id(robotId: int)
+    + find_robot_by_id(robotId: int): Robots&
+    + get_list(): std::vector<Robots>
+}
+
+class RobotData {
+    + robotID: std::string
+    + robotSize: wxString
+    + robotFunction: wxString
+}
+
+class TaskData {
+    + taskRoom: wxString
+    + taskRobot: RobotData
+}
+
+class Room {
+    + room_number_: int
+    + room_size_: std::string
+    + floor_type_: std::string
+    + availability_: std::string
+    + getRoomNumber(): int
+    + getRoomSize(): std::string
+    + getFloorType(): std::string
+    + getAvailability(): std::string
+}
+
+class Robots {
+    + get_id(): int
+    + get_task_status(): std::string
+    + update_task_status(status: std::string)
+    + update_task_room(room: Room)
+    + get_task_room(): Room
+    + update_task_percent(percent: int)
+    + get_task_percent(): int
+    + update_water_level(level: int)
+    + get_water_level(): int
+    + update_battery_level(level: int)
+    + get_battery_level(): int
+    + get_error_status(): std::string
+    + update_error_status(status: std::string)
+}
+
+DataManager --> MongoDatabase : Uses
+DataManager --> RobotManager : Uses
+DataManager --> Room : Manages
+DataManager --> RobotData : Manages
+DataManager --> TaskData : Manages
+DataManager --> Robots : Manages
+RobotManager --> Robots : Manages
+Robots --> Room : Assigned To
 @enduml

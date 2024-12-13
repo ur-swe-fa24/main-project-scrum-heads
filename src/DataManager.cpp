@@ -50,7 +50,7 @@ void DataManager::startUpdateThread() {
                 mongo_database.update_task_status(robot_list);
                 // spdlog::info("Updated task status in MongoDB successfully.");
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Sleep for 0.5 seconds
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // Sleep for 0.5 seconds
         }
 
         // Stop the robot task execution loop when the update thread stops
