@@ -1,6 +1,6 @@
 # Architecture
 ## Full Diagram 
-![Full Achitecture Diagram](Architecture_Diagram_final.png)
+![Full Achitecture Diagram](Architecture_Diagram.png)
 + This is the full architecture diagram of our system. To understand this fully we will be disecting this diagram by component. Starting with The Graphical User Interface.
 ## Graphical User Interface Diagram
 ![Graphical UI Achitecture Diagram](Graphical_UI_Architecture.png)
@@ -13,4 +13,4 @@
 + The Database itself contains all the information about the robots, errors, tasks, rooms, etc. The database receives data from teh system manager which is added into the database. Also, when queried for, sends its data out to the system manager.
 ## Simulation Diagram
 ![Simulation Achitecture Diagram](Simulation_architecture.png)
-+ The Simulation receives the information from the system manager about the tasks and the updates for the robots which is processed in the Data Receiver. The receiver then passes the information to the Robot Manager. The robot manager controls the robots in the simulation and their tasks. The Robot manager is also controlled by the clock. The information from the robot manager is then sent to the Info Reciever which processes and sends out the data into the system manager.
++ The Simulation directly communicates with the Robot Manager, which oversees all robots in the simulation and manages their tasks. The Robot Manager is controlled by the clock, ensuring that robot operations and task updates happen in a timely manner. Each robot’s status and task progress are managed within the Robot Manager, reflecting the current state of the simulation.

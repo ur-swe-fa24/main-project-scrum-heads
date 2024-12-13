@@ -3,7 +3,7 @@ skinparam dpi 200
 skinparam DefaultFontName Inconsolata
 left to right direction
 
-' Robot class with attributes and methods
+' Robots class with attributes and methods
 class Robots {
     -robot_id_: int
     -size_: string
@@ -11,7 +11,7 @@ class Robots {
     -battery_level_: int
     -error_status_: string
     -task_status_: string
-    -task_room_: int
+    -task_room_: Room
     -function_type_: string
     -task_percent_: int
     +get_id(): int
@@ -20,28 +20,58 @@ class Robots {
     +get_battery_level(): int
     +get_error_status(): string
     +get_task_status(): string
-    +get_task_room(): int
+    +get_task_room(): Room
     +get_task_percent(): int
     +get_task_length(): int
     +get_function_type(): string
-    +field_engineer_view_status(): void
     +update_battery_level(new_level: int): void
     +update_water_level(new_level: int): void
     +update_error_status(status: string): void
     +update_task_status(status: string): void
     +update_task_percent(new_percent: int): void
-    +add_robot(robot_list: List<Robots>, new_robot: Robots): void
+    +update_task_room(new_task_room: Room): void
 }
 
-' Robot_Do_Task class with task-related methods
+' Room class with attributes and methods
+class Room {
+    -room_number_: int
+    -room_size_: string
+    -floor_type_: string
+    -availability_: string
+    +getRoomNumber(): int
+    +getRoomSize(): string
+    +getFloorType(): string
+    +getAvailability(): string
+    +setRoomNumber(room_number: int): void
+    +setRoomSize(room_size: string): void
+    +setFloorType(floor_type: string): void
+    +setAvailability(availability: string): void
+}
+
+' RobotManager class with methods to manage robots
+class RobotManager {
+    -robot_list_: List<Robots>
+    +add_robot(new_robot: Robots): void
+    +find_robot_by_id(robot_id: int): Robots
+    +remove_robot_by_id(robot_id: int): bool
+    +get_robot_count(): int
+    +get_list(): List<Robots>
+}
+
+' Robot_Do_Task namespace with task-related methods
 class Robot_Do_Task {
-    +do_task(robot: Robots, room_size: string): int
-    +check_robot(room_size: string, water_level: int, battery_level: int): bool
-    +robot_charge(robot_list: List<Robots>): int
+    +calculate_task_duration(room_size: string): int
+    +get_resource_usage(room_size: string): int
+    +check_robot(robot: Robots): bool
+    +fix(robot: Robots): void
+    +calculate_error_status(robot: Robots): void
+    +execute(robot_list: List<Robots>): void
+    +start_execute_thread(robot_list: List<Robots>): void
+    +stop_execute_thread(): void
 }
 
-Robots "1" ..> "1" Robot_Do_Task : tasks handled by
-
-
+Robots "1" --> "1" Room : uses
+Robots "1" ..> "1..*" RobotManager : managed by
+RobotManager "1" ..> "1..*" Robots : manages
+Robot_Do_Task ..> Robots : interacts with
 @enduml
-
