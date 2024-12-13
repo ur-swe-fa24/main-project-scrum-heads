@@ -1,0 +1,59 @@
+@startuml DataManagerActivityDiagram
+start
+
+:Initialize DataManager;
+:Delete all existing data in MongoDB;
+:Load room data from file into MongoDB;
+
+partition "Live update Workflow" {
+    :Start update thread;
+    while (Keep updating?) is (yes)
+        :Fetch robot list from RobotManager;
+        :Update task status in MongoDB;
+        :Sleep for 3 seconds;
+    endwhile (no)
+    :Stop the update thread;
+}
+
+partition "Add Robot Workflow" {
+    :Receive RobotData input;
+    :Generate new unique Robot ID;
+    :Convert RobotData (wxString to std::string);
+    :Create Robots instance based on size;
+    :Store Robots instance in MongoDB;
+    :Add Robots instance to RobotManager;
+    :Update RobotData with assigned ID;
+    :Add RobotData to local vector;
+}
+
+partition "Add Task Workflow" {
+    :Receive TaskData input;
+    :Convert wxString to std::string;
+    :Store task in MongoDB;
+    :Find robot by ID in RobotManager;
+    :Update robot task status to "Ongoing";
+    :Find room by number in roomVector;
+    :Assign room to robot;
+}
+
+partition "Get Data" {
+    if (Request type == "GetRooms") then (yes)
+        :Fetch all rooms from MongoDB;
+    else if (Request type == "GetAvailableRooms") then (yes)
+        :Filter available rooms from MongoDB;
+    else if (Request type == "GetAvailableRobots") then (yes)
+        :Filter available robots from MongoDB;
+    else if (Request type == "GetTasksTable") then (yes)
+        :Fetch all ongoing tasks from MongoDB;
+    endif
+}
+
+partition "Delete Robot Workflow" {
+    :Receive Robot ID;
+    :Delete robot from MongoDB;
+    :Remove RobotData from local vector;
+    :Remove robot from RobotManager;
+}
+
+stop
+@enduml
