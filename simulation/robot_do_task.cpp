@@ -51,16 +51,15 @@ void fix(robots::Robots& robot) {
 
 // Function to calculate the error status for a robot (randomly assigning errors)
 void calculate_error_status(robots::Robots& robot) {
-    // Define potential failure types and their probabilities (out of 100)
+    // Define potential failure types (probability does not need to be specified here as 5% applies overall)
     struct Failure {
         std::string name;
-        int probability = 1; // Probability out of 100
     };
 
     std::vector<Failure> failures = {
-        {"Overheat", 1},       // 1% chance
-        {"Motor Failure", 1},  // 1% chance
-        {"Sensor Failure", 1}  // 1% chance
+        {"Overheat"},
+        {"Motor Failure"},
+        {"Sensor Failure"}
     };
 
     // Ensure the failures vector is not empty
@@ -69,25 +68,20 @@ void calculate_error_status(robots::Robots& robot) {
     // Initialize random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> error_chance(1, 1000);
+    std::uniform_int_distribution<> error_chance(1, 100);
 
-    // Check each failure type
-    for (const auto& failure : failures) {
-        if (error_chance(gen) <= failure.probability) {
-            // Update the robot's status
-            robot.update_error_status(failure.name);
-            robot.update_task_status("Cancelled");
+    // 5% chance for an error to occur
+    if (error_chance(gen) <= 5) {
+        // Randomly select one of the failure types
+        std::uniform_int_distribution<> failure_selector(0, failures.size() - 1);
+        const auto& selected_failure = failures[failure_selector(gen)];
 
-            // Log the selected failure for debugging
-            // std::cout << "Error triggered: " << failure.name << "\n";
-            // std::cout << "Task status updated to: Cancelled\n";
-            return; // Only one error can occur at a time
-        }
+        // Update the robot's status
+        robot.update_error_status(selected_failure.name);
+        robot.update_task_status("Cancelled");
     }
-
-    // If no errors occurred, log for debugging
-    // std::cout << "No errors occurred.\n";
 }
+
 
 std::atomic<bool> is_canceled = true;
 std::mutex robot_mutex;
