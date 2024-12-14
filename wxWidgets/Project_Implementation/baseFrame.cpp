@@ -127,6 +127,9 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
 
     // std::vector<TaskData>& tasks = dataManager->GetTasks();
 
+    //updates the TaskData vector
+    dataManager->UpdateTaskData();
+
     // Clear the existing display in the robotListBox (so same robot doesn't get added multiple times)
     robotListBox->Clear();
 
