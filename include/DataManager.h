@@ -39,6 +39,9 @@ public:
     //getter function for vector of RobotData
     std::vector<RobotData>& GetRobots();
 
+    //updates TaskData vector from the database
+    void UpdateTaskData();
+
     //getter function for vector of TaskData
     std::vector<TaskData>& GetTasks();
 

@@ -67,7 +67,23 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
         errorStatus = "None";
     }
 
-    std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + ", Water Level: " + std::to_string(robot.get_water_level());
+    //set total water and battery levels for robots, so presented levels are more descriptive as fraction
+    std::string totalAmount;
+    std::string robotSize = robot.get_size();
+    if (robotSize == "Large")
+    {
+        totalAmount = "/140";
+    }
+    else if (robotSize == "Medium")
+    {
+        totalAmount = "/120";
+    }
+    else
+    {
+        totalAmount = "/100";
+    }
+
+    std::string robotInfo = robot.get_task_status() + ", Battery Level: " + std::to_string(robot.get_battery_level()) + totalAmount + ", Water Level: " + std::to_string(robot.get_water_level()) + totalAmount;
     std::vector<std::string> errorInfo = dataManager->getErrorLog(robot.get_id());
 
     if (userRole == "FE")

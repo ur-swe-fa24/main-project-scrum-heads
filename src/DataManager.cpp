@@ -79,6 +79,27 @@ void DataManager::stopUpdateThread() {
 //     // You can then call the database model to save or update robot data here
 // }
 
+void DataManager::UpdateTaskData()
+{
+    tasks.clear(); //empties TaskData vector
+
+    std::vector<robots::Robots> taskVector = mongo_database.read_all_ongoing_tasks(); //reads ongoing tasks from database
+
+    //for each ongoing task
+    for (robots::Robots task : taskVector) 
+    {
+        //get all the necessary info for TaskData
+        wxString taskRoom = std::to_string(task.get_task_room().getRoomNumber());
+        std::string robotID = std::to_string(task.get_id());
+        wxString robotSize = task.get_size();
+        wxString robotFunction = task.get_function_type();
+        RobotData robot = {robotID, robotSize, robotFunction};
+        TaskData updatedTask = {taskRoom, robot};
+        //add the new TaskData
+        tasks.push_back(updatedTask);
+    }
+}
+
 void DataManager::AddRooms()
 {
     // Open the file
@@ -240,6 +261,7 @@ std::vector<robots::Robots> DataManager::GetTasksTable()
     // robots::Robots clicked_robot(robotId, "Large", 100, 50, "", "Vacuum", 3, "Scrub", 10, 15);
     //use read_all_tasks instead if you want non-ongoing (complete and cancelled) tasks
     std::vector<robots::Robots> tasks = mongo_database.read_all_ongoing_tasks();
+    
     return tasks;
 }
 
