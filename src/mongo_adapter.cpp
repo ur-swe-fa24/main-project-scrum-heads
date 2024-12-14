@@ -27,6 +27,8 @@ adapters::Mongo_Adapter::Mongo_Adapter(){
     // Initialize the instance and mongo db as private variables
 }
 
+
+
 // Pass by const ref - protects original objects the parameters are the senor or actuator
 /**
  * Writes a new robot document to the robot table
@@ -57,6 +59,7 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
 
 }
 
+
 /**
  * Reads a robot with a given key and outputs the information pertaining to that robot
  * If robot does not exist a string is returned specifying that
@@ -64,22 +67,27 @@ void adapters::Mongo_Adapter::write_robot(const robots::Robots& robot){
 robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
     auto result = db_["robot"].find_one(make_document(kvp("_id", id)));
     if (result) {
-        auto information = bsoncxx::to_json(*result);
-        json Doc = json::parse(information);
+        try{
+            auto information = bsoncxx::to_json(*result);
+            json Doc = json::parse(information);
 
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = Doc["_id"];
-        auto Size = Doc["size"];
-        auto Water_Level = Doc["water_level"];
-        auto Battery_Level = Doc["battery level"];
-        auto Function_type = Doc["Function Type"];
-        auto Error_Status = Doc["Error Status"];
-        auto Task_Status = Doc["Task Status"];
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = Doc["_id"];
+            auto Size = Doc["size"];
+            auto Water_Level = Doc["water_level"];
+            auto Battery_Level = Doc["battery level"];
+            auto Function_type = Doc["Function Type"];
+            auto Error_Status = Doc["Error Status"];
+            auto Task_Status = Doc["Task Status"];
 
-        Room room(0, "", "", "");
-        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, 0} ;
-        
-        return new_robot;
+            Room room(0, "", "", "");
+            robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, 0} ;
+            
+            return new_robot;
+        }catch(const std::exception e){
+            std::cout << "Exception in read_robot " << e.what() << std::endl;
+        }
+
     } 
     Room room(0, "", "", "");
     robots::Robots new_robot = robots::Robots(id, "", 0, 0, "No instance of robot with id", "", room, "", 0);
@@ -91,17 +99,28 @@ robots::Robots adapters::Mongo_Adapter::read_robot(int id) {
  */
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_robots(){
     std::vector<robots::Robots> robots = {};
-    auto cursor = db_["robot"].find({});
+    try{
+        auto cursor = db_["robot"].find({});
+    }catch(const std::exception e){
+        std::cout << "Exception in read_all_robots1 " << e.what() << std::endl;
+    }
+
     for( auto&& doc : cursor) {
-        auto information = bsoncxx::to_json(doc);
-        json Doc = json::parse(information);
-        auto Id = Doc["_id"];
-        auto Size = Doc["size"];
-        auto Water_Level = Doc["water_level"];
-        auto Battery_Level = Doc["battery level"];
-        auto Function_type = Doc["Function Type"];
-        auto Error_Status = Doc["Error Status"];
-        auto Task_Status = Doc["Task Status"];
+
+        try{
+            auto information = bsoncxx::to_json(doc);
+            json Doc = json::parse(information);
+            auto Id = Doc["_id"];
+            auto Size = Doc["size"];
+            auto Water_Level = Doc["water_level"];
+            auto Battery_Level = Doc["battery level"];
+            auto Function_type = Doc["Function Type"];
+            auto Error_Status = Doc["Error Status"];
+            auto Task_Status = Doc["Task Status"];
+        }catch(const std::exception e){
+            std::cout << "Exception in read_all_robot " << e.what() << std::endl;
+        }
+        
 
         //temporary placeholder to only retrieve "newer" robots that were created with a task status
         if (!Task_Status.is_null())
@@ -217,21 +236,31 @@ void adapters::Mongo_Adapter::update_room_availability(int id, std::string avail
  */
 Room adapters::Mongo_Adapter::read_room(int id){
     //Find the room in the database
-    auto result = db_["room"].find_one(make_document(kvp("Room Id", id)));
+    try{
+        auto result = db_["room"].find_one(make_document(kvp("Room Id", id)));
+    }catch(const std::exception e){
+        std::cout << "Exception in read_room1 " << e.what() << std::endl;
+    }
+
     if(result){
+        try{
+            auto information = bsoncxx::to_json(*result);
+            json room_Doc = json::parse(information);
+
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = room_Doc["Room Id"];
+            auto Size = room_Doc["Room Size"];
+            auto Availability = room_Doc["Availability"];
+            auto Floor_type = room_Doc["Floor Type"];
+
+            Room room(Id, Size, Floor_type, Availability);
+            //return the room
+            return room;
+        }catch(const std::exception e){
+            std::cout << "Exception in read_room1 " << e.what() << std::endl;
+        }
         // If this room exists create a room with the information in the database
-        auto information = bsoncxx::to_json(*result);
-        json room_Doc = json::parse(information);
-
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = room_Doc["Room Id"];
-        auto Size = room_Doc["Room Size"];
-        auto Availability = room_Doc["Availability"];
-        auto Floor_type = room_Doc["Floor Type"];
-
-        Room room(Id, Size, Floor_type, Availability);
-        //return the room
-        return room;        
+                
     }
     else{
         //If room does not exists return an empty room
@@ -247,30 +276,40 @@ void adapters::Mongo_Adapter::delete_rooms(){
     db_["room"].drop( {} );
 }
 
+
 /**
  * Read all rooms from the database and return as a vector of rooms
  */
 std::vector<Room> adapters::Mongo_Adapter::read_all_rooms(){
     //Read all the rooms from the database
     std::vector<Room> rooms = {};
-    auto cursor = db_["room"].find({});
-
+    
+    try{
+        auto cursor = db_["room"].find({});
+    }catch(const std::exception e){
+        std::cout << "Exception in read_all_rooms1 " << e.what() << std::endl;
+    }
     //Loop through all the rooms in the database
     for( auto&& doc : cursor) {
-        auto information = bsoncxx::to_json(doc);
-        json room_Doc = json::parse(information);
+        try{
+            auto information = bsoncxx::to_json(doc);
+            json room_Doc = json::parse(information);
 
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = room_Doc["Room Id"];
-        auto Size = room_Doc["Room Size"];
-        auto Availability = room_Doc["Availability"];
-        auto Floor_type = room_Doc["Floor Type"];
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = room_Doc["Room Id"];
+            auto Size = room_Doc["Room Size"];
+            auto Availability = room_Doc["Availability"];
+            auto Floor_type = room_Doc["Floor Type"];
 
-        // Create a room object for the room in the database
-        Room room(Id, Size, Floor_type, Availability);
+            // Create a room object for the room in the database
+            Room room(Id, Size, Floor_type, Availability);
 
-        // Add room to the vector
-        rooms.push_back(room);
+            // Add room to the vector
+            rooms.push_back(room);
+        }catch(const std::exception e){
+            std::cout << "Exception in read_all_rooms " << e.what() << std::endl;
+        }
+        
     }
     //Return Rooms
     return rooms;
@@ -374,9 +413,14 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
         auto result = db_["task"].find_one(make_document(kvp("robot_id", update.get_id()), kvp("Task Status", "Ongoing")));   
         // else we should just update the robot class if we do not find an ongiong task for this robot update
         if(result){
-            auto task_information = bsoncxx::to_json(*result);
-            json task_Doc = json::parse(task_information);
-            auto Room_Number = task_Doc["Room"];
+            try{
+                auto task_information = bsoncxx::to_json(*result);
+                json task_Doc = json::parse(task_information);
+                auto Room_Number = task_Doc["Room"];
+            }catch(const std::exception e){
+                std::cout << "Exception in update task status red robot " << e.what() << std::endl;
+            }
+
             //If the robot now has an error
             if(update.get_error_status() != ""){
                 //add the error to the error table for safe keeping to grab things later. if we are inquiring about an error log
@@ -578,29 +622,39 @@ void adapters::Mongo_Adapter::update_task_status(std::vector<robots::Robots> upd
  */
 robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
     //Find the ongoing task for the specific robot
-    auto task_result = db_["task"].find_one(make_document(kvp("robot_id", id), kvp("Task Status", "Ongoing"))); 
+    try{
+        auto task_result = db_["task"].find_one(make_document(kvp("robot_id", id), kvp("Task Status", "Ongoing"))); 
+    }catch(const std::exception e){
+        std::cout << "Exception in read_ongoing_tasks" << e.what() << std::endl;
+    }
+   
     if (task_result) {
-        //If there is an ongoing task then create a robot with all the data specific to the task and robot
-        auto task_information = bsoncxx::to_json(*task_result);
-        json task_Doc = json::parse(task_information);
+        try{
+            //If there is an ongoing task then create a robot with all the data specific to the task and robot
+            auto task_information = bsoncxx::to_json(*task_result);
+            json task_Doc = json::parse(task_information);
 
-        robots::Robots robot_info = read_robot(id);
+            robots::Robots robot_info = read_robot(id);
 
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = task_Doc["robot_id"];
-        auto Room_Number = task_Doc["Room"];
-        auto Function_type = robot_info.get_function_type();
-        auto Error_Status = task_Doc["Error Status"];
-        auto Task_Status = task_Doc["Task Status"];
-        auto Task_Percent = task_Doc["Task Percent"];
-        auto Size = robot_info.get_size();
-        auto Water_Level = robot_info.get_water_level();
-        auto Battery_Level = robot_info.get_battery_level();
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = task_Doc["robot_id"];
+            auto Room_Number = task_Doc["Room"];
+            auto Function_type = robot_info.get_function_type();
+            auto Error_Status = task_Doc["Error Status"];
+            auto Task_Status = task_Doc["Task Status"];
+            auto Task_Percent = task_Doc["Task Percent"];
+            auto Size = robot_info.get_size();
+            auto Water_Level = robot_info.get_water_level();
+            auto Battery_Level = robot_info.get_battery_level();
 
-        Room room = read_room(Room_Number);
-        robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
+            Room room = read_room(Room_Number);
+            robots::Robots new_robot = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
+            
+            return new_robot;
+        }catch(const std::exception e){
+            std::cout << "Exception in read_ongoing_task2" << e.what() << std::endl;
+        }
         
-        return new_robot;
     } 
     else{
         //If there is no ongoing task read info from just the robot table
@@ -618,31 +672,42 @@ robots::Robots adapters::Mongo_Adapter::read_ongoing_task(int id){
         return new_robot;
     }
 }
+
+
  /**
   * Read all ongoing tasks of all the robots
   */
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_ongoing_tasks(){
     std::vector<robots::Robots> ongoing_tasks;
-    auto cursor = db_["task"].find(make_document(kvp("Task Status", "Ongoing")));
+    try{
+        auto cursor = db_["task"].find(make_document(kvp("Task Status", "Ongoing")));
+    }catch(const std::exception e){
+        std::cout << "Exception in read_all_ongoing_tasks " << e.what() << std::endl;
+    }
     for( auto&& doc : cursor) {
-        auto task_information = bsoncxx::to_json(doc);
-        json task_Doc = json::parse(task_information);
+        try{
+            auto task_information = bsoncxx::to_json(doc);
+            json task_Doc = json::parse(task_information);
 
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = task_Doc["robot_id"];
-        robots::Robots robot_info = read_robot(Id);
-        auto Room_Number = task_Doc["Room"];
-        auto Function_type = robot_info.get_function_type();
-        auto Error_Status = task_Doc["Error Status"];
-        auto Task_Status = task_Doc["Task Status"];
-        auto Task_Percent = task_Doc["Task Percent"];
-        auto Size = robot_info.get_size();
-        auto Water_Level = robot_info.get_water_level();
-        auto Battery_Level = robot_info.get_battery_level();
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = task_Doc["robot_id"];
+            robots::Robots robot_info = read_robot(Id);
+            auto Room_Number = task_Doc["Room"];
+            auto Function_type = robot_info.get_function_type();
+            auto Error_Status = task_Doc["Error Status"];
+            auto Task_Status = task_Doc["Task Status"];
+            auto Task_Percent = task_Doc["Task Percent"];
+            auto Size = robot_info.get_size();
+            auto Water_Level = robot_info.get_water_level();
+            auto Battery_Level = robot_info.get_battery_level();
 
-        Room room = read_room(Room_Number);
-        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
-        ongoing_tasks.push_back(new_task);
+            Room room = read_room(Room_Number);
+            robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
+            ongoing_tasks.push_back(new_task);
+        }catch(const std::exception e){
+            std::cout << "Exception in read_all_ongoing_tasks2 " << e.what() << std::endl;
+        }
+        
     }
     return ongoing_tasks;
 }
@@ -651,25 +716,35 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_ongoing_tasks(){
  * Read all the tasks a robot has done and are ongoing
  */
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_robot_tasks(int id){
+    try{
+        auto cursor = db_["task"].find(make_document(kvp("robot_id", id)));
+    }catch(const std::exception e){
+        std::cout << "Exception in read_robot_tasks " << e.what() << std::endl;
+    }
     std::vector<robots::Robots> tasks;
-    auto cursor = db_["task"].find(make_document(kvp("robot_id", id)));
+
     // auto robot_result = db_["robot"].find_one(make_document(kvp("_id", id))); 
     for( auto&& doc : cursor) {
-        auto task_information = bsoncxx::to_json(doc);
-        json task_Doc = json::parse(task_information);
+        try{
+            auto task_information = bsoncxx::to_json(doc);
+            json task_Doc = json::parse(task_information);
 
 
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = task_Doc["robot_id"];
-        robots::Robots robot_info = read_robot(Id);
-        auto Room_Number = task_Doc["Room"];
-        auto Function_type = robot_info.get_function_type();
-        auto Error_Status = task_Doc["Error Status"];
-        auto Task_Status = task_Doc["Task Status"];
-        auto Task_Percent = task_Doc["Task Percent"];
-        auto Size = robot_info.get_size();
-        auto Water_Level = robot_info.get_water_level();
-        auto Battery_Level = robot_info.get_battery_level();
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = task_Doc["robot_id"];
+            robots::Robots robot_info = read_robot(Id);
+            auto Room_Number = task_Doc["Room"];
+            auto Function_type = robot_info.get_function_type();
+            auto Error_Status = task_Doc["Error Status"];
+            auto Task_Status = task_Doc["Task Status"];
+            auto Task_Percent = task_Doc["Task Percent"];
+            auto Size = robot_info.get_size();
+            auto Water_Level = robot_info.get_water_level();
+            auto Battery_Level = robot_info.get_battery_level();
+        }catch(const std::exception e){
+            std::cout << "Exception in read_robot_tasks2 " << e.what() << std::endl;
+        }
+        
 
         Room room = read_room(Room_Number);
         robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
@@ -684,28 +759,38 @@ std::vector<robots::Robots> adapters::Mongo_Adapter::read_robot_tasks(int id){
 std::vector<robots::Robots> adapters::Mongo_Adapter::read_all_tasks(){
     //Vector to have all the tasks of a specific robot
     std::vector<robots::Robots> all_tasks;
-    auto cursor = db_["task"].find({});
+    try{
+        auto cursor = db_["task"].find({});
+    }catch(const std::exception e){
+        std::cout << "Exception in read_robot " << e.what() << std::endl;
+    }
+    
     //Loop through all the tasks of the robot
     for( auto&& doc : cursor) {
-        auto task_information = bsoncxx::to_json(doc);
-        json task_Doc = json::parse(task_information);
+        try{
+            auto task_information = bsoncxx::to_json(doc);
+            json task_Doc = json::parse(task_information);
+            
+
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = task_Doc["robot_id"];
+            robots::Robots robot_info = read_robot(Id);
+            auto Room_Number = task_Doc["Room"];
+            auto Function_type = robot_info.get_function_type();
+            auto Error_Status = task_Doc["Error Status"];
+            auto Task_Status = task_Doc["Task Status"];
+            auto Task_Percent = task_Doc["Task Percent"];
+            auto Size = robot_info.get_size();
+            auto Water_Level = robot_info.get_water_level();
+            auto Battery_Level = robot_info.get_battery_level();
+
+            Room room = read_room(Room_Number);
+            robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
+            all_tasks.push_back(new_task);
+        }catch(const std::exception e){
+            std::cout << "Exception in read_robot " << e.what() << std::endl;
+        }
         
-
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = task_Doc["robot_id"];
-        robots::Robots robot_info = read_robot(Id);
-        auto Room_Number = task_Doc["Room"];
-        auto Function_type = robot_info.get_function_type();
-        auto Error_Status = task_Doc["Error Status"];
-        auto Task_Status = task_Doc["Task Status"];
-        auto Task_Percent = task_Doc["Task Percent"];
-        auto Size = robot_info.get_size();
-        auto Water_Level = robot_info.get_water_level();
-        auto Battery_Level = robot_info.get_battery_level();
-
-        Room room = read_room(Room_Number);
-        robots::Robots new_task = robots::Robots{Id, Size, Water_Level, Battery_Level, Error_Status, Task_Status, room, Function_type, Task_Percent} ;
-        all_tasks.push_back(new_task);
     }
     return all_tasks;
 }
@@ -723,26 +808,36 @@ void adapters::Mongo_Adapter::delete_all_tasks(){
  */
 std::vector<std::string> adapters::Mongo_Adapter::get_error_log(int id){
     std::vector<std::string> error_log;
-    auto cursor = db_["error"].find(make_document(kvp("robot_id", id)));
+    try{
+        auto cursor = db_["error"].find(make_document(kvp("robot_id", id)));
+    }catch(const std::exception e){
+        std::cout << "Exception in get_error_log " << e.what() << std::endl;
+    }
+
     //Loop through all the tasks of the robot
     for( auto&& doc : cursor) {
-        auto error_information = bsoncxx::to_json(doc);
-        json error_Doc = json::parse(error_information);
+        try{
+            auto error_information = bsoncxx::to_json(doc);
+            json error_Doc = json::parse(error_information);
+            
+
+            // Assuming Doc is a JSON object, access fields by their keys.
+            auto Id = error_Doc["robot_id"];
+            auto Room_Number = error_Doc["Room"];
+            std::string Function_type = error_Doc["Function Type"];
+            std::string Error_Status = error_Doc["Error Status"];
+            auto Task_Percent = error_Doc["Task Percent"];
+            std::string Size = error_Doc["Size"];
+            auto Water_Level = error_Doc["Water Level"];
+            auto Battery_Level = error_Doc["Battery Level"];
+
+            Room room = read_room(Room_Number);
+            std::string new_error = "Robot Id: " + to_string(Id) + ", Error Status: " + Error_Status + ", Task Percent: " + to_string(Task_Percent) + ", Function Type: " + Function_type + ", Room Number: " + to_string(Room_Number) + ", Room Size: " + room.getRoomSize() + ", Room Floor Type: "+ room.getFloorType();
+            error_log.push_back(new_error);
+        }catch(const std::exception e){
+            std::cout << "Exception in get_error_log2 " << e.what() << std::endl;
+        }
         
-
-        // Assuming Doc is a JSON object, access fields by their keys.
-        auto Id = error_Doc["robot_id"];
-        auto Room_Number = error_Doc["Room"];
-        std::string Function_type = error_Doc["Function Type"];
-        std::string Error_Status = error_Doc["Error Status"];
-        auto Task_Percent = error_Doc["Task Percent"];
-        std::string Size = error_Doc["Size"];
-        auto Water_Level = error_Doc["Water Level"];
-        auto Battery_Level = error_Doc["Battery Level"];
-
-        Room room = read_room(Room_Number);
-        std::string new_error = "Robot Id: " + to_string(Id) + ", Error Status: " + Error_Status + ", Task Percent: " + to_string(Task_Percent) + ", Function Type: " + Function_type + ", Room Number: " + to_string(Room_Number) + ", Room Size: " + room.getRoomSize() + ", Room Floor Type: "+ room.getFloorType();
-        error_log.push_back(new_error);
     }
 
     return error_log;
