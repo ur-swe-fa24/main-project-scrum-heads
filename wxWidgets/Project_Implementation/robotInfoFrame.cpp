@@ -67,6 +67,7 @@ void MyRobotInfoFrame::SetRobotData(robots::Robots robot) {
         errorStatus = "None";
     }
 
+    //set total water and battery levels for robots, so presented levels are more descriptive as fraction
     std::string totalAmount;
     std::string robotSize = robot.get_size();
     if (robotSize == "Large")
