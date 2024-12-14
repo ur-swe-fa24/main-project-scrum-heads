@@ -100,4 +100,5 @@ void MyBMBaseFrame::OnChangeRoomAButtonClick(wxCommandEvent& event)
 
     //refresh after availability is changed
     baseFrame->HandleRefreshButton(event, robotListBox, taskListBox, roomListBox);
+    changeAvailabilityButton->Disable();
 }
