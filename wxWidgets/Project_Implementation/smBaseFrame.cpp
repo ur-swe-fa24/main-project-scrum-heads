@@ -17,5 +17,3 @@ void MySMBaseFrame::OnSMRefreshButtonClick(wxCommandEvent& event)
 {
     //get all the updated business metrics from the dataManager
 }
-
-//still need to figure out exactly which metrics we'd be using, and how to best display

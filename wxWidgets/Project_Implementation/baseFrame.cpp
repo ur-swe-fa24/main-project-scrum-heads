@@ -1,8 +1,6 @@
 #include "baseFrame.hpp"
 #include <wx/wx.h>
 
-// DataManager dataManager; //create single shared instance of dataManager
-
 MyBaseFrame::MyBaseFrame(wxWindow* parent, DataManager* dataManager)
     : baseFrame(parent), dataManager(dataManager)  // Call the base class constructor
 {
@@ -15,40 +13,25 @@ MyBaseFrame::MyBaseFrame(wxWindow* parent, DataManager* dataManager)
 
 void MyBaseFrame::OnFESelectButtonClick(wxCommandEvent& event)
 {
-    // Implement necessary button press logic here
-    // wxMessageBox("Field Engineer Frame", "Info", wxOK | wxICON_INFORMATION);
-    // DataManager dataManager; //create single shared instance of dataManager
     MyFEBaseFrame* feFrame = new MyFEBaseFrame(nullptr, dataManager, this);
-
-    //here is where I would interact with the system manager to fetch all the necessary data I need,
-    //since it's here that the feFrame is created
-
-    // wxString sampleText = "Hello, Field Engineer!";
-    // feFrame->SetText(sampleText);  // Set the text in feFrame’s text control
     
     feFrame->Show(true);
 }
 
 void MyBaseFrame::OnSMSelectButtonClick(wxCommandEvent& event)
 {
-    // Implement necessary button press logic here
-    // wxMessageBox("Senior Management Frame", "Info", wxOK | wxICON_INFORMATION);
     MySMBaseFrame* smFrame = new MySMBaseFrame(nullptr, dataManager, this);
     smFrame->Show(true);
 }
 
 void MyBaseFrame::OnBSSelectButtonClick(wxCommandEvent& event)
 {
-    // Implement necessary button press logic here
-    // wxMessageBox("Building Staff Frame", "Info", wxOK | wxICON_INFORMATION);
     MyBSBaseFrame* bsFrame = new MyBSBaseFrame(nullptr, dataManager, this);
     bsFrame->Show(true);
 }
 
 void MyBaseFrame::OnBMSelectButtonClick(wxCommandEvent& event)
 {
-    // Implement necessary button press logic here
-    // wxMessageBox("Building Manager Frame", "Info", wxOK | wxICON_INFORMATION);
     MyBMBaseFrame* bmFrame = new MyBMBaseFrame(nullptr, dataManager, this);
     bmFrame->Show(true);
 }
@@ -93,8 +76,6 @@ void MyBaseFrame::HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListB
 
         TaskData selectedTask = tasks[selectionIndex]; //finds the coordinated task from the tasks vector
 
-        // wxString taskStatus = "need to get task status here";
-
         // Create viewTaskFrame
         MyViewTaskFrame* taskInfoFrame = new MyViewTaskFrame(parent);
     
@@ -112,15 +93,6 @@ void MyBaseFrame::HandleTaskListBoxDClick(wxWindow* parent, wxListBox* taskListB
 
 void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotListBox, wxListBox* taskListBox, wxListBox* roomListBox)
 {
-    // Implement necessary button press logic here
-    //this refresh button click will have similar logic to the creation of the original feFrame,
-    //interacting with the system manager to fetch all the new data that might not be displayed on screen.
-    //For example, after adding a new robot, the user will need to refresh this window
-
-    // wxMessageBox("Refresh", "Info", wxOK | wxICON_INFORMATION);
-
-    // std::vector<RobotData>& robots = GetRobots();
-
     // Access the shared RobotData vector from DataManager and display each robot
     //this is just used to display simple information (id, size, function) to user
     std::vector<RobotData>& robots = dataManager->GetRobots();
@@ -201,30 +173,6 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
         taskListBox->Append(taskInfo);  // Adding each robot info to the ListBox
     }
 
-    // //iterate through tasks and append info to list box
-    // //need to modify to get ongoing info
-    // for (TaskData& task : tasks) {
-    //     int robotID = std::stoi(task.taskRobot.robotID);
-
-    //     //creates string to hold status as color
-    //     std::string statusBubble;
-
-    //     //note: these availabilities may not be the correct words
-    //     std::string taskStatus = "need to get task status here";
-    //     if (taskStatus == "Ongoing")
-    //     {
-    //         statusBubble = "🟢";
-    //     }
-    //     else
-    //     {
-    //         statusBubble = "🔴";
-    //     }
-
-
-    //     wxString taskInfo = wxString::Format(statusBubble + "Room: " + task.taskRoom + ", Robot: " + task.taskRobot.robotID); //will be ugly for now a placeholder for ID or whatever else later
-    //     taskListBox->Append(taskInfo);  // Adding each robot info to the ListBox
-    // }
-
     //gets rooms from dataManager
     std::vector<Room> rooms = dataManager->GetRooms();
 
@@ -255,11 +203,6 @@ void MyBaseFrame::HandleRefreshButton(wxCommandEvent& event, wxListBox* robotLis
         std::string roomInfo = statusBubble + " ID: " + roomID + " (Size: " + roomSize + ", Floor Type: " + floorType + ")";
         roomListBox->Append(roomInfo);
     }
-
-    // // Pass the robots data to the controller
-    // if (dataManager) {
-    //     dataManager->SendRobotsData(robots);
-    // }
 }
 
 void MyBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData& robotSelection)
@@ -271,7 +214,5 @@ void MyBaseFrame::AddTaskToList(const wxString& roomSelection, const RobotData& 
     dataManager->AddTask(task);
 
     wxMessageBox("Task created in room: " + roomSelection + ", using robot with ID: " + robotSelection.robotID, "Success!", wxOK | wxICON_INFORMATION);
-
-    //task is actually appended to the list on refresh button click, which is being called in the addTaskFrame
 }
 

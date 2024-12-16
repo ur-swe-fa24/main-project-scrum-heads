@@ -9,12 +9,6 @@
 #include "viewTaskFrame.hpp"
 #include "../include/DataManager.h"
 
-
-// struct RobotData {
-//     wxString robotSize;
-//     wxString robotFunction;
-// };
-
 class DataManager;
 
 class MyBaseFrame : public baseFrame
