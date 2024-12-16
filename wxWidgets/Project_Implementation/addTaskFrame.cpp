@@ -7,9 +7,6 @@ MyAddTaskFrame::MyAddTaskFrame(wxWindow* parent, wxListBox* robotListBox, wxList
 {
     createTaskButton->Bind(wxEVT_BUTTON, &MyAddTaskFrame::OnCreateTaskButtonClick, this);
 
-    // // //obviously need to update this so the list boxes are updated with actual rooms and robot IDs, not just manual insertions
-    // roomSelectionListBox->Append("ID: 1 (Size: Medium, Floor Type: Carpet)");
-
     //get available rooms
     availableRoomsVector = dataManager->GetAvailableRooms();
     //iterate through available rooms and get + append info for user
@@ -190,14 +187,6 @@ void MyAddTaskFrame::OnCreateTaskButtonClick(wxCommandEvent& event)
     std::string roomIDString = roomInfoString.substr(RoomIdStart, RoomIdEnd - RoomIdStart);
     wxString roomIDwxString = wxString::FromUTF8(roomIDString);
 
-    //NEED TO somehow get this parameter to be RobotData
-    //maybe extract robot ID from the string, and then use that to find appropriate robot in RobotData vector from datamanager
-    //or, maybe there's a GetStringSelection() equivalent that would be able to retrieve RobotData instead?
-
-    // //convert robotID from wxString to string
-    // std::string robotID = std::string(taskRobotAssignment.mb_str());
-    // std::cout << robotID << std::endl;
-
     //get vector of RobotData from dataManager
     std::vector<RobotData>& robotVector = dataManager->GetRobots();
 
@@ -210,13 +199,7 @@ void MyAddTaskFrame::OnCreateTaskButtonClick(wxCommandEvent& event)
         }
     }
 
-    // // Pass the robot description to feFrame's list box (if creating a new feFrame, will need to use refresh button, or will automtically refresh when addind/deleting a robot)
-    // my_feFrame->AddTaskToList(taskRoomAssignment, targetRobot);
-
     baseFrame->AddTaskToList(roomIDwxString, targetRobot);
-
-    // // Trigger refresh event using the same event as remove robot button click (to mimic user pressing refresh button)
-    // my_feFrame->OnFERefreshButtonClick(event);
 
     baseFrame->HandleRefreshButton(event, localRobotListBox, localTaskListBox, localRoomListBox);
 

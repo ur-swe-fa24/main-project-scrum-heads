@@ -50,8 +50,6 @@ protected:
     void OnTaskListBoxDClick(wxCommandEvent& event) override;
 
 private:
-    // std::vector<RobotData> robots;
-
     DataManager* dataManager;  // Pointer to the data manager
 
     MyBaseFrame* baseFrame;  // Pointer to the baseFrame

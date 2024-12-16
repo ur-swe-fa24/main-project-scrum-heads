@@ -36,20 +36,6 @@ void MyAddRobotFrame::OnCreateRobotButtonClick(wxCommandEvent& event)
     // Collect the selected robot size and function as wxString
     wxString robotSize = robotSizeDropdown->GetStringSelection();
     wxString robotFunction = robotFunctionDropdown->GetStringSelection();
-    // From here, can share the generated robot with size and function to the system manager, which can then pass info to the database
-    // We are leaning towards the system manager or database generating unique robot IDs instead
-    // of having the user specify them, saves some trouble for checking that the user's specified ID is valid
-
-    // // Use wxLogMessage to log the creation for testing
-    // // robotSize and robotFunction take the place of %s
-    // wxLogMessage("Robot created with size: %s and function: %s", robotSize, robotFunction);
-
-    // // Temporary confirmation message
-    // wxMessageBox("Robot Added Successfully", "Confirmation Message", wxOK | wxICON_INFORMATION);
-
-    // Create robot description to show up on field engineer view of list of robots
-    // Robot description also serving as a temporary/preliminary structure to represent how robot data might be cumulated here before being retrived by system manager
-    // wxString robotDescription = wxString::Format("Size: %s, Function: %s", robotSize, robotFunction);
 
     // Pass the robot description to feFrame's list box (if creating a new feFrame, will need to use refresh button, or will automtically refresh when addind/deleting a robot)
     my_feFrame->AddRobotToList(robotSize, robotFunction);

@@ -21,12 +21,6 @@ void MyBMBaseFrame::OnBMRefreshButtonClick(wxCommandEvent& event)
     baseFrame->HandleRefreshButton(event, robotListBox, taskListBox, roomListBox);
 }
 
-// void MyBMBaseFrame::OnBMButtonClick(wxCommandEvent& event)
-// {
-//     // Implement necessary button press logic here
-//     wxMessageBox("Building Manager Frame", "Info", wxOK | wxICON_INFORMATION);
-// }
-
 void MyBMBaseFrame::OnRobotListBoxDClick(wxCommandEvent& event)
 {
     baseFrame->HandleRobotListBoxDClick(this, robotListBox, "BM");

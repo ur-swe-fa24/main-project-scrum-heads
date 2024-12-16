@@ -12,8 +12,6 @@ public:
 
 protected:
 
-    // MyFEBaseFrame* my_feFrame;
-
 private:
 
 };
